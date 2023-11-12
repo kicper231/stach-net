@@ -16,7 +16,7 @@ builder.Services.AddScoped<ICustomerRepository, DbCustomerRepository>();
 
 builder.Services.AddDbContextFactory<ShopperContext>(options =>
     options.UseSqlite("Data Source=shopper.db"));
-
+//stara barana start
 // builder.Services.AddHostedService<DbCreationalService>();
 var app = builder.Build();
 
