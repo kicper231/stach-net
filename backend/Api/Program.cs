@@ -8,29 +8,29 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 
-builder.Services.AddControllers(); // Dodaje us³ugi obs³ugi kontrolerów MVC do aplikacji
-builder.Services.AddEndpointsApiExplorer(); // Umo¿liwia eksploracjê endpointów API, przydatne dla Swagger
-builder.Services.AddSwaggerGen(); 
-// Dodaje generator Swaggera, który dostarcza UI do testowania API i dokumentacji
+builder.Services.AddControllers(); // Dodaje usï¿½ugi obsï¿½ugi kontrolerï¿½w MVC do aplikacji
+builder.Services.AddEndpointsApiExplorer(); // Umoï¿½liwia eksploracjï¿½ endpointï¿½w API, przydatne dla Swagger
+builder.Services.AddSwaggerGen();
+// Dodaje generator Swaggera, ktï¿½ry dostarcza UI do testowania API i dokumentacji
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyAllowSpecificOrigins",
         builder =>
         {
-            builder.WithOrigins("http://127.0.0.1:5500")
+            builder.WithOrigins("http://localhost:3000")
                    .AllowAnyHeader()
                    .AllowAnyMethod();
         });
 });
-// Dodanie us³ugi scoped dla ICustomerRepository, która bêdzie u¿ywaæ DbCustomerRepository do swojej implementacji
+// Dodanie usï¿½ugi scoped dla ICustomerRepository, ktï¿½ra bï¿½dzie uï¿½ywaï¿½ DbCustomerRepository do swojej implementacji
 builder.Services.AddScoped<ICustomerRepository, DbCustomerRepository>();
 
-// Konfiguracja factory do tworzenia DbContext, konkretnie ShopperContext, u¿ywaj¹c SQLite jako bazy danych
-//builder.Services.AddDbContextFactory<ShopperContext>(options =>
-//   options.UseSqlite("Data Source=shopper.db"));
-
+// Konfiguracja factory do tworzenia DbContext, konkretnie ShopperContext, uï¿½ywajï¿½c SQLite jako bazy danych
 builder.Services.AddDbContextFactory<ShopperContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("HostowanaBaza")));
+  options.UseSqlite("Data Source=shopper.db"));
+
+// builder.Services.AddDbContextFactory<ShopperContext>(options =>
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("HostowanaBaza")));
 
 //builder.Services.AddDbContextFactory<ShopperContext>(options =>
 //    options.UseSqlServer("data source=DESKTOP-IIG9H2J;initial catalog=stachnetest;user id=sa;password=monia231; TrustServerCertificate=True "));
@@ -39,12 +39,12 @@ builder.Services.AddDbContextFactory<ShopperContext>(options =>
 //builder.Services.AddDbContextFactory<ShopperContext>(options =>
 //    options.UseSqlServer("data source=DESKTOP-IIG9H2J;initial catalog=stachnetest;user id=sa;password=monia231; TrustServerCertificate=True "));
 
-// Odkomentuj, aby dodaæ us³ugê hostowan¹, która uruchomi DbCreationalService przy starcie
+// Odkomentuj, aby dodaï¿½ usï¿½ugï¿½ hostowanï¿½, ktï¿½ra uruchomi DbCreationalService przy starcie
 builder.Services.AddHostedService<DbCreationalService>();
 
-var app = builder.Build(); // Buduje aplikacjê webow¹
+var app = builder.Build(); // Buduje aplikacjï¿½ webowï¿½
 
-// Konfiguruje pipeline ¿¹dañ HTTP.
+// Konfiguruje pipeline ï¿½ï¿½daï¿½ HTTP.
 
 
 if (app.Environment.IsDevelopment())
@@ -53,14 +53,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection(); // Dodaje middleware do przekierowywania ¿¹dañ HTTP na HTTPS
+app.UseHttpsRedirection(); // Dodaje middleware do przekierowywania ï¿½ï¿½daï¿½ HTTP na HTTPS
 app.UseCors("MyAllowSpecificOrigins");
 
 app.UseAuthorization(); // Dodaje middleware do autoryzacji
 
-app.MapControllers(); // Mapuje trasy do akcji kontrolerów
+app.MapControllers(); // Mapuje trasy do akcji kontrolerï¿½w
 
-// Ta niestandardowa metoda rozszerzenia (nie jest czêœci¹ ASP.NET Core) prawdopodobnie s³u¿y do upewnienia siê, ¿e baza danych jest tworzona przy starcie aplikacji.
+// Ta niestandardowa metoda rozszerzenia (nie jest czï¿½ciï¿½ ASP.NET Core) prawdopodobnie sï¿½uï¿½y do upewnienia siï¿½, ï¿½e baza danych jest tworzona przy starcie aplikacji.
 //app.CreateDatabase<ShopperContext>();
 
-app.Run(); // Uruchamia aplikacjê
+app.Run(); // Uruchamia aplikacjï¿½
