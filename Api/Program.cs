@@ -2,6 +2,7 @@ using Api;
 using Domain.Abstractions;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,8 +26,18 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<ICustomerRepository, DbCustomerRepository>();
 
 // Konfiguracja factory do tworzenia DbContext, konkretnie ShopperContext, u¿ywaj¹c SQLite jako bazy danych
+//builder.Services.AddDbContextFactory<ShopperContext>(options =>
+//   options.UseSqlite("Data Source=shopper.db"));
+
 builder.Services.AddDbContextFactory<ShopperContext>(options =>
-   options.UseSqlite("Data Source=shopper.db"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("HostowanaBaza")));
+
+//builder.Services.AddDbContextFactory<ShopperContext>(options =>
+//    options.UseSqlServer("data source=DESKTOP-IIG9H2J;initial catalog=stachnetest;user id=sa;password=monia231; TrustServerCertificate=True "));
+
+
+//builder.Services.AddDbContextFactory<ShopperContext>(options =>
+//    options.UseSqlServer("data source=DESKTOP-IIG9H2J;initial catalog=stachnetest;user id=sa;password=monia231; TrustServerCertificate=True "));
 
 // Odkomentuj, aby dodaæ us³ugê hostowan¹, która uruchomi DbCreationalService przy starcie
 builder.Services.AddHostedService<DbCreationalService>();
