@@ -26,12 +26,21 @@ namespace Infrastructure
 
         public Customer GetById(int id)
         {
-            throw new NotImplementedException();
+           
+            customers.TryGetValue(id, out var customer);
+            return customer;
         }
 
         public void Add(Customer customer)
         {
-            throw new NotImplementedException();
+            
+            if (customers.ContainsKey(customer.Id))
+            {
+                throw new InvalidOperationException("Klient o tym ID ju¿ istnieje.");
+            }
+
+            
+            customers[customer.Id] = customer;
         }
     }
     
