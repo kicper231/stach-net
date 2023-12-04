@@ -5,6 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
 import { Auth0Provider } from "@auth0/auth0-react";
+import { BrowserRouter } from "react-router-dom";
 
 const domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
@@ -17,7 +18,9 @@ root.render(
       clientId={clientId}
       redirectUri={window.location.origin}
     >
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </Auth0Provider>
   </React.StrictMode>
 );
