@@ -4,7 +4,7 @@ export default function Button() {
   const [x, setX] = useState(null);
 
   function handleClick() {
-    fetch("http://localhost:5157/api/customers", { method: "GET" })
+    fetch("https://stachnet.azurewebsites.net/api/customers", { method: "GET" })
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
