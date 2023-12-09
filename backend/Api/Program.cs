@@ -2,6 +2,7 @@ using Api;
 using Domain.Abstractions;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,14 +24,19 @@ builder.Services.AddCors(options =>
         });
 });
 // Dodanie us�ugi scoped dla ICustomerRepository, kt�ra b�dzie u�ywa� DbCustomerRepository do swojej implementacji
-builder.Services.AddScoped<ICustomerRepository, DbCustomerRepository>();
+builder.Services.AddScoped<IUserRepository, DbRepository>();
 
 // Konfiguracja factory do tworzenia DbContext, konkretnie ShopperContext, u�ywaj�c SQLite jako bazy danych
-builder.Services.AddDbContextFactory<ShopperContext>(options =>
-  options.UseSqlite("Data Source=shopper.db"));
+////builder.Services.AddDbContextFactory<ShopperContext>(options =>
+////  options.UseSqlite("Data Source=shopper.db"));
 
-// builder.Services.AddDbContextFactory<ShopperContext>(options =>
-//     options.UseSqlServer(builder.Configuration.GetConnectionString("HostowanaBaza")));
+builder.Services.AddDbContextFactory<ShopperContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("LokalnaBaza"),
+        x => x.MigrationsAssembly("Api")
+    )
+);
+
 
 //builder.Services.AddDbContextFactory<ShopperContext>(options =>
 //    options.UseSqlServer("data source=DESKTOP-IIG9H2J;initial catalog=stachnetest;user id=sa;password=monia231; TrustServerCertificate=True "));
