@@ -17,6 +17,11 @@ root.render(
       domain={domain}
       clientId={clientId}
       redirectUri={window.location.origin}
+      // authorizationParams={{
+      //   redirect_uri: window.location.origin,
+      //   audience: "https://stachnet.azurewebsites.net/api",
+      //   scope: "read:current_user update:current_user_metadata"
+      // }}
     >
       <BrowserRouter>
         <App />
