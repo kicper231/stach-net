@@ -10,9 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers(); // Dodaje us�ugi obs�ugi kontroler�w MVC do aplikacji
-builder.Services.AddEndpointsApiExplorer(); // Umo�liwia eksploracj� endpoint�w API, przydatne dla Swagger
+builder.Services.AddEndpointsApiExplorer(); 
 builder.Services.AddSwaggerGen();
-// Dodaje generator Swaggera, kt�ry dostarcza UI do testowania API i dokumentacji
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyAllowSpecificOrigins",
@@ -51,6 +52,11 @@ builder.Services.AddHostedService<DbCreationalService>();
 var app = builder.Build(); // Buduje aplikacj� webow�
 
 // Konfiguruje pipeline ��da� HTTP.
+
+
+
+
+
 
 
 if (app.Environment.IsDevelopment())
