@@ -65,7 +65,7 @@ namespace Infrastructure;
         modelBuilder.Entity<DeliveryRequest>()
             .HasOne(dr => dr.User)
             .WithMany()
-            .HasForeignKey(dr => dr.UserId)
+           // .HasForeignKey(dr => dr.UserId)
             .OnDelete(DeleteBehavior.Restrict); 
         modelBuilder.Entity<DeliveryRequest>()
             .HasOne(dr => dr.Package)
@@ -142,8 +142,8 @@ namespace Infrastructure;
 
 
        // indeksy??
-        modelBuilder.Entity<DeliveryRequest>()
-            .HasIndex(dr => dr.UserId);
+       // modelBuilder.Entity<DeliveryRequest>()
+         //   .HasIndex(dr => dr.UserId);
 
        
         modelBuilder.Entity<Offer>()

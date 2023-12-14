@@ -44,7 +44,24 @@ public class DbRepository : IUserRepository
 }
 
 
+public class DbRequestRepository : IDeliveryRequestRepository
+{
+    private readonly ShopperContext _context;
 
+    public DbRequestRepository(ShopperContext context)
+    {
+        _context = context;
+    }
+
+    public List<DeliveryRequest> GetDeliveryRequestsByUserId(string userId)
+    {
+        return _context.DeliveryRequests
+            .Where(dr => dr.UserAuth0 == userId)
+            .ToList();
+    }
+
+  
+}
 
 
 
