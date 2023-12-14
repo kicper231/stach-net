@@ -2,8 +2,10 @@ using Api;
 using Domain.Abstractions;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Api.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,12 @@ builder.Services.AddCors(options =>
 // Dodanie us�ugi scoped dla ICustomerRepository, kt�ra b�dzie u�ywa� DbCustomerRepository do swojej implementacji
 builder.Services.AddScoped<IUserRepository, DbRepository>();
 
+builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
+
+
+builder.Services.AddScoped<IDeliveryRequestService, DeliveryRequestService>();
+
+
 // Konfiguracja factory do tworzenia DbContext, konkretnie ShopperContext, u�ywaj�c SQLite jako bazy danych
 ////builder.Services.AddDbContextFactory<ShopperContext>(options =>
 ////  options.UseSqlite("Data Source=shopper.db"));
@@ -49,9 +57,18 @@ builder.Services.AddDbContextFactory<ShopperContext>(options =>
 // Odkomentuj, aby doda� us�ug� hostowan�, kt�ra uruchomi DbCreationalService przy starcie
 builder.Services.AddHostedService<DbCreationalService>();
 
+
+var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.Authority = domain;
+    options.Audience = builder.Configuration["Auth0:Audience"];
+});
+
 var app = builder.Build(); // Buduje aplikacj� webow�
 
-// Konfiguruje pipeline ��da� HTTP.
+
 
 
 
