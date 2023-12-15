@@ -17,6 +17,24 @@ div.contextHolder {
   justify-content: center;
 }
 
+.overflow {
+  overflow-y: scroll;
+  height: calc(100vh - 200px);
+}
+
 * {
   color: white;
+}
+
+input {
+  color: black;
+}
+
+/* XXX */
+
+div.columns {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }

@@ -14,9 +14,10 @@ export default function NavBar() {
         <p className="name">Mój Szybki Kurier</p>
       </div>
       <div className="rightSide">
+        <button onClick={() => navigate("/")}>Home</button>
         {!isAuthenticated && <LoginButton />}
         {isAuthenticated && (
-          <button onClick={() => navigate("/profile")}>Profile</button>
+          <button onClick={() => navigate("/profile")}>Profil</button>
         )}
         {isAuthenticated && <LogoutButton />}
       </div>
