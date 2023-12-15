@@ -1,11 +1,13 @@
-import Button from "./Button";
+import { useNavigate } from "react-router-dom";
+import LandingPage from "./LandingPage";
 
 export default function Menu() {
+  const navigate = useNavigate();
+
   return (
     <>
-      <button>Click me</button>
-      <button>Click me too</button>
-      <Button />
+      <LandingPage />
+      <button onClick={() => navigate("/form")}>Wysłanie paczki</button>
     </>
   );
 }
