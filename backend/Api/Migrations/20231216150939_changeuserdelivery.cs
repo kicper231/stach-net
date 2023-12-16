@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Api.Migrations
 {
     /// <inheritdoc />
-    public partial class wielemodelifluent : Migration
+    public partial class changeuserdelivery : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -88,6 +90,7 @@ namespace Api.Migrations
                     RequestId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
+                    UserAuth0 = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PackageId = table.Column<int>(type: "int", nullable: false),
                     SourceAddressId = table.Column<int>(type: "int", nullable: false),
                     DestinationAddressId = table.Column<int>(type: "int", nullable: false),
@@ -123,7 +126,7 @@ namespace Api.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -154,7 +157,7 @@ namespace Api.Migrations
                         column: x => x.DeliveryRequestId,
                         principalTable: "DeliveryRequests",
                         principalColumn: "RequestId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -186,6 +189,15 @@ namespace Api.Migrations
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "Auth0Id", "CreatedAt", "Email", "FirstName", "Id", "LastName" },
+                values: new object[,]
+                {
+                    { 1, "auth0-id-1", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "jan.kowalski@example.com", "Jan", 0, "Kowalski" },
+                    { 2, "auth0-id-2", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "anna.nowak@example.com", "Anna", 0, "Nowak" }
                 });
 
             migrationBuilder.CreateIndex(

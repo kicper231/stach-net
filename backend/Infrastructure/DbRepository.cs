@@ -1,6 +1,7 @@
 ﻿using Domain.Abstractions;
 using Domain.Model;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Infrastructure;
 
@@ -60,7 +61,17 @@ public class DbRequestRepository : IDeliveryRequestRepository
             .ToList();
     }
 
-  
+    public void Add(DeliveryRequest delivery)
+    {
+
+        _context.DeliveryRequests.Add(delivery);
+
+        _context.SaveChanges();
+    }
+
+
+
+
 }
 
 

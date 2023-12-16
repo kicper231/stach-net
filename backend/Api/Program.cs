@@ -64,6 +64,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 {
     options.Authority = domain;
     options.Audience = builder.Configuration["Auth0:Audience"];
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = context =>
+        {
+           
+            //var claims = context.Principal.Claims;
+            //var name = claims.FirstOrDefault(c => c.Type == "name")?.Value;
+            //var surname = claims.FirstOrDefault(c => c.Type == "family_name")?.Value;
+            //var email = claims.FirstOrDefault(c => c.Type == "email")?.Value;
+
+          
+
+            return Task.CompletedTask;
+        },
+    };
 });
 
 var app = builder.Build(); // Buduje aplikacj� webow�

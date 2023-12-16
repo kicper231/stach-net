@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(ShopperContext))]
-    [Migration("20231209221344_wielemodelifluent")]
-    partial class wielemodelifluent
+    [Migration("20231216150939_changeuserdelivery")]
+    partial class changeuserdelivery
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -163,6 +163,10 @@ namespace Api.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserAuth0")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -286,6 +290,28 @@ namespace Api.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            Auth0Id = "auth0-id-1",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "jan.kowalski@example.com",
+                            FirstName = "Jan",
+                            Id = 0,
+                            LastName = "Kowalski"
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            Auth0Id = "auth0-id-2",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "anna.nowak@example.com",
+                            FirstName = "Anna",
+                            Id = 0,
+                            LastName = "Nowak"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Model.Delivery", b =>
@@ -330,7 +356,7 @@ namespace Api.Migrations
                     b.HasOne("Domain.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("DestinationAddress");
@@ -353,7 +379,7 @@ namespace Api.Migrations
                     b.HasOne("Domain.Model.DeliveryRequest", "DeliveryRequest")
                         .WithMany()
                         .HasForeignKey("DeliveryRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CourierCompany");

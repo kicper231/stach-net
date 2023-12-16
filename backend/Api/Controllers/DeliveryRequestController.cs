@@ -1,4 +1,5 @@
 ﻿using Api.Service;
+using Domain.DTO;
 using Domain.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,18 @@ public class DeliveryRequestController : ControllerBase
 
         var deliveryRequests = _deliveryRequestService.GetUserDeliveryRequests(userId);
         return Ok(deliveryRequests);
+    }
+
+
+
+
+    [HttpPost]
+    public IActionResult SendDeliveryRequest([FromBody]DeliveryRequestDTO DRDTO)
+    {
+
+        _deliveryRequestService.Add(DRDTO);
+
+        return StatusCode(200);
     }
 
   
