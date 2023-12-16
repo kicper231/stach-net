@@ -66,22 +66,22 @@ namespace Infrastructure;
             .HasOne(dr => dr.User)
             .WithMany()
            // .HasForeignKey(dr => dr.UserId)
-            .OnDelete(DeleteBehavior.Restrict); 
+            .OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<DeliveryRequest>()
             .HasOne(dr => dr.Package)
-            .WithMany() 
-            .HasForeignKey(dr => dr.PackageId);
+            .WithMany(); 
+            //.HasForeignKey(dr => dr.PackageId);
 
         modelBuilder.Entity<DeliveryRequest>()
                .HasOne(dr => dr.SourceAddress)
                .WithMany()
-              .HasForeignKey(dr => dr.SourceAddressId)
+              //.HasForeignKey(dr => dr.SourceAddressId)
               .OnDelete(DeleteBehavior.Restrict);
     
         modelBuilder.Entity<DeliveryRequest>()
             .HasOne(dr => dr.DestinationAddress)
             .WithMany()
-            .HasForeignKey(dr => dr.DestinationAddressId)
+            //.HasForeignKey(dr => dr.DestinationAddressId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Offer
