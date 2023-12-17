@@ -11,11 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 
-builder.Services.AddControllers(); // Dodaje us�ugi obs�ugi kontroler�w MVC do aplikacji
+builder.Services.AddControllers(); 
 builder.Services.AddEndpointsApiExplorer(); 
 builder.Services.AddSwaggerGen();
 
-
+//cors polityka 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyAllowSpecificOrigins",
@@ -26,9 +26,10 @@ builder.Services.AddCors(options =>
                    .AllowAnyMethod();
         });
 });
-// Dodanie us�ugi scoped dla ICustomerRepository, kt�ra b�dzie u�ywa� DbCustomerRepository do swojej implementacji
-builder.Services.AddScoped<IUserRepository, DbRepository>();
-
+//dodanie scopow injections
+builder.Services.AddScoped<IUserRepository, DbUserRepository>();
+builder.Services.AddScoped<IPackageRepository, DbPackageRepository>();
+builder.Services.AddScoped<IAddressRepository, DbAddressRepository>();
 builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
 
 
@@ -104,7 +105,6 @@ app.UseAuthorization(); // Dodaje middleware do autoryzacji
 
 app.MapControllers(); // Mapuje trasy do akcji kontroler�w
 
-// Ta niestandardowa metoda rozszerzenia (nie jest cz�ci� ASP.NET Core) prawdopodobnie s�u�y do upewnienia si�, �e baza danych jest tworzona przy starcie aplikacji.
-//app.CreateDatabase<ShopperContext>();
+
 
 app.Run(); // Uruchamia aplikacj�
