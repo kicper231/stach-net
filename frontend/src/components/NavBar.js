@@ -5,9 +5,12 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated,user } = useAuth0();
   const navigate = useNavigate();
 
+  const isCourier = user && Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) && user["https://stachnet.azurewebsites.net//roles"].includes('Curier');
+
+  console.log(isCourier);
   return (
     <div className="navBar">
       <div className="leftSide">
@@ -20,6 +23,13 @@ export default function NavBar() {
           <button onClick={() => navigate("/profile")}>Profil</button>
         )}
         {isAuthenticated && <LogoutButton />}
+
+
+        {isAuthenticated && isCourier && (
+          
+          <button onClick={() => {/* kurierlogika */}}> KURIER</button>
+        )}
+        
       </div>
     </div>
   );

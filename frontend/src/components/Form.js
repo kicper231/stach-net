@@ -2,26 +2,52 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
 
 export default function Form() {
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const [token, SetToken] = useState();
+  const { isAuthenticated, getAccessTokenSilently, user } = useAuth0();
+  const [bearerToken, setBearerToken] = useState();
 
   useEffect(() => {
     const getToken = async () => {
       try {
-        const token = await getAccessTokenSilently();
-        SetToken(token);
-      } catch (error) {
-        console.log("Error");
+        // Używamy konfiguracji zamiast bezpośredniego odwołania do process.env
+        const options = { authorizationParams: { audience: process.env.REACT_APP_AUDIENCE} };
+      //  console.log(options);
+  
+        // Sprawdzamy, czy użytkownik jest uwierzytelniony, zanim spróbujemy pobrać token
+        const token = isAuthenticated ? await getAccessTokenSilently(options) : '';
+        setBearerToken(token);
+  
+        // Logujemy token (możesz to usunąć w środowisku produkcyjnym)
+       // console.log(token);
+      } catch (err) {
+        // Logowanie błędu, jeśli wystąpi problem z pobraniem tokena
+        console.log('Failed to fetch token', err);
       }
     };
+  
+    
+    if (isAuthenticated) {
+      getToken();
+    } else {
+     
+      setBearerToken('');
+    }
+  
+    
+  }, [getAccessTokenSilently, isAuthenticated]);
+  
 
-    getToken();
-  });
 
-  console.log(token);
+
+
+ 
+
+
+  console.log("twojastara1");
+  console.log(bearerToken);
+  console.log("twojastara2");
 
   const [formData, setFormData] = useState({
-    userAuth0: token,
+    userAuth0: user.sub,
     user: {
       firstName: "Adam",
       lastName: "Nowak",
@@ -84,13 +110,17 @@ export default function Form() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+     
     try {
+       
       // Send the form data to the backend
-      const response = await fetch("http://localhost:5157/api/test_fetch", {
+     // const token = await getAccessTokenSilently();
+     // console.log(token);
+      const response = await fetch("https://localhost:7161/api/requestdelivery", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${bearerToken}`
         },
         body: JSON.stringify(formData),
       });
