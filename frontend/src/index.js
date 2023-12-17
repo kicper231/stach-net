@@ -9,20 +9,33 @@ import { BrowserRouter } from "react-router-dom";
 
 const domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
+const audience = process.env.REACT_APP_AUDIENCE;
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+const providerConfig = {
+  domain: domain,
+  clientId: clientId,
+  redirectUri: window.location.origin,
+  ...(audience ? { audience: audience } : null),
+
+};
+
+
+console.log(audience);
+
+
 root.render(
   <React.StrictMode>
     <Auth0Provider
-      domain={domain}
-      clientId={clientId}
-      authorizationParams={{
-        redirect_uri: window.location.origin,
-      }}
+      {...providerConfig}
+
+
+      
     >
       <BrowserRouter>
         <App />
-      </BrowserRouter>
+     </BrowserRouter>
     </Auth0Provider>
   </React.StrictMode>
 );
