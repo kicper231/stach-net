@@ -5,7 +5,7 @@ export default function Form() {
   const { isAuthenticated, getAccessTokenSilently, user } = useAuth0();
   const [bearerToken, setBearerToken] = useState();
 
-  useEffect(() => {
+  useEffect(() => { //
     const getToken = async () => {
       try {
         // Używamy konfiguracji zamiast bezpośredniego odwołania do process.env
@@ -47,7 +47,7 @@ export default function Form() {
   console.log("twojastara2");
 
   const [formData, setFormData] = useState({
-    userAuth0: user.sub,
+    userAuth0:  user ? user.sub : '',
     user: {
       firstName: "Adam",
       lastName: "Nowak",

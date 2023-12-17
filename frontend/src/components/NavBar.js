@@ -9,7 +9,7 @@ export default function NavBar() {
   const navigate = useNavigate();
 
   const isCourier = user && Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) && user["https://stachnet.azurewebsites.net//roles"].includes('Curier');
-
+  const isClient = user && Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) && user["https://stachnet.azurewebsites.net//roles"].includes('Client');
   console.log(isCourier);
   return (
     <div className="navBar">
@@ -28,6 +28,11 @@ export default function NavBar() {
         {isAuthenticated && isCourier && (
           
           <button onClick={() => {/* kurierlogika */}}> KURIER</button>
+        )}
+
+        {isAuthenticated && isClient && (
+          
+          <button onClick={() => {/* kurierlogika */}}> Client</button>
         )}
         
       </div>
