@@ -11,10 +11,12 @@ public class DeliveryRequestService : IDeliveryRequestService
     private readonly IPackageRepository _packageRepository;
     private readonly IAddressRepository _addressRepository;
 
-    public DeliveryRequestService(IDeliveryRequestRepository repository,IUserRepository repositoryuser)
+    public DeliveryRequestService(IDeliveryRequestRepository repository,IUserRepository repositoryuser,IPackageRepository repositorypackage,IAddressRepository repositoryaddress)
     {
         _repository = repository;
         _userRepository = repositoryuser;
+        _packageRepository = repositorypackage;
+        _addressRepository = repositoryaddress;
     }
 
     public List<DeliveryRequest> GetUserDeliveryRequests(string userId)
