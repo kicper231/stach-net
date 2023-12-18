@@ -31,7 +31,7 @@ builder.Services.AddScoped<IUserRepository, DbUserRepository>();
 builder.Services.AddScoped<IPackageRepository, DbPackageRepository>();
 builder.Services.AddScoped<IAddressRepository, DbAddressRepository>();
 builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
-string Szczur = "jondrpo";
+
 
 builder.Services.AddHttpClient<IHttpService, HttpService>();
 
