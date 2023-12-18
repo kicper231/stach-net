@@ -1,6 +1,8 @@
 ﻿using Domain.Abstractions;
 using Domain.DTO;
 using Domain.Model;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Service;
 
@@ -10,13 +12,15 @@ public class DeliveryRequestService : IDeliveryRequestService
     private readonly IUserRepository _userRepository;
     private readonly IPackageRepository _packageRepository;
     private readonly IAddressRepository _addressRepository;
+    private readonly IHttpService _httpService;
 
-    public DeliveryRequestService(IDeliveryRequestRepository repository,IUserRepository repositoryuser,IPackageRepository repositorypackage,IAddressRepository repositoryaddress)
+    public DeliveryRequestService(IDeliveryRequestRepository repository,IUserRepository repositoryuser,IPackageRepository repositorypackage,IAddressRepository repositoryaddress, IHttpService httpService)
     {
         _repository = repository;
         _userRepository = repositoryuser;
         _packageRepository = repositorypackage;
         _addressRepository = repositoryaddress;
+        _httpService = httpService;
     }
 
     public List<DeliveryRequest> GetUserDeliveryRequests(string userId)
@@ -24,12 +28,12 @@ public class DeliveryRequestService : IDeliveryRequestService
         return _repository.GetDeliveryRequestsByUserId(userId);
     }
 
-    public void Add(DeliveryRequestDTO deliveryRequestDTO)
+    public async Task<DeliveryRespondDTO> Add(DeliveryRequestDTO deliveryRequestDTO)
     {
         // create user example before actions or claim from token (hamsko)
         User user = new User
         {
-            Auth0Id = "twojastaraauth0",
+            Auth0Id = deliveryRequestDTO.UserAuth0,
             FirstName = deliveryRequestDTO.UserDetails.FirstName,
             LastName = deliveryRequestDTO.UserDetails.LastName,
             Email = deliveryRequestDTO.UserDetails.Email,
@@ -79,6 +83,15 @@ public class DeliveryRequestService : IDeliveryRequestService
         };
 
         _repository.Add(deliveryRequest);
+
+
+        string externalApiUrl = "https://localhost:7286/WeatherForecast";
+        var deliveryRespondDTO = await _httpService.PostDeliveryRequestAsync(externalApiUrl, deliveryRequestDTO);
+
+        
+
+
+        return deliveryRespondDTO;
     }
 
 

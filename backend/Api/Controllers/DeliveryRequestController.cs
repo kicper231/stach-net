@@ -39,12 +39,12 @@ public class DeliveryRequestController : ControllerBase
 
 
     [HttpPost]
-    public IActionResult SendDeliveryRequest([FromBody]DeliveryRequestDTO DRDTO)
+    public async Task<ActionResult<DeliveryRespondDTO>> SendDeliveryRequest([FromBody]DeliveryRequestDTO DRDTO)
     {
 
-        _deliveryRequestService.Add(DRDTO);
+        var response = await _deliveryRequestService.Add(DRDTO);
 
-        return StatusCode(200);
+        return Ok(response);
     }
 
   

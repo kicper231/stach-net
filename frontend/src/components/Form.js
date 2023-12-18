@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 export default function Form() {
   const { isAuthenticated, getAccessTokenSilently, user } = useAuth0();
   const [bearerToken, setBearerToken] = useState();
+  const [serverResponse, setServerResponse] = useState("");
 
   useEffect(() => { //
     const getToken = async () => {
@@ -42,13 +43,13 @@ export default function Form() {
  
 
 
-  console.log("twojastara1");
-  console.log(bearerToken);
-  console.log("twojastara2");
+  // console.log("twojastara1");
+  // console.log(bearerToken);
+  // console.log("twojastara2");
 
   const [formData, setFormData] = useState({
     userAuth0:  user ? user.sub : '',
-    user: {
+    userDetails: {
       firstName: "Adam",
       lastName: "Nowak",
       email: "adam.nowak@gmail.com",
@@ -128,6 +129,8 @@ export default function Form() {
       // Check if the request was successful (status code 2xx)
       if (response.ok) {
         console.log("Form submitted successfully!");
+        const data = await response.json();
+        setServerResponse(JSON.stringify(data, null, 2));
       } else {
         console.error("Form submission failed:", response.statusText);
       }
@@ -385,6 +388,13 @@ export default function Form() {
         </form>
       </div>
       <div className="overflow">{renderObjectValues(formData)}</div>
+
+      <div className="response">
+      {serverResponse && (
+        <pre>{serverResponse}</pre>
+      )}
+    </div>
+
     </div>
   );
 }
