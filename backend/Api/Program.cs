@@ -33,6 +33,8 @@ builder.Services.AddScoped<IAddressRepository, DbAddressRepository>();
 builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
 
 
+builder.Services.AddHttpClient<IHttpService, HttpService>();
+
 builder.Services.AddScoped<IDeliveryRequestService, DeliveryRequestService>();
 
 
