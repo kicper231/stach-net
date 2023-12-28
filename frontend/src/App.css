@@ -19,7 +19,7 @@ div.contextHolder {
 
 .overflow {
   overflow-y: scroll;
-  height: calc(100vh - 200px);
+  height: calc(80vh - 200px);
 }
 
 * {
@@ -28,4 +28,11 @@ div.contextHolder {
 
 input {
   color: black;
+}
+
+.columns {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
