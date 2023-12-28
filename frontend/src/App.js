@@ -3,7 +3,10 @@ import "./components/button.css";
 import NavBar from "./components/NavBar";
 import Profile from "./components/Profile";
 import Menu from "./components/Menu";
-import Form from "./components/Form";
+
+import { RequestInquiry } from "./components/RequestInquiry";
+import { RequestOffers } from "./components/RequestOffers";
+import { RequestSummary } from "./components/RequestSummary";
 
 import { useAuth0 } from "@auth0/auth0-react";
 import { Routes, Route } from "react-router-dom";
@@ -27,7 +30,15 @@ export default function App() {
             path="/profile"
             element={isAuthenticated ? <Profile /> : AccessDenied()}
           />
-          <Route path="/form" element={<Form />} />
+          <Route
+            path="/delivery_request/inquiry"
+            element={<RequestInquiry />}
+          />
+          <Route path="/delivery_request/offers" element={<RequestOffers />} />
+          <Route
+            path="/delivery_request/summary"
+            element={<RequestSummary />}
+          />
         </Routes>
       </div>
     </div>

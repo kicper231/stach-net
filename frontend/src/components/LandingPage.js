@@ -1,10 +1,9 @@
 export default function LandingPage() {
   return (
     <p>
-      Mój Szybki Kurier to przeciętna, niczym nie wyróżniająca się firma do
-      transportu twoich przesyłek. <br /> Uwaga, ponieważ nie gwarantujemy, że
-      twoja paczka dojdzie w jednym kawałku. <br /> Liczba użytkowników:
-      45,000,000.
+      MKS Courier is an average, unremarkable company for transporting your
+      packages. <br /> Please note that we do not guarantee that your package
+      will arrive in one piece. <br /> Number of users: 45 000 000.
     </p>
   );
 }
