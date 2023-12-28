@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export function RequestOffers() {
+  const navigate = useNavigate();
   const [data, setData] = useState({});
   const [offers, setOffers] = useState([]);
 
@@ -44,7 +46,10 @@ export function RequestOffers() {
 
   return (
     <div>
-      <h1>Offers</h1>
+      <h1>Waiting for offers</h1>
+      <button onClick={() => navigate("/delivery_request/summary")}>
+        Imaginary offer
+      </button>
 
       <ul>
         {offers.map((offer, index) => (
