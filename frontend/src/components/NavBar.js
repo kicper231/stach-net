@@ -11,13 +11,13 @@ export default function NavBar() {
   return (
     <div className="navBar">
       <div className="leftSide">
-        <p className="name">Mój Szybki Kurier</p>
+        <p className="name">MKS Courier</p>
       </div>
       <div className="rightSide">
         <button onClick={() => navigate("/")}>Home</button>
         {!isAuthenticated && <LoginButton />}
         {isAuthenticated && (
-          <button onClick={() => navigate("/profile")}>Profil</button>
+          <button onClick={() => navigate("/profile")}>Profile</button>
         )}
         {isAuthenticated && <LogoutButton />}
       </div>

@@ -1,6 +1,3 @@
-
-
-
 div.background {
   background-color: #282c34;
 }
@@ -31,13 +28,4 @@ div.contextHolder {
 
 input {
   color: black;
-}
-
-/* XXX */
-
-div.columns {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
 }
