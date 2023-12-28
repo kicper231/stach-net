@@ -7,6 +7,7 @@ import Menu from "./components/Menu";
 import { RequestInquiry } from "./components/RequestInquiry";
 import { RequestOffers } from "./components/RequestOffers";
 import { RequestSummary } from "./components/RequestSummary";
+import { Test } from "./components/Test";
 
 import { useAuth0 } from "@auth0/auth0-react";
 import { Routes, Route } from "react-router-dom";
@@ -26,6 +27,7 @@ export default function App() {
       <div className="contextHolder">
         <Routes>
           <Route path="/" element={<Menu />} />
+          <Route path="/test" element={<Test />} />
           <Route
             path="/profile"
             element={isAuthenticated ? <Profile /> : AccessDenied()}
