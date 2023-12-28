@@ -1,8 +1,8 @@
 # Currier Hub (.NET Framework)
 
-### `M`ój `S`zybki `K`urier
+### `MKS` Courier
 
-### Authors: `M`ateusz, `S`tasiek, `K`acper
+### Authors: `M`ateusz, `K`acper, `S`tasiek
 
 ## Start application
 
