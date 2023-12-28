@@ -4,10 +4,14 @@ import React, { useState, useEffect } from "react";
 
 const domain = process.env.REACT_APP_AUTH0_DOMAIN;
 
+const data = {
+  id: 1,
+  firstName: "Adam",
+  lastName: "Nowak",
+};
+
 export function Test() {
   const [activeUsers, setActiveUsers] = useState(null);
-  const [data, setData] = useState({});
-
   const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
@@ -39,43 +43,46 @@ export function Test() {
     callApi();
   });
 
-  useEffect(() => {
-    const sendDataWithFetch = async () => {
-      try {
-        const response = await fetch("http://localhost:5157/test_post_fetch", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
+  function handleGet() {
+    fetch("http://localhost:5157/test_get", { method: "GET" })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => console.error(error));
+  }
 
-        if (response.ok) {
-          console.log("Form submitted successfully!");
-        } else {
-          console.error("Form submission failed:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error sending form data:", error);
+  const handlePostFetch = async () => {
+    try {
+      const response = await fetch("http://localhost:5157/test_post_fetch", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        console.log("Form submitted successfully!");
+      } else {
+        console.error("Form submission failed:", response.statusText);
       }
-    };
+    } catch (error) {
+      console.error("Error sending form data:", error);
+    }
+  };
 
-    const sendDataWithAxios = async () => {
-      try {
-        const response = await axios.post(
-          "http://localhost:5157/test_post_axios",
-          data
-        );
-        console.log("Data sent successfully:", response.data);
-      } catch (error) {
-        console.error("Error sending data to the server:", error);
-      }
-    };
-
-    setData({ id: 1, string: "abc" });
-    sendDataWithFetch();
-    sendDataWithAxios();
-  }, [data]);
+  const handlePostAxios = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5157/test_post_axios",
+        data
+      );
+      console.log("Data sent successfully:", response.data);
+    } catch (error) {
+      console.error("Error sending data to the server:", error);
+    }
+  };
 
   return (
     <div>
@@ -85,6 +92,9 @@ export function Test() {
       ) : (
         <p>Loading...</p>
       )}
+      <button onClick={handleGet}>Get data</button>
+      <button onClick={handlePostFetch}>Post with Fetch</button>
+      <button onClick={handlePostAxios}>Post with Axios</button>
     </div>
   );
 }
