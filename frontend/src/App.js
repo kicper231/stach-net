@@ -33,12 +33,12 @@ export default function App() {
             element={isAuthenticated ? <Profile /> : AccessDenied()}
           />
           <Route
-            path="/delivery_request/inquiry"
+            path="/delivery-request/inquiry"
             element={<RequestInquiry />}
           />
-          <Route path="/delivery_request/offers" element={<RequestOffers />} />
+          <Route path="/delivery-request/offers" element={<RequestOffers />} />
           <Route
-            path="/delivery_request/summary"
+            path="/delivery-request/summary"
             element={<RequestSummary />}
           />
         </Routes>

@@ -2,10 +2,16 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const serverUrl = process.env.SERVER_URL;
+
 export function RequestOffers() {
   const navigate = useNavigate();
   const [data, setData] = useState({});
-  const [offers, setOffers] = useState([]);
+  const [offers, setOffers] = useState([
+    { companyName: "CurrierHub", price: 0.99 },
+    { companyName: "Fast curier", price: 13.4 },
+    { companyName: "Slow curier", price: 20 },
+  ]);
 
   useEffect(() => {
     setData({ id: 1, data: "abc" });
@@ -16,7 +22,7 @@ export function RequestOffers() {
     const sendDataToServer = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:5157/delivery_request/offers",
+          `${serverUrl}/delivery-request/offers`,
           data
         );
         console.log("Data sent successfully:", response.data);
@@ -47,13 +53,16 @@ export function RequestOffers() {
   return (
     <div>
       <h1>Waiting for offers</h1>
-      <button onClick={() => navigate("/delivery_request/summary")}>
-        Imaginary offer
-      </button>
 
       <ul>
         {offers.map((offer, index) => (
-          <li key={index}>{offer}</li>
+          <li
+            key={index}
+            className="offer"
+            onClick={() => navigate("/delivery-request/summary")}
+          >
+            {offer.companyName} ({offer.price} PLN)
+          </li>
         ))}
       </ul>
     </div>

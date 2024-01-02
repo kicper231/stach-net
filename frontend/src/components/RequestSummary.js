@@ -152,6 +152,8 @@ export function RequestSummary() {
     );
   }
 
+  function handleClick() {}
+
   return (
     <>
       <h1>Summary</h1>
@@ -160,7 +162,7 @@ export function RequestSummary() {
         <div className="overflow">{renderObjectValues(imaginaryData)}</div>
         <div className="overflow">{renderObjectValues(summaryData)}</div>
       </div>
-      <button>Submit a request</button>
+      <button onClick={handleClick}>Submit a request</button>
     </>
   );
 }
