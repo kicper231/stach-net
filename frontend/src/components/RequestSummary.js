@@ -1,4 +1,9 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import axios from "axios";
 import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+
+const serverUrl = process.env.SERVER_URL;
 
 const summaryData = {
   PriceSplitOnTaxes: 12,
@@ -8,6 +13,9 @@ const summaryData = {
 };
 
 export function RequestSummary() {
+  const { isAuthenticated } = useAuth0();
+  const navigate = useNavigate();
+
   const [imaginaryData, setImaginaryData] = useState({
     userAuth0: "NOT IMPLEMENTED",
     user: {
@@ -152,15 +160,30 @@ export function RequestSummary() {
     );
   }
 
-  function handleClick() {}
+  function handleClick() {
+    const sendDataToServer = async () => {
+      try {
+        const response = await axios.post(
+          `${serverUrl}/delivery-request/submit`,
+          imaginaryData
+        );
+        console.log("Data sent successfully:", response.data);
+      } catch (error) {
+        console.error("Error sending data to the server:", error);
+      }
+    };
+
+    sendDataToServer();
+    navigate("/delivery-request/id");
+  }
 
   return (
     <>
       <h1>Summary</h1>
       <div className="columns">
-        {UserInformations()}
+        {!isAuthenticated && UserInformations()}
         <div className="overflow">{renderObjectValues(imaginaryData)}</div>
-        <div className="overflow">{renderObjectValues(summaryData)}</div>
+        {renderObjectValues(summaryData)}
       </div>
       <button onClick={handleClick}>Submit a request</button>
     </>
