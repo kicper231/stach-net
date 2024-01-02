@@ -7,6 +7,7 @@ import Menu from "./components/Menu";
 import { RequestInquiry } from "./components/RequestInquiry";
 import { RequestOffers } from "./components/RequestOffers";
 import { RequestSummary } from "./components/RequestSummary";
+import { RequestId } from "./components/RequestId";
 import { Test } from "./components/Test";
 
 import { useAuth0 } from "@auth0/auth0-react";
@@ -41,6 +42,7 @@ export default function App() {
             path="/delivery-request/summary"
             element={<RequestSummary />}
           />
+          <Route path="/delivery-request/id" element={<RequestId />} />
         </Routes>
       </div>
     </div>
