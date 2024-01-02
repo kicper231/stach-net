@@ -36,3 +36,9 @@ input {
   align-items: center;
   justify-content: center;
 }
+
+li.offer:hover {
+  background-color: black;
+  color: orange;
+  cursor: pointer;
+}

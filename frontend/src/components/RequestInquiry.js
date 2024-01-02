@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const serverUrl = process.env.SERVER_URL;
+
 export function RequestInquiry() {
   const navigate = useNavigate();
 
@@ -56,20 +58,17 @@ export function RequestInquiry() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    navigate("/delivery_request/offers");
+    navigate("/delivery-request/offers");
 
     try {
       // Send the form data to the backend
-      const response = await fetch(
-        "http://localhost:5157/delivery_request/inquiry",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(`${serverUrl}/delivery-request/inquiry`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
       // Check if the request was successful (status code 2xx)
       if (response.ok) {

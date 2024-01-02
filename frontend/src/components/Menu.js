@@ -7,7 +7,7 @@ export default function Menu() {
   return (
     <>
       <LandingPage />
-      <button onClick={() => navigate("/delivery_request/inquiry")}>
+      <button onClick={() => navigate("/delivery-request/inquiry")}>
         Delivery request
       </button>
     </>
