@@ -15,6 +15,9 @@ export default function NavBar() {
       </div>
       <div className="rightSide">
         <button onClick={() => navigate("/")}>Home</button>
+        {isAuthenticated && (
+          <button onClick={() => navigate("/requests")}>Requests</button>
+        )}
         {!isAuthenticated && <LoginButton />}
         {isAuthenticated && (
           <button onClick={() => navigate("/profile")}>Profile</button>
