@@ -37,7 +37,8 @@ input {
   justify-content: center;
 }
 
-li.offer:hover {
+li.offer:hover,
+li.request:hover {
   background-color: black;
   color: orange;
   cursor: pointer;

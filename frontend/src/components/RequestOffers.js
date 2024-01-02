@@ -51,7 +51,7 @@ export function RequestOffers() {
   }, [data]);
 
   return (
-    <div>
+    <>
       <h1>Waiting for offers</h1>
 
       <ul>
@@ -65,6 +65,6 @@ export function RequestOffers() {
           </li>
         ))}
       </ul>
-    </div>
+    </>
   );
 }
