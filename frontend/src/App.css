@@ -1,6 +1,3 @@
-
-
-
 div.background {
   background-color: #282c34;
 }
@@ -22,7 +19,7 @@ div.contextHolder {
 
 .overflow {
   overflow-y: scroll;
-  height: calc(100vh - 200px);
+  height: calc(80vh - 200px);
 }
 
 * {
@@ -33,11 +30,16 @@ input {
   color: black;
 }
 
-/* XXX */
-
-div.columns {
+.columns {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+}
+
+li.offer:hover,
+li.request:hover {
+  background-color: black;
+  color: orange;
+  cursor: pointer;
 }
