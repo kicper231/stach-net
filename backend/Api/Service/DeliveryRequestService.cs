@@ -12,9 +12,9 @@ public class DeliveryRequestService : IDeliveryRequestService
     private readonly IUserRepository _userRepository;
     private readonly IPackageRepository _packageRepository;
     private readonly IAddressRepository _addressRepository;
-    private readonly IHttpService _httpService;
+    private readonly IOfferService _httpService;
 
-    public DeliveryRequestService(IDeliveryRequestRepository repository,IUserRepository repositoryuser,IPackageRepository repositorypackage,IAddressRepository repositoryaddress, IHttpService httpService)
+    public DeliveryRequestService(IDeliveryRequestRepository repository,IUserRepository repositoryuser,IPackageRepository repositorypackage,IAddressRepository repositoryaddress, IOfferService httpService)
     {
         _repository = repository;
         _userRepository = repositoryuser;
@@ -30,7 +30,7 @@ public class DeliveryRequestService : IDeliveryRequestService
 
     public async Task<DeliveryRespondDTO> Add(DeliveryRequestDTO deliveryRequestDTO)
     {
-        // create user example before actions or claim from token (hamsko)
+        // create user example before actions or claim from token 
         User user = new User
         {
             Auth0Id = deliveryRequestDTO.UserAuth0,
@@ -86,7 +86,7 @@ public class DeliveryRequestService : IDeliveryRequestService
 
 
         string externalApiUrl = "https://localhost:7286/WeatherForecast";
-        var deliveryRespondDTO = await _httpService.PostDeliveryRequestAsync(externalApiUrl, deliveryRequestDTO);
+        var deliveryRespondDTO = await _httpService.GetOffer(externalApiUrl, deliveryRequestDTO);
 
         
 
