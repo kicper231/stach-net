@@ -7,7 +7,9 @@ export default function Menu() {
   return (
     <>
       <LandingPage />
-      <button onClick={() => navigate("/form")}>Wysłanie paczki</button>
+      <button onClick={() => navigate("/delivery-request/inquiry")}>
+        Delivery request
+      </button>
     </>
   );
 }

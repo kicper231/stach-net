@@ -1,17 +1,24 @@
+import { useEffect, useState } from "react";
 
-//import { Test } from "./Test"; 
+const serverUrl = process.env.SERVER_URL;
+
 export default function LandingPage() {
+  const [number, setNumber] = useState(-1);
+
+  useEffect(() => {
+    fetch(`${serverUrl}/total-users`, { method: "GET" })
+      .then((response) => response.json())
+      .then((data) => {
+        setNumber(data);
+      })
+      .catch((error) => console.error(error));
+  });
+
   return (
-    <div>
-      <p>
-        Mój Szybki Kurier to przeciętna, niczym nie wyróżniająca się firma do
-        transportu twoich przesyłek. <br /> Uwaga, ponieważ nie gwarantujemy, że
-        twoja paczka dojdzie w jednym kawałku. <br />
-      </p>
-      {/* <Test /> Tutaj wywołujemy komponent Test */} 
-    </div>
+    <p>
+      MKS Courier is an average, unremarkable company for transporting your
+      packages. <br /> Please note that we do not guarantee that your package
+      will arrive in one piece. <br /> Number of users: {number}.
+    </p>
   );
 }
-//ogolnie to nie zadziala po stronei frontu ten test bo ograniczenia managment api: 
-// https://auth0.com/docs/secure/tokens/access-tokens/get-management-api-tokens-for-single-page-applications
-// xdd
