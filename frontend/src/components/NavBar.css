@@ -1,0 +1,33 @@
+div.navBar {
+  position: sticky;
+  top: 0;
+  height: 75px;
+
+  background-color: black;
+  border-bottom: 2px solid orange;
+
+  display: flex;
+}
+
+div.navBar > div.leftSide {
+  width: 50%;
+  margin-left: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+div.navBar > div.rightSide {
+  width: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+p.name {
+  color: orange;
+  font-size: 30px;
+  font-weight: bold;
+}

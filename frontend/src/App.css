@@ -1,14 +1,45 @@
-.App {
-  text-align: center;
+div.background {
+  background-color: #282c34;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+div.navBarHolder {
+  width: 100vw;
+  height: 75px;
+}
+
+div.contextHolder {
+  width: 100vw;
+  height: calc(100vh - 75px);
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+.overflow {
+  overflow-y: scroll;
+  height: calc(80vh - 200px);
+}
+
+* {
   color: white;
+}
+
+input {
+  color: black;
+}
+
+.columns {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+li.offer:hover,
+li.request:hover {
+  background-color: black;
+  color: orange;
+  cursor: pointer;
 }
