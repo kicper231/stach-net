@@ -65,43 +65,42 @@ namespace Infrastructure;
         modelBuilder.Entity<DeliveryRequest>()
             .HasOne(dr => dr.User)
             .WithMany()
-           // .HasForeignKey(dr => dr.UserId)
+            .HasForeignKey(dr => dr.UserId)
             .OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<DeliveryRequest>()
             .HasOne(dr => dr.Package)
-            .WithMany(); 
-            //.HasForeignKey(dr => dr.PackageId);
+            .WithMany()
+            .HasForeignKey(dr => dr.PackageId);
 
         modelBuilder.Entity<DeliveryRequest>()
                .HasOne(dr => dr.SourceAddress)
                .WithMany()
-              //.HasForeignKey(dr => dr.SourceAddressId)
-              .OnDelete(DeleteBehavior.Restrict);
-    
+               .HasForeignKey(dr => dr.SourceAddressId)
+               .OnDelete(DeleteBehavior.Restrict);
+
         modelBuilder.Entity<DeliveryRequest>()
             .HasOne(dr => dr.DestinationAddress)
             .WithMany()
-            //.HasForeignKey(dr => dr.DestinationAddressId)
+            .HasForeignKey(dr => dr.DestinationAddressId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Offer
         modelBuilder.Entity<Offer>()
             .HasKey(o => o.OfferId);
-       
         modelBuilder.Entity<Offer>()
             .HasOne(o => o.CourierCompany)
-            .WithMany() 
+            .WithMany()
             .HasForeignKey(o => o.CourierCompanyId);
         modelBuilder.Entity<Offer>()
-        .Property(o => o.Price)
-        .HasColumnType("decimal(18, 2)")
-        .IsRequired();
-
+            .Property(o => o.Price)
+            .HasColumnType("decimal(18, 2)")
+            .IsRequired();
         modelBuilder.Entity<Offer>()
            .HasOne(o => o.DeliveryRequest)
            .WithMany()
            .HasForeignKey(o => o.DeliveryRequestId)
             .OnDelete(DeleteBehavior.Restrict);
+
         // CourierCompany
         modelBuilder.Entity<CourierCompany>()
             .HasKey(cc => cc.CourierCompanyId);
@@ -120,10 +119,10 @@ namespace Infrastructure;
             .HasOne(d => d.Offer)
             .WithMany()
             .HasForeignKey(d => d.OfferId)
-             .OnDelete(DeleteBehavior.Restrict); // nie wiem to bez sensu 
+            .OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Delivery>()
             .HasOne(d => d.Courier)
-            .WithMany() 
+            .WithMany()
             .HasForeignKey(d => d.CourierId);
 
         // User
@@ -141,11 +140,11 @@ namespace Infrastructure;
             .IsRequired();
 
 
-       // indeksy??
-       // modelBuilder.Entity<DeliveryRequest>()
-         //   .HasIndex(dr => dr.UserId);
+        // indeksy??
+        // modelBuilder.Entity<DeliveryRequest>()
+        //   .HasIndex(dr => dr.UserId);
 
-       
+
         modelBuilder.Entity<Offer>()
             .HasIndex(o => o.CourierCompanyId);
 
@@ -159,11 +158,11 @@ namespace Infrastructure;
 
         //data seed 
 
-        modelBuilder.Entity<User>().HasData(
-        new User { UserId = 1, Auth0Id = "auth0-id-1", FirstName = "Jan", LastName = "Kowalski", Email = "jan.kowalski@example.com" },
-        new User { UserId = 2, Auth0Id = "auth0-id-2", FirstName = "Anna", LastName = "Nowak", Email = "anna.nowak@example.com" }
+    //    modelBuilder.Entity<User>().HasData(
+    //    new User {  Auth0Id = "auth0-id-1", FirstName = "Jan", LastName = "Kowalski", Email = "jan.kowalski@example.com" },
+    //    new User { Auth0Id = "auth0-id-2", FirstName = "Anna", LastName = "Nowak", Email = "anna.nowak@example.com" }
        
-    );
+    //);
     }
 
 

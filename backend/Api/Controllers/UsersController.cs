@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Domain.Model;
 using Domain.Abstractions;
+using Domain.DTO;
+using Api.Service;
 
 namespace Api.Customers
 {
@@ -50,13 +52,15 @@ namespace Api.Customers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository repository;
-
-        public UsersController(IUserRepository repository)
+        private readonly IUserService userService;
+        public UsersController(IUserRepository repository, IUserService userService)
         {
             this.repository = repository;
+            this.userService = userService;
         }
 
         [HttpGet]
+
         public ActionResult<List<User>> Get()
         {
             var users = repository.GetAll();
@@ -64,28 +68,41 @@ namespace Api.Customers
         }
 
         [HttpGet("{id}", Name = "GetUserById")]
-        public ActionResult<User> Get(int id)
+        public ActionResult<User> Get(string id)
         {
-            var user = repository.GetById(id);
+            var user = repository.GetByAuth0Id(id);
             if (user == null)
                 return NotFound();
 
             return Ok(user);
         }
 
-        [HttpPost]
-        public ActionResult<User> Post([FromBody] User user)
-        {
-            repository.Add(user);
-            return CreatedAtRoute("GetUserById", new { Id = user.Id }, user);
+        [HttpPost("auth0")]
+        public ActionResult<User> Post([FromBody] DTO_UserFromAuth0 user)
+            {
+                var result = userService.AddUser(user);
+
+                if (result.Success)
+                {
+                    if (result.StatusCode == 201)
+                    {
+                    return CreatedAtRoute("GetUserById", new { id = result.user.UserId }, result.user);
+                }
+                    return Ok(result.user);
+                }
+                else
+                {
+                    return StatusCode(result.StatusCode, result.Message);
+                }
+            }
         }
 
 
 
 
-       
+
     }
 
 
 
-}
+
