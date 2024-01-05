@@ -41,12 +41,11 @@ builder.Services.AddScoped<IDeliveryRequestService, DeliveryRequestService>();
 
 
 // Konfiguracja factory do tworzenia DbContext, konkretnie ShopperContext, u�ywaj�c SQLite jako bazy danych
-////builder.Services.AddDbContextFactory<ShopperContext>(options =>
-////  options.UseSqlite("Data Source=shopper.db"));
+
 
 builder.Services.AddDbContextFactory<ShopperContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("LokalnaBaza"),
+        builder.Configuration.GetConnectionString("HostowanaBaza"),
         x => x.MigrationsAssembly("Api")
     )
 );
@@ -59,7 +58,7 @@ builder.Services.AddDbContextFactory<ShopperContext>(options =>
 //builder.Services.AddDbContextFactory<ShopperContext>(options =>
 //    options.UseSqlServer("data source=DESKTOP-IIG9H2J;initial catalog=stachnetest;user id=sa;password=monia231; TrustServerCertificate=True "));
 
-// Odkomentuj, aby doda� us�ug� hostowan�, kt�ra uruchomi DbCreationalService przy starcie
+
 builder.Services.AddHostedService<DbCreationalService>();
 
 
@@ -98,9 +97,10 @@ var app = builder.Build(); // Buduje aplikacj� webow�
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+   
 }
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection(); // Dodaje middleware do przekierowywania ��da� HTTP na HTTPS
 app.UseCors("MyAllowSpecificOrigins");
