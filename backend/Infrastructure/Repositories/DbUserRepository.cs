@@ -21,10 +21,10 @@ public class DbUserRepository : IUserRepository
     }
 
 
-    public User GetById(int id)
+    public User GetByAuth0Id(string Auth0Id)
     {
 
-        return context.Users.Find(id);
+        return context.Users.FirstOrDefault(u => u.Auth0Id == Auth0Id);
     }
 
 

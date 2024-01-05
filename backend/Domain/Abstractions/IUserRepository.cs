@@ -10,7 +10,7 @@ namespace Domain.Abstractions
     public interface IUserRepository
     {
         List<User> GetAll();
-        User GetById(int id);
+        User GetByAuth0Id(string id);
         void Add(User user);
       
     }

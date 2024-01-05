@@ -31,7 +31,7 @@ builder.Services.AddScoped<IUserRepository, DbUserRepository>();
 builder.Services.AddScoped<IPackageRepository, DbPackageRepository>();
 builder.Services.AddScoped<IAddressRepository, DbAddressRepository>();
 builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
-
+builder.Services.AddScoped<IUserService, UserService>();
 // popraw 
 builder.Services.AddHttpClient<IOfferService, OfferService>();
 
@@ -100,12 +100,13 @@ if (app.Environment.IsDevelopment())
    
 }
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI();  // ui nawet gdy nie developmnet
 
-app.UseHttpsRedirection(); // Dodaje middleware do przekierowywania ��da� HTTP na HTTPS
+app.UseHttpsRedirection(); // middle ware na https
 app.UseCors("MyAllowSpecificOrigins");
 
 app.UseAuthorization(); // Dodaje middleware do autoryzacji
+app.UseAuthentication();
 
 app.MapControllers(); // Mapuje trasy do akcji kontroler�w
 
