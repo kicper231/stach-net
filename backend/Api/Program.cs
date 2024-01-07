@@ -4,16 +4,59 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Api.Service;
+using Microsoft.OpenApi.Models;
+using Api.Authorization;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+//Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
 
 builder.Services.AddControllers(); 
-builder.Services.AddEndpointsApiExplorer(); 
-builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen(c =>
+{
+c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+// Definicja schematu bezpieczeństwa dla tokena Bearer
+c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+{
+    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+    Name = "Authorization",
+    In = ParameterLocation.Header,
+    Type = SecuritySchemeType.ApiKey,
+    Scheme = "Bearer"
+});
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+            },
+            new List<string>()
+        }
+    });
+
+
+
+});
+
+
 
 //cors polityka 
 builder.Services.AddCors(options =>
@@ -21,9 +64,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("MyAllowSpecificOrigins",
         builder =>
         {
-            builder.WithOrigins("http://localhost:3000")
+            builder.WithOrigins("https://localhost:3000")
                    .AllowAnyHeader()
-                   .AllowAnyMethod();
+                   .AllowAnyMethod()
+                   .AllowCredentials();
         });
 });
 //dodanie scopow injections
@@ -68,22 +112,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 {
     options.Authority = domain;
     options.Audience = builder.Configuration["Auth0:Audience"];
-    options.Events = new JwtBearerEvents
-    {
-        OnTokenValidated = context =>
-        {
-           
-            //var claims = context.Principal.Claims;
-            //var name = claims.FirstOrDefault(c => c.Type == "name")?.Value;
-            //var surname = claims.FirstOrDefault(c => c.Type == "family_name")?.Value;
-            //var email = claims.FirstOrDefault(c => c.Type == "email")?.Value;
 
-          
 
-            return Task.CompletedTask;
-        },
-    };
 });
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("read:messages", policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
+});
+
+
+builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
+
 
 var app = builder.Build(); // Buduje aplikacj� webow�
 
@@ -101,12 +142,13 @@ if (app.Environment.IsDevelopment())
 }
 app.UseSwagger();
 app.UseSwaggerUI();  // ui nawet gdy nie developmnet
+app.UseRouting();
 
 app.UseHttpsRedirection(); // middle ware na https
 app.UseCors("MyAllowSpecificOrigins");
 
-app.UseAuthorization(); // Dodaje middleware do autoryzacji
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers(); // Mapuje trasy do akcji kontroler�w
 

@@ -3,52 +3,19 @@ using Domain.Model;
 using Domain.Abstractions;
 using Domain.DTO;
 using Api.Service;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Customers
 {
-    //[Route("api/customers")]
-    //public class CustomersController : ControllerBase
-    //{
-    //    private readonly ICustomerRepository repository;
 
-    //    public CustomersController(ICustomerRepository repository)
-    //    {
-    //        this.repository = repository;
-    //    }
-
-    //    // GET api/customers
-
-    //    [HttpGet]
-    //    public ActionResult<List<Customer>> Get()
-    //    {
-    //        var customers = repository.GetAll();
-
-    //        return Ok(customers);
-    //    }
-        
-    //    // GET api/customers/{id}
-    //    [HttpGet("{id}", Name = "GetCustomerById")]
-    //    public ActionResult<Customer> Get(int id)
-    //    {
-    //        var customer = repository.GetById(id);
-
-    //        if (customer == null)
-    //            return NotFound();
-
-    //        return Ok(customer);
-    //    }
-
-    //    [HttpPost]
-    //    public ActionResult<Customer> Post([FromBody] Customer customer)
-    //    {
-    //        repository.Add(customer);
-
-    //        return CreatedAtRoute("GetCustomerById", new { Id = customer.Id} , customer);
-    //    }
-    //}
-
+    public  class LoginResult
+    {
+        public int NumberOfLogins { get; set; }
+       
+    }
 
     [Route("api/users")]
+    
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository repository;
@@ -60,7 +27,7 @@ namespace Api.Customers
         }
 
         [HttpGet]
-
+        
         public ActionResult<List<User>> Get()
         {
             var users = repository.GetAll();
@@ -68,6 +35,7 @@ namespace Api.Customers
         }
 
         [HttpGet("{id}", Name = "GetUserById")]
+
         public ActionResult<User> Get(string id)
         {
             var user = repository.GetByAuth0Id(id);
@@ -78,6 +46,8 @@ namespace Api.Customers
         }
 
         [HttpPost("auth0")]
+        //[Authorize]
+
         public ActionResult<User> Post([FromBody] DTO_UserFromAuth0 user)
             {
                 var result = userService.AddUser(user);
@@ -95,7 +65,26 @@ namespace Api.Customers
                     return StatusCode(result.StatusCode, result.Message);
                 }
             }
+
+
+        [HttpGet("ActiveUsers")]
+        public ActionResult<LoginResult> GetNumberOfLogins()
+        {
+            var result = userService.NumberOfLogins();
+            if (result.Success)
+            {
+                return Ok(new LoginResult { NumberOfLogins = result.Data });
+            }
+            else
+            {
+                return StatusCode(500, result.ErrorMessage);
+            }
         }
+
+
+
+
+    }
 
 
 

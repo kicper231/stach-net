@@ -1,7 +1,7 @@
 ﻿using Domain.Abstractions;
 using Domain.DTO;
 using Domain.Model;
-
+using Infrastructure;
 namespace Api.Service;
 
 
@@ -9,16 +9,28 @@ namespace Api.Service;
 public interface IUserService
 {
     ServiceResult AddUser(DTO_UserFromAuth0 user);
+    public OperationResult<int> NumberOfLogins();
+
 }
 
 public class UserService : IUserService
 {
     private readonly IUserRepository repository;
 
+    public OperationResult<int> NumberOfLogins()
+    {
+        var result = repository.NumberOfUserLogins();
+        if (!result.Success)
+        {
+            
+        }
+        return result;
+    }
     public UserService(IUserRepository repository)
     {
         this.repository = repository;
     }
+
 
     public ServiceResult AddUser(DTO_UserFromAuth0 user)
     {
@@ -27,6 +39,8 @@ public class UserService : IUserService
             var existingUser = repository.GetByAuth0Id(user.Auth0Id);
             if (existingUser != null)
             {
+                existingUser.NumberOfLogins++;
+                repository.SaveChanges();
                 return new ServiceResult(false, "Użytkownik już istnieje.", 409);
             }
 
@@ -35,8 +49,8 @@ public class UserService : IUserService
             AddUser.FirstName = user.FirstName;
             AddUser.Email = user.Email;
             AddUser.LastName = user.LastName;
-         
-            
+            AddUser.CreatedAt= DateTime.Now;
+            AddUser.NumberOfLogins = 1;
             repository.Add(AddUser);
 
             //if (!success)
@@ -51,6 +65,11 @@ public class UserService : IUserService
             return new ServiceResult(false, "Wystąpił błąd: " + ex.Message, 500);
         }
     }
+
+
+
+   
+
 }
 
 public class ServiceResult

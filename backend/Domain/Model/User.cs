@@ -1,4 +1,6 @@
-﻿namespace Domain.Model;
+﻿using Microsoft.Identity.Client;
+
+namespace Domain.Model;
 
 
 
@@ -12,6 +14,8 @@ public class User : BaseEntity
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
+
+    public int NumberOfLogins { get; set; } 
 
     public  User() { }
 
