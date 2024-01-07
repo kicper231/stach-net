@@ -1,12 +1,26 @@
 ﻿using Domain.Abstractions;
 using Domain.Model;
 using Infrastructure;
+
 namespace Infrastructure;
 public class DbUserRepository : IUserRepository
 {
 
     private readonly ShopperContext context;
 
+    public OperationResult<int> NumberOfUserLogins()
+    {
+        try
+        {
+            int sum = context.Users.Sum(a => a.NumberOfLogins);
+            return OperationResult<int>.CreateSuccessResult(sum);
+        }
+        catch (Exception ex)
+        {
+           
+            return OperationResult<int>.CreateFailure("Error occurred retrieving the number of logins.");
+        }
+    }
 
     public DbUserRepository(ShopperContext context)
     {
@@ -33,6 +47,14 @@ public class DbUserRepository : IUserRepository
 
         context.Users.Add(user);
 
+        context.SaveChanges();
+    }
+
+
+   
+
+    public void SaveChanges()
+    {
         context.SaveChanges();
     }
 
