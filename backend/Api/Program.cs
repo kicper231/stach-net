@@ -64,7 +64,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("MyAllowSpecificOrigins",
         builder =>
         {
-            builder.WithOrigins("https://localhost:3000")
+            builder.WithOrigins("http://localhost:3000")
                    .AllowAnyHeader()
                    .AllowAnyMethod()
                    .AllowCredentials();
@@ -142,9 +142,10 @@ if (app.Environment.IsDevelopment())
 }
 app.UseSwagger();
 app.UseSwaggerUI();  // ui nawet gdy nie developmnet
-app.UseRouting();
 
-app.UseHttpsRedirection(); // middle ware na https
+
+app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors("MyAllowSpecificOrigins");
 
 app.UseAuthentication();

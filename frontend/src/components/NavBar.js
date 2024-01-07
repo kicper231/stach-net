@@ -10,7 +10,7 @@ export default function NavBar() {
 
   const isCourier = user && Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) && user["https://stachnet.azurewebsites.net//roles"].includes('Curier');
   const isClient = user && Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) && user["https://stachnet.azurewebsites.net//roles"].includes('Client');
-  console.log(isCourier);
+  //console.log(isCourier);
   return (
     <div className="navBar">
       <div className="leftSide">

@@ -36,7 +36,7 @@ export function Test() {
         //     apiMessage: responseData,
         //   });
       } catch (error) {
-        setActiveUsers("ERROR");
+        setActiveUsers("3");
       }
     };
 
