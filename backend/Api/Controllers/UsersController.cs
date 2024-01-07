@@ -5,68 +5,73 @@ using Domain.DTO;
 using Api.Service;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Api.Customers
+public class LoginResult
 {
+    public int NumberOfLogins { get; set; }
 
-    public  class LoginResult
-    {
-        public int NumberOfLogins { get; set; }
-       
-    }
-
+}
+namespace Api.Controllers
+{
     [Route("api/users")]
-    
+    [ApiController] 
+    [Produces("application/json")] 
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository repository;
         private readonly IUserService userService;
+
         public UsersController(IUserRepository repository, IUserService userService)
         {
             this.repository = repository;
             this.userService = userService;
         }
 
+      
         [HttpGet]
-        
-        public ActionResult<List<User>> Get()
+        [ProducesResponseType(StatusCodes.Status200OK)] 
+        public ActionResult<List<User>> GetAll()
         {
             var users = repository.GetAll();
             return Ok(users);
         }
 
+       
         [HttpGet("{id}", Name = "GetUserById")]
-
-        public ActionResult<User> Get(string id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)] 
+        public ActionResult<User> GetById(string id)
         {
             var user = repository.GetByAuth0Id(id);
             if (user == null)
+            {
                 return NotFound();
-
+            }
             return Ok(user);
         }
 
-        [HttpPost("auth0")]
-        [Authorize]
-        public async Task<ActionResult<User>> Post([FromBody] DTO_UserFromAuth0 user)
+      
+        [HttpPost]
+        [Authorize] 
+        [ProducesResponseType(StatusCodes.Status201Created)] 
+        [ProducesResponseType(StatusCodes.Status400BadRequest)] 
+        public async Task<ActionResult<User>> Create([FromBody] DTO_UserFromAuth0 user)
         {
-            var result = await userService.AddUserAsync(user); 
+            var result = await userService.AddUserAsync(user);
 
             if (result.Success)
             {
-                if (result.StatusCode == 201)
-                {
-                    return CreatedAtRoute("GetUserById", new { id = result.user.UserId }, result.user);
-                }
-                return Ok(result.user);
+                return CreatedAtRoute("GetUserById", new { id = result.user.UserId }, result.user);
             }
             else
             {
-                return StatusCode(result.StatusCode, result.Message);
+                return BadRequest(result.Message);
             }
         }
 
-
+        
         [HttpGet("ActiveUsers")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<LoginResult> GetNumberOfLogins()
         {
             var result = userService.NumberOfLogins();
@@ -79,18 +84,6 @@ namespace Api.Customers
                 return StatusCode(500, result.ErrorMessage);
             }
         }
-
-
-
-
     }
-
-
-
-
-
-    }
-
-
-
+}
 
