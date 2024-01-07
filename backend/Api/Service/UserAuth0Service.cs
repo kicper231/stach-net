@@ -9,7 +9,8 @@ namespace Api.Service;
 public interface IUserService
 {
     ServiceResult AddUser(DTO_UserFromAuth0 user);
-    public OperationResult<int> NumberOfLogins();
+    Task<ServiceResult> AddUserAsync(DTO_UserFromAuth0 user);
+     OperationResult<int> NumberOfLogins();
 
 }
 
@@ -66,9 +67,40 @@ public class UserService : IUserService
         }
     }
 
+    public async Task<ServiceResult> AddUserAsync(DTO_UserFromAuth0 user)
+    {
+        try
+        {
+            // Asynchronicznie pobierz użytkownika.
+            var existingUser = await repository.GetByAuth0IdAsync(user.Auth0Id);
+            if (existingUser != null)
+            {
+                existingUser.NumberOfLogins++;
+                await repository.SaveChangesAsync(); // Asynchroniczne zapisywanie zmian.
+                return new ServiceResult(false, "Użytkownik już istnieje.", 409);
+            }
+
+            User AddUser = new User
+            {
+                Auth0Id = user.Auth0Id,
+                FirstName = user.FirstName,
+                Email = user.Email,
+                LastName = user.LastName,
+                CreatedAt = DateTime.Now,
+                NumberOfLogins = 1
+            };
+
+            await repository.AddAsync(AddUser); // Załóżmy, że AddAsync to asynchroniczna wersja metody Add.
+
+            return new ServiceResult(true, "Użytkownik został dodany.", 201, AddUser);
+        }
+        catch (Exception ex)
+        {
+            return new ServiceResult(false, "Wystąpił błąd: " + ex.Message, 500);
+        }
+    }
 
 
-   
 
 }
 

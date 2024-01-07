@@ -1,6 +1,7 @@
 ﻿using Domain.Abstractions;
 using Domain.Model;
 using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
 public class DbUserRepository : IUserRepository
@@ -56,6 +57,26 @@ public class DbUserRepository : IUserRepository
     public void SaveChanges()
     {
         context.SaveChanges();
+    }
+
+
+
+    // async 
+
+    public async Task<int> SaveChangesAsync()
+    {
+        return await context.SaveChangesAsync();
+    }
+
+    public async Task AddAsync(User user)
+    {
+        await context.Users.AddAsync(user);
+        context.SaveChanges();
+    }
+
+    public async Task<User> GetByAuth0IdAsync(string auth0Id)
+    {
+        return await context.Users.FirstOrDefaultAsync(u => u.Auth0Id == auth0Id);
     }
 
 }

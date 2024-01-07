@@ -46,25 +46,24 @@ namespace Api.Customers
         }
 
         [HttpPost("auth0")]
-        //[Authorize]
+        [Authorize]
+        public async Task<ActionResult<User>> Post([FromBody] DTO_UserFromAuth0 user)
+        {
+            var result = await userService.AddUserAsync(user); 
 
-        public ActionResult<User> Post([FromBody] DTO_UserFromAuth0 user)
+            if (result.Success)
             {
-                var result = userService.AddUser(user);
-
-                if (result.Success)
+                if (result.StatusCode == 201)
                 {
-                    if (result.StatusCode == 201)
-                    {
                     return CreatedAtRoute("GetUserById", new { id = result.user.UserId }, result.user);
                 }
-                    return Ok(result.user);
-                }
-                else
-                {
-                    return StatusCode(result.StatusCode, result.Message);
-                }
+                return Ok(result.user);
             }
+            else
+            {
+                return StatusCode(result.StatusCode, result.Message);
+            }
+        }
 
 
         [HttpGet("ActiveUsers")]
