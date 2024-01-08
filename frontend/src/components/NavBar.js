@@ -3,20 +3,12 @@ import LoginButton from "./LoginButton";
 import LogoutButton from "./LogoutButton";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
+import { AuthService } from "./AuthService";
 
 export default function NavBar() {
   const { isAuthenticated, user } = useAuth0();
   const navigate = useNavigate();
 
-  const isCourier =
-    user &&
-    Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) &&
-    user["https://stachnet.azurewebsites.net//roles"].includes("Curier");
-  const isClient =
-    user &&
-    Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) &&
-    user["https://stachnet.azurewebsites.net//roles"].includes("Client");
-  //console.log(isCourier);
   return (
     <div className="navBar">
       <div className="leftSide">
@@ -33,24 +25,22 @@ export default function NavBar() {
         )}
         {isAuthenticated && <LogoutButton />}
 
-        {isAuthenticated && isCourier && (
+        {isAuthenticated && AuthService.isCourier(user) && (
           <button
             onClick={() => {
-              /* kurierlogika */
+              /* Courier logic */
             }}
           >
-            {" "}
-            KURIER
+            Courier
           </button>
         )}
 
-        {isAuthenticated && isClient && (
+        {isAuthenticated && AuthService.isClient(user) && (
           <button
             onClick={() => {
-              /* kurierlogika */
+              /* Client logic */
             }}
           >
-            {" "}
             Client
           </button>
         )}
