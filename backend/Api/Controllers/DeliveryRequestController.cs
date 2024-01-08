@@ -20,7 +20,7 @@ public class DeliveryRequestController : ControllerBase
         _deliveryRequestService = deliveryRequestService;
     }
 
-    [HttpGet]
+    [HttpGet("getmyinquries")]
     [Authorize]
     public ActionResult<List<DeliveryRequest>> GetMyDeliveryRequests()
     {

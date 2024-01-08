@@ -2,64 +2,63 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const serverUrl = process.env.SERVER_URL;
+//const serverUrl = process.env.REACT_APP_SERVER_URL;  
 
 export function RequestOffers() {
   const navigate = useNavigate();
-  const [data, setData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [offers, setOffers] = useState([
     { companyName: "CurrierHub", price: 0.99 },
     { companyName: "Fast curier", price: 13.4 },
     { companyName: "Slow curier", price: 20 },
-  ]);
+  ]); 
 
   useEffect(() => {
-    setData({ id: 1, data: "abc" });
-  }, []);
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
 
-  useEffect(() => {
-    // Function to send data to the server
-    const sendDataToServer = async () => {
       try {
-        const response = await axios.post(
-          `${serverUrl}/delivery-request/offers`,
-          data
-        );
-        console.log("Data sent successfully:", response.data);
+        const response = await axios.post(`https://localhost:7161/api/requestdelivery`, { /* tutaj może być payload, jeśli jest potrzebny */ });
+
+        if (response.status === 200) {
+          // Możesz zdecydować, czy chcesz dodać oferty do istniejących, czy je zastąpić
+          // Aby dodać nowe oferty do istniejących:
+          setOffers(prevOffers => [...prevOffers, ...response.data.offers]);
+          
+          // Aby zastąpić istniejące oferty nowymi:
+          // setOffers(response.data.offers);
+        } else {
+          console.error("Nie udało się pobrać ofert:", response.statusText);
+          setError("Nie udało się pobrać ofert.");
+        }
       } catch (error) {
-        console.error("Error sending data to the server:", error);
+        if (error.code === 'ECONNABORTED') {
+          console.error("Timeout:", error.message);
+          setError("Przekroczono czas oczekiwania na odpowiedź.");
+        } else {
+          console.error("Wystąpił błąd:", error);
+          setError("Wystąpił błąd podczas pobierania ofert.");
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    // Function to connect to WebSocket and listen for offers
-    const connectToWebSocket = () => {
-      const socket = new WebSocket("ws://your-server-websocket-endpoint");
-
-      socket.addEventListener("message", (event) => {
-        const newOffer = JSON.parse(event.data);
-        setOffers((prevOffers) => [...prevOffers, newOffer]);
-      });
-
-      // Close the WebSocket connection after 30 seconds
-      setTimeout(() => {
-        socket.close();
-      }, 30000);
-    };
-
-    sendDataToServer();
-    connectToWebSocket();
-  }, [data]);
+    fetchData();
+  }, []);  
 
   return (
     <>
-      <h1>Waiting for offers</h1>
-
+      <h1>{isLoading ? "Czekamy na oferty..." : "Oferty"}</h1>
+      {error && <p>{error}</p>}
       <ul>
         {offers.map((offer, index) => (
           <li
             key={index}
             className="offer"
-            onClick={() => navigate("/delivery-request/summary")}
+            onClick={() => navigate("/delivery-request/summary", { state: { selectedOffer: offer } })}
           >
             {offer.companyName} ({offer.price} PLN)
           </li>
