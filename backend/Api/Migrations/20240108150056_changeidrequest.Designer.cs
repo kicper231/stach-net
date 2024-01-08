@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(ShopperContext))]
-    partial class ShopperContextModelSnapshot : ModelSnapshot
+    [Migration("20240108150056_changeidrequest")]
+    partial class changeidrequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -144,10 +147,10 @@ namespace Api.Migrations
                     b.Property<int>("DestinationAddressId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PackageId")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsCompany")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("Priority")
+                    b.Property<int>("PackageId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("RequestDate")
@@ -160,12 +163,13 @@ namespace Api.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserAuth0")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("WeekendDelivery")
+                    b.Property<bool>("VipPackage")
                         .HasColumnType("bit");
 
                     b.HasKey("DeliveryRequestId");
@@ -233,8 +237,17 @@ namespace Api.Migrations
                     b.Property<double>("Length")
                         .HasColumnType("float");
 
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("WeekendDelivery")
+                        .HasColumnType("bit");
+
                     b.Property<double>("Weight")
                         .HasColumnType("float");
+
+                    b.Property<int>("WeightUnit")
+                        .HasColumnType("int");
 
                     b.Property<double>("Width")
                         .HasColumnType("float");

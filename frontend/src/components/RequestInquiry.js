@@ -1,43 +1,40 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-//const serverUrl = process.env.SERVER_URL;
+const serverUrl = process.env.SERVER_URL;
 
 export function RequestInquiry() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    userAuth0: '12345abcdef',
     package: {
-      width: 2,
-      height: 3,
-      length: 1,
-     // dimensionUnit: "Meters/Inches",
-      weight: 10,
-     // weightUnit: "weight",
-     priority: false,
-     weekendDelivery: false,
+        width: 15,
+        height: 10,
+        length: 20,
+        weight: 5.5,
     },
     sourceAddress: {
-      houseNumber: "string",
-      apartmentNumber: "string",
-      street: "Lubelska ",
-      city: "Lublin",
-      postalCode: "20-000",
-      country: "Polska",
+        houseNumber: '12A',
+        apartmentNumber: '3',
+        street: 'Kwiatowa',
+        city: 'Kraków',
+        postalCode: '30-001',
+        country: 'Polska',
     },
     destinationAddress: {
-      houseNumber: "string",
-      apartmentNumber: "string",
-      street: "Nowowiejska ",
-      city: "Warszawa",
-      postalCode: "000-00",
-      country: "Polska",
+        houseNumber: '55B',
+        apartmentNumber: '7',
+        street: 'Wolności',
+        city: 'Warszawa',
+        postalCode: '00-950',
+        country: 'Polska',
     },
-    deliveryDate: "2024-2-29",
-    vipPackage: true,
-  
-    isCompany: true
-  });
+    deliveryDate: '2024-03-15',
+    priority: true,
+    weekendDelivery: true,
+});
+
 
   const handleChange = (e, key = null) => {
     var value = e.target.value;
@@ -299,59 +296,9 @@ export function RequestInquiry() {
         <br />
             
 
-        <label>
-          IsVip:
-          <br />
-          <label>
-            <input
-              type="radio"
-              name="vipPackage"
-              value="option1"
-              checked={formData.vipPackage === true}
-              onChange={handleChange}
-              required
-            />
-           YES
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="vipPackage"
-              value="option2"
-              checked={formData.vipPackage === false}
-              onChange={handleChange}
-              required
-            />
-            NO
-          </label>
-        </label>
-        <br/>
-        <label>
-          IsCompany:
-          <br />
-          <label>
-            <input
-              type="radio"
-              name="IsCompany"
-              value="option3"
-              checked={formData.isCompany === true}
-              onChange={handleChange}
-              required
-            />
-           YES
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="IsCompany"
-              value="option4"
-              checked={formData.isCompany === false}
-              onChange={handleChange}
-              required
-            />
-            NO
-          </label>
-        </label>
+      
+       
+       
 
         <br/>
         <button type="submit">Send delivery request</button>
