@@ -14,7 +14,7 @@ export default function LandingPage() {
         setNumber(data);
       })
       .catch((error) => console.error(error));
-  },[]); // bo inaczej zapetla sie w kołko (?) to  poprawić bo widac -1 przez chwile zanim dojdzie fetch i ogólnie jakis system tego renderownaia idk 
+  }, []); // bo inaczej zapetla sie w kołko (?) to  poprawić bo widac -1 przez chwile zanim dojdzie fetch i ogólnie jakis system tego renderownaia idk
 
   return (
     <p>
