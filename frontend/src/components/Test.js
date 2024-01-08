@@ -47,7 +47,7 @@ export function Test() {
     fetch("http://localhost:5157/test_get", { method: "GET" })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        console.log("GET", data);
       })
       .catch((error) => console.error(error));
   }

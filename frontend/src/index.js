@@ -16,11 +16,11 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 const providerConfig = {
   domain: domain,
   clientId: clientId,
-  redirectUri: window.location.origin,
+  authorizationParams: {
+    redirect_uri: window.location.origin,
+  },
   ...(audience ? { audience: audience } : null),
 };
-
-console.log(audience);
 
 root.render(
   <React.StrictMode>
