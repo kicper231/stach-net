@@ -1,31 +1,42 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const serverUrl = process.env.SERVER_URL;
+//const serverUrl = process.env.SERVER_URL;
 
 export function RequestInquiry() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     package: {
-      dimensions: "0.2m x 0.3m x 0.4m",
+      width: 2,
+      height: 3,
+      length: 1,
+     // dimensionUnit: "Meters/Inches",
       weight: 10,
-      priority: false,
-      weekendDelivery: false,
+     // weightUnit: "weight",
+     priority: false,
+     weekendDelivery: false,
     },
     sourceAddress: {
-      street: "Lubelska 13",
+      houseNumber: "string",
+      apartmentNumber: "string",
+      street: "Lubelska ",
       city: "Lublin",
       postalCode: "20-000",
       country: "Polska",
     },
     destinationAddress: {
-      street: "Nowowiejska 2",
+      houseNumber: "string",
+      apartmentNumber: "string",
+      street: "Nowowiejska ",
       city: "Warszawa",
       postalCode: "000-00",
       country: "Polska",
     },
-    deliveryDate: "2024-2-27",
+    deliveryDate: "2024-2-29",
+    vipPackage: true,
+  
+    isCompany: true
   });
 
   const handleChange = (e, key = null) => {
@@ -37,6 +48,12 @@ export function RequestInquiry() {
 
     if (e.target.name === "priority") {
       value = value === "option1" ? true : false;
+    }
+    if (e.target.name === "vipPackage") {
+      value = value === "option1" ? true : false;
+    }
+    if (e.target.name === "IsCompany") {
+      value = value === "option3" ? true : false;
     }
 
     if (key === null) {
@@ -56,29 +73,11 @@ export function RequestInquiry() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+   //e.preventDefault();
+  //  console.log(JSON.stringify(formData));
+  navigate("/delivery-request/offers", { state: { formData: formData } });
 
-    navigate("/delivery-request/offers");
-
-    try {
-      // Send the form data to the backend
-      const response = await fetch(`${serverUrl}/delivery-request/inquiry`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      // Check if the request was successful (status code 2xx)
-      if (response.ok) {
-        console.log("Form submitted successfully!");
-      } else {
-        console.error("Form submission failed:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error sending form data:", error);
-    }
+    
   };
 
   return (
@@ -87,11 +86,32 @@ export function RequestInquiry() {
         <p>Package</p>
 
         <label>
-          Dimensions:
+          width:
+          <input
+            type="text"
+            name="width"
+            value={formData.package.width}
+            onChange={(e) => handleChange(e, "package")}
+          />
+        </label>
+        <br />
+        <label>
+        height:
           <input
             type="text"
             name="dimensions"
-            value={formData.package.dimensions}
+            value={formData.package.height}
+            onChange={(e) => handleChange(e, "package")}
+          />
+        </label>
+        <br />
+        
+        <label>
+        length:
+          <input
+            type="text"
+            name="length"
+            value={formData.package.length}
             onChange={(e) => handleChange(e, "package")}
           />
         </label>
@@ -142,9 +162,28 @@ export function RequestInquiry() {
             onChange={(e) => handleChange(e, "package")}
           />
         </label>
-
+     
         <p>Source address</p>
-
+        <label>
+        houseNumber:
+          <input
+            type="text"
+            name="houseNumber"
+            value={formData.sourceAddress.houseNumber}
+            onChange={(e) => handleChange(e, "sourceAddress")}
+          />
+        </label>
+        <br />
+        <label>
+        apartmentNumber:
+          <input
+            type="text"
+            name="apartmentNumber"
+            value={formData.sourceAddress.apartmentNumber}
+            onChange={(e) => handleChange(e, "sourceAddress")}
+          />
+        </label>
+        <br />
         <label>
           Street:
           <input
@@ -186,7 +225,26 @@ export function RequestInquiry() {
         </label>
 
         <p>Destination address</p>
-
+        <label>
+        houseNumber:
+          <input
+            type="text"
+            name="houseNumber"
+            value={formData.destinationAddress.houseNumber}
+            onChange={(e) => handleChange(e, "destinationAddress")}
+          />
+        </label>
+        <br />
+        <label>
+        apartmentNumber:
+          <input
+            type="text"
+            name="apartmentNumber"
+            value={formData.destinationAddress.apartmentNumber}
+            onChange={(e) => handleChange(e, "destinationAddress")}
+          />
+        </label>
+        <br />
         <label>
           Street:
           <input
@@ -239,7 +297,63 @@ export function RequestInquiry() {
           />
         </label>
         <br />
+            
 
+        <label>
+          IsVip:
+          <br />
+          <label>
+            <input
+              type="radio"
+              name="vipPackage"
+              value="option1"
+              checked={formData.vipPackage === true}
+              onChange={handleChange}
+              required
+            />
+           YES
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="vipPackage"
+              value="option2"
+              checked={formData.vipPackage === false}
+              onChange={handleChange}
+              required
+            />
+            NO
+          </label>
+        </label>
+        <br/>
+        <label>
+          IsCompany:
+          <br />
+          <label>
+            <input
+              type="radio"
+              name="IsCompany"
+              value="option3"
+              checked={formData.isCompany === true}
+              onChange={handleChange}
+              required
+            />
+           YES
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="IsCompany"
+              value="option4"
+              checked={formData.isCompany === false}
+              onChange={handleChange}
+              required
+            />
+            NO
+          </label>
+        </label>
+
+        <br/>
         <button type="submit">Send delivery request</button>
       </form>
     </div>
