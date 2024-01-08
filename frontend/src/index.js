@@ -18,24 +18,16 @@ const providerConfig = {
   clientId: clientId,
   redirectUri: window.location.origin,
   ...(audience ? { audience: audience } : null),
-
 };
-
 
 console.log(audience);
 
-
 root.render(
   <React.StrictMode>
-    <Auth0Provider
-      {...providerConfig}
-
-
-      
-    >
+    <Auth0Provider {...providerConfig}>
       <BrowserRouter>
         <App />
-     </BrowserRouter>
+      </BrowserRouter>
     </Auth0Provider>
   </React.StrictMode>
 );

@@ -5,11 +5,17 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
-  const { isAuthenticated,user } = useAuth0();
+  const { isAuthenticated, user } = useAuth0();
   const navigate = useNavigate();
 
-  const isCourier = user && Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) && user["https://stachnet.azurewebsites.net//roles"].includes('Curier');
-  const isClient = user && Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) && user["https://stachnet.azurewebsites.net//roles"].includes('Client');
+  const isCourier =
+    user &&
+    Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) &&
+    user["https://stachnet.azurewebsites.net//roles"].includes("Curier");
+  const isClient =
+    user &&
+    Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) &&
+    user["https://stachnet.azurewebsites.net//roles"].includes("Client");
   //console.log(isCourier);
   return (
     <div className="navBar">
@@ -27,17 +33,27 @@ export default function NavBar() {
         )}
         {isAuthenticated && <LogoutButton />}
 
-
         {isAuthenticated && isCourier && (
-          
-          <button onClick={() => {/* kurierlogika */}}> KURIER</button>
+          <button
+            onClick={() => {
+              /* kurierlogika */
+            }}
+          >
+            {" "}
+            KURIER
+          </button>
         )}
 
         {isAuthenticated && isClient && (
-          
-          <button onClick={() => {/* kurierlogika */}}> Client</button>
+          <button
+            onClick={() => {
+              /* kurierlogika */
+            }}
+          >
+            {" "}
+            Client
+          </button>
         )}
-        
       </div>
     </div>
   );

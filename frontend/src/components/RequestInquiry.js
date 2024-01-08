@@ -11,11 +11,11 @@ export function RequestInquiry() {
       width: 2,
       height: 3,
       length: 1,
-     // dimensionUnit: "Meters/Inches",
+      // dimensionUnit: "Meters/Inches",
       weight: 10,
-     // weightUnit: "weight",
-     priority: false,
-     weekendDelivery: false,
+      // weightUnit: "weight",
+      priority: false,
+      weekendDelivery: false,
     },
     sourceAddress: {
       houseNumber: "string",
@@ -35,8 +35,8 @@ export function RequestInquiry() {
     },
     deliveryDate: "2024-2-29",
     vipPackage: true,
-  
-    isCompany: true
+
+    isCompany: true,
   });
 
   const handleChange = (e, key = null) => {
@@ -73,11 +73,9 @@ export function RequestInquiry() {
   };
 
   const handleSubmit = async (e) => {
-   //e.preventDefault();
-  //  console.log(JSON.stringify(formData));
-  navigate("/delivery-request/offers", { state: { formData: formData } });
-
-    
+    //e.preventDefault();
+    //  console.log(JSON.stringify(formData));
+    navigate("/delivery-request/offers", { state: { formData: formData } });
   };
 
   return (
@@ -96,7 +94,7 @@ export function RequestInquiry() {
         </label>
         <br />
         <label>
-        height:
+          height:
           <input
             type="text"
             name="dimensions"
@@ -105,9 +103,9 @@ export function RequestInquiry() {
           />
         </label>
         <br />
-        
+
         <label>
-        length:
+          length:
           <input
             type="text"
             name="length"
@@ -162,10 +160,10 @@ export function RequestInquiry() {
             onChange={(e) => handleChange(e, "package")}
           />
         </label>
-     
+
         <p>Source address</p>
         <label>
-        houseNumber:
+          houseNumber:
           <input
             type="text"
             name="houseNumber"
@@ -175,7 +173,7 @@ export function RequestInquiry() {
         </label>
         <br />
         <label>
-        apartmentNumber:
+          apartmentNumber:
           <input
             type="text"
             name="apartmentNumber"
@@ -226,7 +224,7 @@ export function RequestInquiry() {
 
         <p>Destination address</p>
         <label>
-        houseNumber:
+          houseNumber:
           <input
             type="text"
             name="houseNumber"
@@ -236,7 +234,7 @@ export function RequestInquiry() {
         </label>
         <br />
         <label>
-        apartmentNumber:
+          apartmentNumber:
           <input
             type="text"
             name="apartmentNumber"
@@ -297,7 +295,6 @@ export function RequestInquiry() {
           />
         </label>
         <br />
-            
 
         <label>
           IsVip:
@@ -311,7 +308,7 @@ export function RequestInquiry() {
               onChange={handleChange}
               required
             />
-           YES
+            YES
           </label>
           <label>
             <input
@@ -325,7 +322,7 @@ export function RequestInquiry() {
             NO
           </label>
         </label>
-        <br/>
+        <br />
         <label>
           IsCompany:
           <br />
@@ -338,7 +335,7 @@ export function RequestInquiry() {
               onChange={handleChange}
               required
             />
-           YES
+            YES
           </label>
           <label>
             <input
@@ -353,7 +350,7 @@ export function RequestInquiry() {
           </label>
         </label>
 
-        <br/>
+        <br />
         <button type="submit">Send delivery request</button>
       </form>
     </div>
