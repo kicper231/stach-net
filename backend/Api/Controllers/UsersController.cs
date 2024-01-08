@@ -51,7 +51,7 @@ namespace Api.Controllers
 
       
         [HttpPost]
-        [Authorize] 
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)] 
         [ProducesResponseType(StatusCodes.Status400BadRequest)] 
         public async Task<ActionResult<User>> Create([FromBody] DTO_UserFromAuth0 user)

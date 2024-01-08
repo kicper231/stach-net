@@ -39,13 +39,13 @@ public class DeliveryRequestController : ControllerBase
 
 
     [HttpPost]
-    public async Task<ActionResult<DeliveryRespondDTO>> SendDeliveryRequest([FromBody]DeliveryRequestDTO DRDTO)
+    public async Task<IActionResult> SendDeliveryRequest([FromBody] DeliveryRequestDTO DRDTO)
     {
-        //
-        var response = await _deliveryRequestService.Add(DRDTO);
+        // Your existing code
+        var response = await _deliveryRequestService.GetOffers(DRDTO);
 
-        return Ok(response);
+        return Ok(response);  // This is now valid
     }
 
-  
+
 }

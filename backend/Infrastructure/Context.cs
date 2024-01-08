@@ -31,10 +31,7 @@ namespace Infrastructure;
         // Package
         modelBuilder.Entity<Package>()
             .HasKey(p => p.PackageId);
-        modelBuilder.Entity<Package>()
-            .Property(p => p.Dimensions)
-            .HasMaxLength(100)
-            .IsRequired();
+       
         modelBuilder.Entity<Package>()
             .Property(p => p.Weight)
             .IsRequired();
@@ -60,13 +57,14 @@ namespace Infrastructure;
             .IsRequired();
 
         // DeliveryRequest
+        modelBuilder.Entity<DeliveryRequest>().HasKey(p => p.DeliveryRequestId);
         modelBuilder.Entity<DeliveryRequest>()
-            .HasKey(dr => dr.RequestId);
-        modelBuilder.Entity<DeliveryRequest>()
-            .HasOne(dr => dr.User)
-            .WithMany()
-            .HasForeignKey(dr => dr.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+     .HasOne(dr => dr.User)
+     .WithMany()
+     .HasForeignKey(dr => dr.UserId)
+     .IsRequired(false)  
+     .OnDelete(DeleteBehavior.Restrict); 
+
         modelBuilder.Entity<DeliveryRequest>()
             .HasOne(dr => dr.Package)
             .WithMany()

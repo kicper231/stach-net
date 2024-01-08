@@ -1,34 +1,41 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation as useRouteLocation } from "react-router-dom";
 
-//const serverUrl = process.env.REACT_APP_SERVER_URL;  
+const serverUrl = process.env.REACT_APP_SERVER_URL;
 
 export function RequestOffers() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const location = useRouteLocation();
   const [offers, setOffers] = useState([
     { companyName: "CurrierHub", price: 0.99 },
     { companyName: "Fast curier", price: 13.4 },
     { companyName: "Slow curier", price: 20 },
-  ]); 
+  ]);  // Bazowe oferty
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       setError(null);
 
+     
+      const formData = location.state?.formData;
+
+      if (!formData) {
+        setError("Brak danych formularza.");
+        setIsLoading(false);
+        return;
+      }
+
       try {
-        const response = await axios.post(`https://localhost:7161/api/requestdelivery`, { /* tutaj może być payload, jeśli jest potrzebny */ });
+        const response = await axios.post(`https://localhost:7161/api/requestdelivery`, formData, {
+          timeout: 30000, // 30 sekund timeout
+        });
 
         if (response.status === 200) {
-          // Możesz zdecydować, czy chcesz dodać oferty do istniejących, czy je zastąpić
-          // Aby dodać nowe oferty do istniejących:
-          setOffers(prevOffers => [...prevOffers, ...response.data.offers]);
-          
-          // Aby zastąpić istniejące oferty nowymi:
-          // setOffers(response.data.offers);
+          setOffers(response.data || []); // Ustaw nowe oferty
         } else {
           console.error("Nie udało się pobrać ofert:", response.statusText);
           setError("Nie udało się pobrać ofert.");
@@ -66,4 +73,4 @@ export function RequestOffers() {
       </ul>
     </>
   );
-}
+        }
