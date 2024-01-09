@@ -63,7 +63,7 @@ export function RequestInquiry() {
   const handleSend = async () => {
     // Send data logic
 
-    navigate("/delivery-request/offers", { state: { formData: formData } });
+    navigate("/delivery-request/offers", { state: { requestData: formData } });
   };
 
   return (
