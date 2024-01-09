@@ -1,78 +1,69 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-
-//const serverUrl = process.env.REACT_APP_SERVER_URL;
+import { useLocation, useNavigate } from "react-router-dom";
+import { config } from "../config-development";
 
 export function RequestOffers() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [offers, setOffers] = useState([
-    { companyName: "CurrierHub", price: 0.99 },
-    { companyName: "Fast curier", price: 13.4 },
-    { companyName: "Slow curier", price: 20 },
-  ]);
+  const location = useLocation();
+  const [offers, setOffers] = useState();
+  const [noDataError, setNoDataError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
+      const requestData = location.state?.requestData;
+
+      if (!requestData) {
+        setNoDataError(true);
+        return;
+      }
 
       try {
         const response = await axios.post(
-          `https://localhost:7161/api/requestdelivery`,
-          {
-            /* tutaj może być payload, jeśli jest potrzebny */
-          }
+          `${config.serverUri}/api/requestdelivery`,
+          requestData
         );
-
-        if (response.status === 200) {
-          // Możesz zdecydować, czy chcesz dodać oferty do istniejących, czy je zastąpić
-          // Aby dodać nowe oferty do istniejących:
-          setOffers((prevOffers) => [...prevOffers, ...response.data.offers]);
-
-          // Aby zastąpić istniejące oferty nowymi:
-          // setOffers(response.data.offers);
-        } else {
-          console.error("Nie udało się pobrać ofert:", response.statusText);
-          setError("Nie udało się pobrać ofert.");
-        }
+        setOffers(response.data);
       } catch (error) {
-        if (error.code === "ECONNABORTED") {
-          console.error("Timeout:", error.message);
-          setError("Przekroczono czas oczekiwania na odpowiedź.");
-        } else {
-          console.error("Wystąpił błąd:", error);
-          setError("Wystąpił błąd podczas pobierania ofert.");
-        }
-      } finally {
-        setIsLoading(false);
+        console.error(error);
       }
     };
 
     fetchData();
-  }, []);
+  });
+
+  function offersList() {
+    return (
+      <>
+        <h1>Offers</h1>
+        <ul>
+          {offers.map((offer, index) => (
+            <li
+              key={index}
+              className="offer"
+              onClick={() =>
+                navigate("/delivery-request/summary", {
+                  state: { selectedOffer: offer },
+                })
+              }
+            >
+              {offer.companyName} ({offer.price} PLN)
+            </li>
+          ))}
+        </ul>
+      </>
+    );
+  }
 
   return (
     <>
-      <h1>{isLoading ? "Czekamy na oferty..." : "Oferty"}</h1>
-      {error && <p>{error}</p>}
-      <ul>
-        {offers.map((offer, index) => (
-          <li
-            key={index}
-            className="offer"
-            onClick={() =>
-              navigate("/delivery-request/summary", {
-                state: { selectedOffer: offer },
-              })
-            }
-          >
-            {offer.companyName} ({offer.price} PLN)
-          </li>
-        ))}
-      </ul>
+      {noDataError ? (
+        <h1>No request</h1>
+      ) : offers ? (
+        offersList()
+      ) : (
+        <h1>Looking for offers...</h1>
+      )}
     </>
   );
 }
