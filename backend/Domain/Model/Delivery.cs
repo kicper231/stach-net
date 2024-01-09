@@ -15,6 +15,7 @@ public class Delivery : BaseEntity
     public Offer Offer { get; set; }
     public int CourierId { get; set; }
     public User Courier { get; set; }
+
     public DateTime PickupDate { get; set; }
     public DateTime DeliveryDate { get; set; }
     public DeliveryStatus DeliveryStatus { get; set; }

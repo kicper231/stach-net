@@ -83,8 +83,8 @@ public class DeliveryRequestService : IDeliveryRequestService
             Priority = deliveryRequestDTO.Priority ? PackagePriority.High : PackagePriority.Low,
             WeekendDelivery = deliveryRequestDTO.WeekendDelivery
         };
-
-        _repository.Add(deliveryRequest);
+        deliveryRequest.CreatedAt = DateTime.Now;
+       _repository.Add(deliveryRequest);
 
 
         //string externalApiUrl = "https://localhost:7286/WeatherForecast";
@@ -93,30 +93,49 @@ public class DeliveryRequestService : IDeliveryRequestService
 
         List<DeliveryRespondDTO> offers = new List<DeliveryRespondDTO>();
 
-       
-        offers.Add(new DeliveryRespondDTO
+
+
+        List<DeliveryRespondDTO> offersToSend = new List<DeliveryRespondDTO>();
+
+      
+        offersToSend.Add(new DeliveryRespondDTO
         {
             CompanyName = "Company A",
-            Cost = 100,  // Example cost
-            DeliveryDate = DateTime.Now.AddDays(5)  
+            Cost = 100, 
+            DeliveryDate = DateTime.Now.AddDays(5),
+            InquiryId = "SomeInquiryId1",
+            PriceBreakDown = new List<PriceBreakdown>
+    {
+        new PriceBreakdown { Amount = 80, Currency = "PLN", Description = "Podstawowa cena" },
+        new PriceBreakdown { Amount = 10, Currency = "PLN", Description = "Podatek VAT" },
+        new PriceBreakdown { Amount = 5, Currency = "PLN", Description = "Opłata za dostawę" },
+        
+    }
         });
 
-        offers.Add(new DeliveryRespondDTO
+    
+        offersToSend.Add(new DeliveryRespondDTO
         {
             CompanyName = "Company B",
-            Cost = 120,  // Example cost
-            DeliveryDate = DateTime.Now.AddDays(4) 
+            Cost = 120, 
+            DeliveryDate = DateTime.Now.AddDays(4),
+            InquiryId = "SomeInquiryId2",
+            PriceBreakDown = new List<PriceBreakdown>
+    {
+        new PriceBreakdown { Amount = 90, Currency = "PLN", Description = "Podstawowa cena" },
+        new PriceBreakdown { Amount = 15, Currency = "PLN", Description = "Podatek VAT" },
+        new PriceBreakdown { Amount = 10, Currency = "PLN", Description = "Opłata za dostawę" },
+        
+    }
         });
 
-        offers.Add(new DeliveryRespondDTO
-        {
-            CompanyName = "Company C",
-            Cost = 90,  // Example cost
-            DeliveryDate = DateTime.Now.AddDays(6)  // Example delivery date
-        });
+       
+        return offersToSend;
 
 
-        return offers;
+
+
+       
     }
 
 

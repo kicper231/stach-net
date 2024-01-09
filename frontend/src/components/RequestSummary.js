@@ -1,8 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
 const serverUrl = process.env.SERVER_URL;
 
 const summaryData = {
@@ -13,9 +13,13 @@ const summaryData = {
 };
 
 export function RequestSummary() {
+
+  
   const { isAuthenticated } = useAuth0();
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const selectedOffer = location.state?.selectedOffer;
+  console.log(selectedOffer);
   const [imaginaryData, setImaginaryData] = useState({
     userAuth0: "NOT IMPLEMENTED",
     user: {
@@ -30,27 +34,9 @@ export function RequestSummary() {
       postalCode: "000-01",
       country: "Polska",
     },
-    package: {
-      dimensions: "0.2m x 0.3m x 0.4m",
-      weight: 10,
-      priority: false,
-      weekendDelivery: false,
-    },
-    sourceAddress: {
-      street: "Lubelska 13",
-      city: "Lublin",
-      postalCode: "20-000",
-      country: "Polska",
-    },
-    destinationAddress: {
-      street: "Nowowiejska 2",
-      city: "Warszawa",
-      postalCode: "000-00",
-      country: "Polska",
-    },
-    deliveryDate: "2024-2-27",
+    selectedOfferCompany:  selectedOffer.companyName,
+    selectedOfferId: selectedOffer.inquiryId,
   });
-
   const handleChange = (e, key = null) => {
     var value = e.target.value;
 
@@ -69,6 +55,8 @@ export function RequestSummary() {
       });
     }
   };
+
+  
 
   function UserInformations() {
     return (
@@ -183,11 +171,12 @@ export function RequestSummary() {
       <div className="columns">
         {!isAuthenticated && UserInformations()}
         <div className="overflow">{renderObjectValues(imaginaryData)}</div>
-        {renderObjectValues(summaryData)}
+        {selectedOffer && renderObjectValues(selectedOffer)} {/* Wyświetlanie szczegółów wybranej oferty */}
       </div>
       <button onClick={handleClick}>Submit a request</button>
     </>
   );
+
 }
 
 const renderObjectValues = (obj) => {

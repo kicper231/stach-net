@@ -26,7 +26,7 @@ console.log(audience);
 
 
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <Auth0Provider
       {...providerConfig}
 
@@ -37,7 +37,7 @@ root.render(
         <App />
      </BrowserRouter>
     </Auth0Provider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

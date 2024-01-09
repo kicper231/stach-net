@@ -71,7 +71,7 @@ export function RequestInquiry() {
 
   const handleSubmit = async (e) => {
    //e.preventDefault();
-  //  console.log(JSON.stringify(formData));
+   console.log(JSON.stringify(formData));
   navigate("/delivery-request/offers", { state: { formData: formData } });
 
     
