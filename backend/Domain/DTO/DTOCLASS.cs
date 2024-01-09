@@ -45,3 +45,25 @@ public class PackageDTO
     public double Weight { get; set; }
    
 }
+
+
+
+
+/// odebranie inquires od api 
+/// 
+
+public class InquiryDTO
+{
+    public string InquiryId { get; set; }
+    public decimal TotalPrice { get; set; }
+    public string Currency { get; set; }
+    public DateTime ExpiringAt { get; set; }
+    public List<PriceBreakdown> PriceBreakDown { get; set; }
+}
+
+public class PriceBreakdown
+{
+    public decimal Amount { get; set; }
+    public string Currency { get; set; }
+    public string Description { get; set; }
+}

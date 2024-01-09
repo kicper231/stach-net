@@ -8,10 +8,21 @@ export function RequestOffers() {
   const navigate = useNavigate();
   const location = useRouteLocation();
   const [offers, setOffers] = useState([
-    { companyName: "CurrierHub", price: 0.99 },
-    { companyName: "Fast curier", price: 13.4 },
-    { companyName: "Slow curier", price: 20 },
-  ]);  // Bazowe oferty
+    {
+      companyName: "Company A",
+      price: 100,
+      deliveryDate: new Date().toISOString(), 
+      inquiryId: "InquiryId1",
+     
+    },
+    {
+      companyName: "Company B",
+      price: 120,
+      deliveryDate: new Date().toISOString(), 
+      inquiryId: "InquiryId2",
+      
+    },
+  ]);  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -54,7 +65,7 @@ export function RequestOffers() {
     };
 
     fetchData();
-  }, []);  
+  }, [location.state]);  
 
   return (
     <>

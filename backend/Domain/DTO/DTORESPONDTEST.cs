@@ -10,8 +10,11 @@ public class DeliveryRespondDTO
 {
     public string CompanyName { get; set; }
 
-    public int Cost { get; set; }
+    public decimal Cost { get; set; }
     public DateTime DeliveryDate { get; set; }
+    public string InquiryId { get; set; }
+
+    public List<PriceBreakdown> PriceBreakDown { get; set; }
     //public DeliveryRespondDTO(string text, int a, DateTime date)
     //{
     //    CompanyName = text;

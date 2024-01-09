@@ -12,6 +12,7 @@ public class Offer : BaseEntity
     public int OfferId { get; set; }
     public int DeliveryRequestId { get; set; }
     public DeliveryRequest DeliveryRequest { get; set; }
+    public string InquiryId { get; set; }
     public int CourierCompanyId { get; set; }
     public CourierCompany CourierCompany { get; set; }
     public decimal Price { get; set; }
