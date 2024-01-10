@@ -12,7 +12,7 @@ public class DeliveryRequestService : IDeliveryRequestService
     private readonly IUserRepository _userRepository;
     private readonly IPackageRepository _packageRepository;
     private readonly IAddressRepository _addressRepository;
-    private readonly IOfferService _httpService;
+    private readonly IOfferService _httpOffersServise;
 
     public DeliveryRequestService(IDeliveryRequestRepository repository,IUserRepository repositoryuser,IPackageRepository repositorypackage,IAddressRepository repositoryaddress, IOfferService httpService)
     {
@@ -20,7 +20,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         _userRepository = repositoryuser;
         _packageRepository = repositorypackage;
         _addressRepository = repositoryaddress;
-        _httpService = httpService;
+        _httpOffersServise = httpService;
     }
 
     public List<DeliveryRequest> GetUserDeliveryRequests(string userId)
@@ -87,8 +87,8 @@ public class DeliveryRequestService : IDeliveryRequestService
        _repository.Add(deliveryRequest);
 
 
-        //string externalApiUrl = "https://localhost:7286/WeatherForecast";
-        //var deliveryRespondDTO = await _httpService.GetOffer(externalApiUrl, deliveryRequestDTO);
+       
+        DeliveryRespondDTO deliveryRespondDTO = await _httpOffersServise.GetOffers(deliveryRequestDTO);
 
 
         List<DeliveryRespondDTO> offers = new List<DeliveryRespondDTO>();
@@ -97,21 +97,8 @@ public class DeliveryRequestService : IDeliveryRequestService
 
         List<DeliveryRespondDTO> offersToSend = new List<DeliveryRespondDTO>();
 
-      
-        offersToSend.Add(new DeliveryRespondDTO
-        {
-            CompanyName = "Company A",
-            Cost = 100, 
-            DeliveryDate = DateTime.Now.AddDays(5),
-            InquiryId = "SomeInquiryId1",
-            PriceBreakDown = new List<PriceBreakdown>
-    {
-        new PriceBreakdown { Amount = 80, Currency = "PLN", Description = "Podstawowa cena" },
-        new PriceBreakdown { Amount = 10, Currency = "PLN", Description = "Podatek VAT" },
-        new PriceBreakdown { Amount = 5, Currency = "PLN", Description = "Opłata za dostawę" },
-        
-    }
-        });
+
+        offersToSend.Add(deliveryRespondDTO);
 
     
         offersToSend.Add(new DeliveryRespondDTO
