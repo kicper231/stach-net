@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Domain.Model;
 using Domain.Abstractions;
 
+
+
 namespace Api.Controllers
 {
     [Route("api/users")]

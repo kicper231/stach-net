@@ -1,5 +1,6 @@
 
 using Api;
+using Api.Service;
 using Api.Infrastructure;
 using Domain.Abstractions;
 using Infrastructure;
@@ -18,7 +19,7 @@ builder.Services.AddSingleton<IUserRepository, FakeUserRepository>();
 
 
 builder.Services.AddScoped<IUserRepository, DbUserRepository>();
-
+builder.Services.AddScoped<IInquiries, Inquiries>();
 builder.Services.AddDbContextFactory<ShopperContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("HostowanaBaza"),
