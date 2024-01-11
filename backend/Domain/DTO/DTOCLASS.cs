@@ -28,8 +28,8 @@ public class UserDetailsDTO
 
 public class AddressDTO
 {
-    public string HouseNumber { get; set; }  // New property
-    public string ApartmentNumber { get; set; }  // New property
+    public string HouseNumber { get; set; }  
+    public string ApartmentNumber { get; set; }  
     public string Street { get; set; }
     public string City { get; set; }
     public string PostalCode { get; set; }
@@ -39,9 +39,9 @@ public class AddressDTO
 
 public class PackageDTO
 {
-    public double Width { get; set; }  // New property
-    public double Height { get; set; }  // New property
-    public double Length { get; set; }  // New property
+    public double Width { get; set; } 
+    public double Height { get; set; } 
+    public double Length { get; set; }  
     public double Weight { get; set; }
    
 }
