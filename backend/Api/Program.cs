@@ -56,11 +56,12 @@ c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 
 });
 
+var url = $"{builder.Configuration["CourierApi:UrlLocal"]}";
 builder.Services.AddHttpClient<IOfferService, OfferService>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["CourierApi:Url"]);
+    client.BaseAddress = new Uri(url);
 });
-System.Console.WriteLine(builder.Configuration["CourierApi:Url"]);
+//System.Console.WriteLine(builder.Configuration["CourierApi:Url"]);
 
 //cors polityka 
 builder.Services.AddCors(options =>
