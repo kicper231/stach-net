@@ -3,6 +3,7 @@ using Domain.DTO;
 using Domain.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Security.Claims;
 
 namespace Api.Controllers;
@@ -39,12 +40,34 @@ public class DeliveryRequestController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> SendDeliveryRequest([FromBody] DeliveryRequestDTO DRDTO)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DeliveryRespondDTO))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    
+    public async Task<ActionResult<DeliveryRespondDTO>> SendDeliveryRequest([FromBody] DeliveryRequestDTO DRDTO)
     {
-        // Your existing code
-        var response = await _deliveryRequestService.GetOffers(DRDTO);
 
-        return Ok(response);  // This is now valid
+        //try
+        //{
+            var response = await _deliveryRequestService.GetOffers(DRDTO);
+            if (response != null)
+            {
+                return Ok(response); // Sukces
+            }
+            else
+            {
+               
+                return NotFound("Nie znaleziono ofert.");
+            }
+        //}
+        //catch (HttpRequestException ex)
+        //{
+        //    if (ex.StatusCode == HttpStatusCode.BadRequest)
+        //    {
+        //        return BadRequest("Błąd żądania: " + ex.Message);
+        //    }
+        //    // Obsługa innych wyjątków
+        //    return StatusCode(404, $"{ex.Message}");
+        //}
     }
 
 

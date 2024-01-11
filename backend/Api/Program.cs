@@ -56,7 +56,11 @@ c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 
 });
 
-
+builder.Services.AddHttpClient<IOfferService, OfferService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["CourierApi:Url"]);
+});
+System.Console.WriteLine(builder.Configuration["CourierApi:Url"]);
 
 //cors polityka 
 builder.Services.AddCors(options =>
