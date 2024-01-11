@@ -7,7 +7,7 @@ namespace Api.Service;
 
 
 public class OfferService : IOfferService
-{
+{ 
     private readonly HttpClient _httpClientOffer;
 
     public OfferService(HttpClient httpClient)
@@ -17,12 +17,12 @@ public class OfferService : IOfferService
     }
 
     
-    public async Task<DeliveryRespondDTO> GetOffer(DeliveryRequestDTO requestDTO)
+    public async Task<DeliveryRespondDTO> GetOffers(DeliveryRequestDTO requestDTO)
     {
-        var response = await _httpClientOffer.PostAsJsonAsync("/" requestDTO);
+        var response = await _httpClientOffer.PostAsJsonAsync("/inquiries", requestDTO);
         //response.EnsureSuccessStatusCode();
         //return await response.Content.ReadFromJsonAsync<DeliveryRespondDTO>();
-        return response;
+        return await response.Content.ReadFromJsonAsync<DeliveryRespondDTO>();
     }
 
 
