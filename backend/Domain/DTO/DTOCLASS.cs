@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.DTO;
+﻿namespace Domain.DTO;
 
 public class InquiryDTO
 {
     public string UserAuth0 { get; set; }
-    
+
     public PackageDTO Package { get; set; }
     public AddressDTO SourceAddress { get; set; }
     public AddressDTO DestinationAddress { get; set; }
@@ -28,8 +22,8 @@ public class UserDetailsDTO
 
 public class AddressDTO
 {
-    public string HouseNumber { get; set; }  
-    public string ApartmentNumber { get; set; }  
+    public string HouseNumber { get; set; }
+    public string ApartmentNumber { get; set; }
     public string Street { get; set; }
     public string City { get; set; }
     public string zipCode { get; set; }
@@ -39,11 +33,11 @@ public class AddressDTO
 
 public class PackageDTO
 {
-    public double Width { get; set; } 
-    public double Height { get; set; } 
-    public double Length { get; set; }  
+    public double Width { get; set; }
+    public double Height { get; set; }
+    public double Length { get; set; }
     public double Weight { get; set; }
-   
+
 }
 
 
@@ -74,7 +68,7 @@ public class PriceBreakdown
 
 public class InquiryToOurApiDTO
 {
-    
+
 
     public PackageDTO Package { get; set; }
     public AddressDTO SourceAddress { get; set; }

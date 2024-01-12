@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Model;
+﻿namespace Domain.Model;
 
 
 public class Offer : BaseEntity
@@ -15,7 +9,8 @@ public class Offer : BaseEntity
     public string InquiryId { get; set; }
     public int CourierCompanyId { get; set; }
     public CourierCompany CourierCompany { get; set; }
-    public decimal Price { get; set; }
+
+    public double totalPrice { get; set; }
     public DateTime OfferValidity { get; set; }
     public OfferStatus OfferStatus { get; set; }
 }
@@ -23,6 +18,7 @@ public class Offer : BaseEntity
 public enum OfferStatus
 {
     Available,
-    Expired
+    Expired,
+    Accepted
 }
 

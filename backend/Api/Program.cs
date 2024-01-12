@@ -1,39 +1,34 @@
 using Api;
-using Domain.Abstractions;
+using Api.Authorization;
+using Api.Service;
 using Domain;
+using Domain.Abstractions;
 using Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Api.Service;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Api.Authorization;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
 
-builder.Services.AddControllers(); 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
-c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-// Definicja schematu bezpieczeństwa dla tokena Bearer
-c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-{
-    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-    Name = "Authorization",
-    In = ParameterLocation.Header,
-    Type = SecuritySchemeType.ApiKey,
-    Scheme = "Bearer"
-});
+    // Definicja schematu bezpieczeństwa dla tokena Bearer
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -97,7 +92,7 @@ builder.Services.AddScoped<IAddressRepository, DbAddressRepository>();
 builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOfferService, OfferService>();
-
+builder.Services.AddScoped<ICourierCompanyRepository, DbCourierCompanyRepository>();
 
 builder.Services.Configure<IdentityManagerSettings>(builder.Configuration.GetSection("IdentityManager"));
 
@@ -154,7 +149,7 @@ var app = builder.Build(); // Buduje aplikacj� webow�
 
 if (app.Environment.IsDevelopment())
 {
-   
+
 }
 app.UseSwagger();
 app.UseSwaggerUI();  // ui nawet gdy nie developmnet

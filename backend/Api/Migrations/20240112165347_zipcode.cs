@@ -1,14 +1,11 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
-
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
 namespace Api.Migrations
 {
     /// <inheritdoc />
-    public partial class changeuserdelivery : Migration
+    public partial class zipcode : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,11 +16,12 @@ namespace Api.Migrations
                 {
                     AddressId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    HouseNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApartmentNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Street = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     zipCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Country = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -39,7 +37,6 @@ namespace Api.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     ContactInfo = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -53,11 +50,10 @@ namespace Api.Migrations
                 {
                     PackageId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Dimensions = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Width = table.Column<double>(type: "float", nullable: false),
+                    Height = table.Column<double>(type: "float", nullable: false),
+                    Length = table.Column<double>(type: "float", nullable: false),
                     Weight = table.Column<double>(type: "float", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    WeekendDelivery = table.Column<bool>(type: "bit", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -75,7 +71,7 @@ namespace Api.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    NumberOfLogins = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -87,22 +83,23 @@ namespace Api.Migrations
                 name: "DeliveryRequests",
                 columns: table => new
                 {
-                    RequestId = table.Column<int>(type: "int", nullable: false)
+                    DeliveryRequestId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UserAuth0 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    UserAuth0 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PackageId = table.Column<int>(type: "int", nullable: false),
                     SourceAddressId = table.Column<int>(type: "int", nullable: false),
                     DestinationAddressId = table.Column<int>(type: "int", nullable: false),
                     RequestDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeliveryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    WeekendDelivery = table.Column<bool>(type: "bit", nullable: false),
+                    Priority = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DeliveryRequests", x => x.RequestId);
+                    table.PrimaryKey("PK_DeliveryRequests", x => x.DeliveryRequestId);
                     table.ForeignKey(
                         name: "FK_DeliveryRequests_Addresses_DestinationAddressId",
                         column: x => x.DestinationAddressId,
@@ -136,11 +133,11 @@ namespace Api.Migrations
                     OfferId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DeliveryRequestId = table.Column<int>(type: "int", nullable: false),
+                    InquiryId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CourierCompanyId = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     OfferValidity = table.Column<DateTime>(type: "datetime2", nullable: false),
                     OfferStatus = table.Column<int>(type: "int", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -156,7 +153,7 @@ namespace Api.Migrations
                         name: "FK_Offers_DeliveryRequests_DeliveryRequestId",
                         column: x => x.DeliveryRequestId,
                         principalTable: "DeliveryRequests",
-                        principalColumn: "RequestId",
+                        principalColumn: "DeliveryRequestId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -171,7 +168,6 @@ namespace Api.Migrations
                     PickupDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeliveryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeliveryStatus = table.Column<int>(type: "int", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -189,15 +185,6 @@ namespace Api.Migrations
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "UserId", "Auth0Id", "CreatedAt", "Email", "FirstName", "Id", "LastName" },
-                values: new object[,]
-                {
-                    { 1, "auth0-id-1", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "jan.kowalski@example.com", "Jan", 0, "Kowalski" },
-                    { 2, "auth0-id-2", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "anna.nowak@example.com", "Anna", 0, "Nowak" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -1,6 +1,5 @@
 ﻿using Domain.Abstractions;
 using Domain.Model;
-using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
@@ -18,7 +17,7 @@ public class DbUserRepository : IUserRepository
         }
         catch (Exception ex)
         {
-           
+
             return OperationResult<int>.CreateFailure("Error occurred retrieving the number of logins.");
         }
     }
@@ -52,7 +51,7 @@ public class DbUserRepository : IUserRepository
     }
 
 
-   
+
 
     public void SaveChanges()
     {

@@ -3,8 +3,6 @@ using Domain.DTO;
 using Domain.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Net;
 using System.Security.Claims;
 
 namespace Api.Controllers;
@@ -66,20 +64,20 @@ public class InquiriesController : ControllerBase
         //        }))
         //        .ToList();
 
-           
+
         //    return BadRequest(errors);
         //}
         //{ // dla stacha
         var response = await _inquiryservice.GetOffers(DRDTO);
-            if (response != null)
-            {
-                return Ok(response); // Sukces
-            }
-            else
-            {
-               
-                return NotFound("Nie znaleziono ofert.");
-            }
+        if (response != null)
+        {
+            return Ok(response); // Sukces
+        }
+        else
+        {
+
+            return NotFound("Nie znaleziono ofert.");
+        }
         //}
         //catch (HttpRequestException ex)
         //{

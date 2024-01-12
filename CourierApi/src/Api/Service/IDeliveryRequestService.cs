@@ -19,7 +19,7 @@ namespace Api.Service
             return new InquiryDTO
             {
                 InquiryId = "123abc",
-                TotalPrice = 150.99m,
+                TotalPrice = 150.99,
                 Currency = "USD",
                 ExpiringAt = DateTime.Now.AddDays(7),
                 PriceBreakDown = new List<PriceBreakdown>
