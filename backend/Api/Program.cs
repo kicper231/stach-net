@@ -1,5 +1,6 @@
 using Api;
 using Domain.Abstractions;
+using Domain;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -56,10 +57,23 @@ c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 
 });
 
-var url = $"{builder.Configuration["CourierApi:UrlLocal"]}";
-builder.Services.AddHttpClient<IOfferService, OfferService>(client =>
+var OurUrl = $"{builder.Configuration["CourierApi:UrlLocal"]}";  //Url lub Urllocal
+var SzymonUrl = $"{builder.Configuration["IdentityManager:Url"]}";
+var TokenSzymonUrl = $"{builder.Configuration["IdentityManager:TokenEndpoint"]}";
+
+builder.Services.AddHttpClient("OurClient", client =>
 {
-    client.BaseAddress = new Uri(url);
+    client.BaseAddress = new Uri($"{OurUrl}");
+});
+
+builder.Services.AddHttpClient("SzymonClient", client =>
+{
+    client.BaseAddress = new Uri($"{SzymonUrl}");
+});
+
+builder.Services.AddHttpClient("SzymonToken", client =>
+{
+    client.BaseAddress = new Uri($"{TokenSzymonUrl}");
 });
 //System.Console.WriteLine(builder.Configuration["CourierApi:Url"]);
 
@@ -75,15 +89,17 @@ builder.Services.AddCors(options =>
                    .AllowCredentials();
         });
 });
+
 //dodanie scopow injections
 builder.Services.AddScoped<IUserRepository, DbUserRepository>();
 builder.Services.AddScoped<IPackageRepository, DbPackageRepository>();
 builder.Services.AddScoped<IAddressRepository, DbAddressRepository>();
 builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
-// popraw 
-builder.Services.AddHttpClient<IOfferService, OfferService>();
+builder.Services.AddScoped<IOfferService, OfferService>();
 
+
+builder.Services.Configure<IdentityManagerSettings>(builder.Configuration.GetSection("IdentityManager"));
 
 
 builder.Services.AddScoped<IDeliveryRequestService, DeliveryRequestService>();
@@ -100,17 +116,12 @@ builder.Services.AddDbContextFactory<ShopperContext>(options =>
 );
 
 
-//builder.Services.AddDbContextFactory<ShopperContext>(options =>
-//    options.UseSqlServer("data source=DESKTOP-IIG9H2J;initial catalog=stachnetest;user id=sa;password=monia231; TrustServerCertificate=True "));
 
 
-//builder.Services.AddDbContextFactory<ShopperContext>(options =>
-//    options.UseSqlServer("data source=DESKTOP-IIG9H2J;initial catalog=stachnetest;user id=sa;password=monia231; TrustServerCertificate=True "));
-
-
+// servis bazy danych
 builder.Services.AddHostedService<DbCreationalService>();
 
-
+// autetykacja
 var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
@@ -121,7 +132,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 });
 
-
+//autoryzacja pozniej
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("read:messages", policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));

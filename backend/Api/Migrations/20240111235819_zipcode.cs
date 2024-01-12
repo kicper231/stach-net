@@ -5,11 +5,23 @@
 namespace Api.Migrations
 {
     /// <inheritdoc />
-    public partial class userauth0 : Migration
+    public partial class zipcode : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.RenameColumn(
+               name: "PostalCode",
+                table: "Addresses",
+                 newName: "zipCode");
+
+            migrationBuilder.AddColumn<string>(
+                name: "InquiryId",
+                table: "Offers",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
+
             migrationBuilder.AlterColumn<string>(
                 name: "UserAuth0",
                 table: "DeliveryRequests",
@@ -22,6 +34,10 @@ namespace Api.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "InquiryId",
+                table: "Offers");
+
             migrationBuilder.AlterColumn<string>(
                 name: "UserAuth0",
                 table: "DeliveryRequests",

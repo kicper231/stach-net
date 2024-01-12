@@ -8,7 +8,7 @@ namespace Api.Service
     {
         List<DeliveryRequest> GetUserDeliveryRequests(string userId);
         
-        Task<List<DeliveryRespondDTO>> GetOffers(DeliveryRequestDTO deliveryRequest);
+        Task<List<DeliveryRespondDTO>> GetOffers(InquiryDTO deliveryRequest);
 
     }
 }

@@ -3,6 +3,7 @@ using Domain.DTO;
 using Domain.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Net;
 using System.Security.Claims;
 
@@ -10,15 +11,15 @@ namespace Api.Controllers;
 
 
 [ApiController]
-[Route("api/requestdelivery")]
+//[Route()]
 //[Authorize] 
-public class DeliveryRequestController : ControllerBase
+public class InquiriesController : ControllerBase
 {
-    private readonly IDeliveryRequestService _deliveryRequestService;
+    private readonly IDeliveryRequestService _inquiryservice;
 
-    public DeliveryRequestController(IDeliveryRequestService deliveryRequestService)
+    public InquiriesController(IDeliveryRequestService deliveryRequestService)
     {
-        _deliveryRequestService = deliveryRequestService;
+        _inquiryservice = deliveryRequestService;
     }
 
     [HttpGet("getmyinquries")]
@@ -32,23 +33,44 @@ public class DeliveryRequestController : ControllerBase
             return Unauthorized("Brak identyfikatora użytkownika.");
         }
 
-        var deliveryRequests = _deliveryRequestService.GetUserDeliveryRequests(userId);
+        var deliveryRequests = _inquiryservice.GetUserDeliveryRequests(userId);
         return Ok(deliveryRequests);
     }
 
 
 
 
-    [HttpPost]
+    [HttpPost("sendinquiry")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DeliveryRespondDTO))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    
-    public async Task<ActionResult<DeliveryRespondDTO>> SendDeliveryRequest([FromBody] DeliveryRequestDTO DRDTO)
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
+
+    public async Task<ActionResult<DeliveryRespondDTO>> SendDeliveryRequest([FromBody] InquiryDTO DRDTO)
     {
 
-        //try
+        //try if (DRDTO != null && DRDTO.Weight == 1000)
+        //if (DRDTO != null && DRDTO.Package.Weight > 1000)
         //{
-            var response = await _deliveryRequestService.GetOffers(DRDTO);
+        //    ModelState.AddModelError("Weight", "Waga nie może wynosić dokładnie 1000.");
+        //}
+
+        //// Sprawdź, czy ModelState.IsValid jest false po dodaniu błędów
+        //if (!ModelState.IsValid)
+        //{
+        //    var errors = ModelState.Keys
+        //        .SelectMany(key => ModelState[key].Errors.Select(error => new ErrorResponse
+        //        {
+        //            PropertyName = key,
+        //            ErrorMessage = error.ErrorMessage,
+        //            Severity = "Error",
+        //            ErrorCode = "ValidationError",
+        //        }))
+        //        .ToList();
+
+           
+        //    return BadRequest(errors);
+        //}
+        //{ // dla stacha
+        var response = await _inquiryservice.GetOffers(DRDTO);
             if (response != null)
             {
                 return Ok(response); // Sukces
