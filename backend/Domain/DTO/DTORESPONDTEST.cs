@@ -16,11 +16,11 @@ public class DeliveryRespondDTO
     //    DeliveryDate = date;
     //}
 }
+
 public class ErrorResponse
 {
     public string PropertyName { get; set; }
     public string ErrorMessage { get; set; }
     public string Severity { get; set; }
     public string ErrorCode { get; set; }
-
 }

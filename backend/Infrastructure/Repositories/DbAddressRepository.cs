@@ -2,7 +2,6 @@
 
 namespace Infrastructure;
 
-
 public class DbAddressRepository : IAddressRepository
 {
     private readonly ShopperContext _context;
@@ -28,4 +27,3 @@ public class DbAddressRepository : IAddressRepository
         _context.SaveChanges();
     }
 }
-

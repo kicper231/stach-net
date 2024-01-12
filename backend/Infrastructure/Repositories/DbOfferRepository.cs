@@ -2,13 +2,12 @@
 
 namespace Infrastructure;
 
-
 public interface IOfferRepository
 {
     public void Add(Offer offer);
     public Offer? GetByInquiryId(string id);
-
 }
+
 public class DbOfferRepository : IOfferRepository
 {
     private readonly ShopperContext _context;
@@ -19,13 +18,9 @@ public class DbOfferRepository : IOfferRepository
     }
 
 
-
-
-
     public Offer? GetByInquiryId(string id)
     {
         return _context.Offers.FirstOrDefault(a => a.InquiryId == id);
-
     }
 
     public void Add(Offer offer)
@@ -34,4 +29,3 @@ public class DbOfferRepository : IOfferRepository
         _context.SaveChanges();
     }
 }
-

@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 public class LoginResult
 {
     public int NumberOfLogins { get; set; }
-
 }
+
 namespace Api.Controllers
 {
     [Route("api/users")]
@@ -42,10 +42,7 @@ namespace Api.Controllers
         public ActionResult<User> GetById(string id)
         {
             var user = repository.GetByAuth0Id(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
+            if (user == null) return NotFound();
             return Ok(user);
         }
 
@@ -59,13 +56,8 @@ namespace Api.Controllers
             var result = await userService.AddUserAsync(user);
 
             if (result.Success)
-            {
                 return CreatedAtRoute("GetUserById", new { id = result.user.UserId }, result.user);
-            }
-            else
-            {
-                return BadRequest(result.Message);
-            }
+            return BadRequest(result.Message);
         }
 
 
@@ -76,14 +68,8 @@ namespace Api.Controllers
         {
             var result = userService.NumberOfLogins();
             if (result.Success)
-            {
                 return Ok(new LoginResult { NumberOfLogins = result.Data });
-            }
-            else
-            {
-                return StatusCode(500, result.ErrorMessage);
-            }
+            return StatusCode(500, result.ErrorMessage);
         }
     }
 }
-

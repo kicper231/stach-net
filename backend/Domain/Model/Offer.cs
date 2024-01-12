@@ -1,6 +1,5 @@
 ﻿namespace Domain.Model;
 
-
 public class Offer : BaseEntity
 {
     public int OfferId { get; set; }
@@ -21,4 +20,3 @@ public enum OfferStatus
     Expired,
     Accepted
 }
-

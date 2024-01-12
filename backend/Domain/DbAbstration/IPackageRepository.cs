@@ -6,4 +6,3 @@ public interface IPackageRepository
     Package GetById(int id);
     void Add(Package package);
 }
-

@@ -1,7 +1,5 @@
 ﻿namespace Domain.Model;
 
-
-
 public class Delivery : BaseEntity
 {
     public int DeliveryId { get; set; }
@@ -13,9 +11,6 @@ public class Delivery : BaseEntity
     public DateTime PickupDate { get; set; }
     public DateTime DeliveryDate { get; set; }
     public DeliveryStatus DeliveryStatus { get; set; }
-
-
-
 }
 
 public enum DeliveryStatus

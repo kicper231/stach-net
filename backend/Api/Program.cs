@@ -42,34 +42,22 @@ builder.Services.AddSwaggerGen(c =>
                 },
                 Scheme = "oauth2",
                 Name = "Bearer",
-                In = ParameterLocation.Header,
+                In = ParameterLocation.Header
             },
             new List<string>()
         }
     });
-
-
-
 });
 
-var OurUrl = $"{builder.Configuration["CourierApi:UrlLocal"]}";  //Url lub Urllocal
+var OurUrl = $"{builder.Configuration["CourierApi:UrlLocal"]}"; //Url lub Urllocal
 var SzymonUrl = $"{builder.Configuration["IdentityManager:Url"]}";
 var TokenSzymonUrl = $"{builder.Configuration["IdentityManager:TokenEndpoint"]}";
 
-builder.Services.AddHttpClient("OurClient", client =>
-{
-    client.BaseAddress = new Uri($"{OurUrl}");
-});
+builder.Services.AddHttpClient("OurClient", client => { client.BaseAddress = new Uri($"{OurUrl}"); });
 
-builder.Services.AddHttpClient("SzymonClient", client =>
-{
-    client.BaseAddress = new Uri($"{SzymonUrl}");
-});
+builder.Services.AddHttpClient("SzymonClient", client => { client.BaseAddress = new Uri($"{SzymonUrl}"); });
 
-builder.Services.AddHttpClient("SzymonToken", client =>
-{
-    client.BaseAddress = new Uri($"{TokenSzymonUrl}");
-});
+builder.Services.AddHttpClient("SzymonToken", client => { client.BaseAddress = new Uri($"{TokenSzymonUrl}"); });
 //System.Console.WriteLine(builder.Configuration["CourierApi:Url"]);
 
 //cors polityka 
@@ -79,9 +67,9 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder.WithOrigins("http://localhost:3000")
-                   .AllowAnyHeader()
-                   .AllowAnyMethod()
-                   .AllowCredentials();
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
 });
 
@@ -111,26 +99,23 @@ builder.Services.AddDbContextFactory<ShopperContext>(options =>
 );
 
 
-
-
 // servis bazy danych
 builder.Services.AddHostedService<DbCreationalService>();
 
 // autetykacja
 var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
-{
-    options.Authority = domain;
-    options.Audience = builder.Configuration["Auth0:Audience"];
-
-
-});
+    .AddJwtBearer(options =>
+    {
+        options.Authority = domain;
+        options.Audience = builder.Configuration["Auth0:Audience"];
+    });
 
 //autoryzacja pozniej
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("read:messages", policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
+    options.AddPolicy("read:messages",
+        policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
 });
 
 
@@ -140,19 +125,12 @@ builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 var app = builder.Build(); // Buduje aplikacj� webow�
 
 
-
-
-
-
-
-
-
 if (app.Environment.IsDevelopment())
 {
-
 }
+
 app.UseSwagger();
-app.UseSwaggerUI();  // ui nawet gdy nie developmnet
+app.UseSwaggerUI(); // ui nawet gdy nie developmnet
 
 
 app.UseHttpsRedirection();
@@ -163,7 +141,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers(); // Mapuje trasy do akcji kontroler�w
-
 
 
 app.Run(); // Uruchamia aplikacj�

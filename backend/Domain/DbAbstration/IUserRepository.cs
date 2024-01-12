@@ -1,21 +1,16 @@
 ﻿using Domain.Model;
 
-namespace Domain.Abstractions
+namespace Domain.Abstractions;
+
+public interface IUserRepository
 {
-    public interface IUserRepository
-    {
-        List<User> GetAll();
-        User GetByAuth0Id(string id);
-        void Add(User user);
-        public void SaveChanges();
-        public OperationResult<int> NumberOfUserLogins();
+    List<User> GetAll();
+    User GetByAuth0Id(string id);
+    void Add(User user);
+    public void SaveChanges();
+    public OperationResult<int> NumberOfUserLogins();
 
-        public Task<User> GetByAuth0IdAsync(string auth0Id);
-        public Task AddAsync(User user);
-        public Task<int> SaveChangesAsync();
-
-    }
-
-
-
+    public Task<User> GetByAuth0IdAsync(string auth0Id);
+    public Task AddAsync(User user);
+    public Task<int> SaveChangesAsync();
 }

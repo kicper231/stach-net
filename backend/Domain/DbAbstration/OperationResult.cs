@@ -1,6 +1,4 @@
-﻿
-
-namespace Domain.Abstractions;
+﻿namespace Domain.Abstractions;
 
 public class OperationResult<T>
 {

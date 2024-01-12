@@ -1,12 +1,11 @@
-﻿using Api.Service;
+﻿using System.Security.Claims;
+using Api.Service;
 using Domain.DTO;
 using Domain.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Api.Controllers;
-
 
 [ApiController]
 //[Route()]
@@ -26,25 +25,18 @@ public class InquiriesController : ControllerBase
     {
         var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-        if (string.IsNullOrEmpty(userId))
-        {
-            return Unauthorized("Brak identyfikatora użytkownika.");
-        }
+        if (string.IsNullOrEmpty(userId)) return Unauthorized("Brak identyfikatora użytkownika.");
 
         var deliveryRequests = _inquiryservice.GetUserDeliveryRequests(userId);
         return Ok(deliveryRequests);
     }
 
 
-
-
     [HttpPost("sendinquiry")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DeliveryRespondDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
-
     public async Task<ActionResult<DeliveryRespondDTO>> SendDeliveryRequest([FromBody] InquiryDTO DRDTO)
     {
-
         //try if (DRDTO != null && DRDTO.Weight == 1000)
         //if (DRDTO != null && DRDTO.Package.Weight > 1000)
         //{
@@ -70,14 +62,8 @@ public class InquiriesController : ControllerBase
         //{ // dla stacha
         var response = await _inquiryservice.GetOffers(DRDTO);
         if (response != null)
-        {
             return Ok(response); // Sukces
-        }
-        else
-        {
-
-            return NotFound("Nie znaleziono ofert.");
-        }
+        return NotFound("Nie znaleziono ofert.");
         //}
         //catch (HttpRequestException ex)
         //{
@@ -89,6 +75,4 @@ public class InquiriesController : ControllerBase
         //    return StatusCode(404, $"{ex.Message}");
         //}
     }
-
-
 }

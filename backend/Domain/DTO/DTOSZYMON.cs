@@ -1,4 +1,1 @@
 ﻿namespace Domain.DTO;
-
-
-

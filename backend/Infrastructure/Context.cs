@@ -8,7 +8,9 @@ namespace Infrastructure;
 
 public class ShopperContext : DbContext
 {
-
+    public ShopperContext(DbContextOptions options) : base(options)
+    {
+    }
 
 
     public DbSet<User> Users { get; set; }
@@ -18,8 +20,6 @@ public class ShopperContext : DbContext
     public DbSet<Offer> Offers { get; set; }
     public DbSet<CourierCompany> CourierCompanies { get; set; }
     public DbSet<Delivery> Deliveries { get; set; }
-
-    public ShopperContext(DbContextOptions options) : base(options) { }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -55,11 +55,11 @@ public class ShopperContext : DbContext
         // DeliveryRequest
         modelBuilder.Entity<DeliveryRequest>().HasKey(p => p.DeliveryRequestId);
         modelBuilder.Entity<DeliveryRequest>()
-     .HasOne(dr => dr.User)
-     .WithMany()
-     .HasForeignKey(dr => dr.UserId)
-     .IsRequired(false)
-     .OnDelete(DeleteBehavior.Restrict);
+            .HasOne(dr => dr.User)
+            .WithMany()
+            .HasForeignKey(dr => dr.UserId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<DeliveryRequest>()
             .HasOne(dr => dr.Package)
@@ -67,10 +67,10 @@ public class ShopperContext : DbContext
             .HasForeignKey(dr => dr.PackageId);
 
         modelBuilder.Entity<DeliveryRequest>()
-               .HasOne(dr => dr.SourceAddress)
-               .WithMany()
-               .HasForeignKey(dr => dr.SourceAddressId)
-               .OnDelete(DeleteBehavior.Restrict);
+            .HasOne(dr => dr.SourceAddress)
+            .WithMany()
+            .HasForeignKey(dr => dr.SourceAddressId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<DeliveryRequest>()
             .HasOne(dr => dr.DestinationAddress)
@@ -90,9 +90,9 @@ public class ShopperContext : DbContext
             .HasColumnType("decimal(18, 2)")
             .IsRequired();
         modelBuilder.Entity<Offer>()
-           .HasOne(o => o.DeliveryRequest)
-           .WithMany()
-           .HasForeignKey(o => o.DeliveryRequestId)
+            .HasOne(o => o.DeliveryRequest)
+            .WithMany()
+            .HasForeignKey(o => o.DeliveryRequestId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // CourierCompany
@@ -147,21 +147,20 @@ public class ShopperContext : DbContext
             .HasIndex(d => d.CourierId);
 
 
-
-
-
         //data seed 
 
         modelBuilder.Entity<CourierCompany>().HasData(
-            new CourierCompany { CourierCompanyId = 1, Name = "StachnetCompany", ContactInfo = "https://courierapistachnet.azurewebsites.net/api", CreatedAt = DateAndTime.Now },
-            new CourierCompany { CourierCompanyId = 2, Name = "SzymonCompany", ContactInfo = "https://mini.currier.api.snet.com.pl", CreatedAt = DateAndTime.Now }
-        ); ;
+            new CourierCompany
+            {
+                CourierCompanyId = 1, Name = "StachnetCompany",
+                ContactInfo = "https://courierapistachnet.azurewebsites.net/api", CreatedAt = DateAndTime.Now
+            },
+            new CourierCompany
+            {
+                CourierCompanyId = 2, Name = "SzymonCompany", ContactInfo = "https://mini.currier.api.snet.com.pl",
+                CreatedAt = DateAndTime.Now
+            }
+        );
+        ;
     }
-
-
-
-
 }
-
-
-

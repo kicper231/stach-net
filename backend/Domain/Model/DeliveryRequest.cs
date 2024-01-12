@@ -1,8 +1,4 @@
-﻿
-
-namespace Domain.Model;
-
-
+﻿namespace Domain.Model;
 
 public class DeliveryRequest : BaseEntity
 {
@@ -24,8 +20,6 @@ public class DeliveryRequest : BaseEntity
 
     //public bool VipPackage { get; set; }  
     //public bool IsCompany { get; set; }   
-
-
 }
 
 public enum DeliveryRequestStatus
