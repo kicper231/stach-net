@@ -1,6 +1,4 @@
-﻿
-
-namespace Domain.Model;
+﻿namespace Domain.Model;
 
 public class Address : BaseEntity
 {
@@ -12,11 +10,3 @@ public class Address : BaseEntity
     public string zipCode { get; set; }
     public string Country { get; set; }
 }
-
-
-
-
-
-
-
-

@@ -1,6 +1,5 @@
 ﻿using Domain.Model;
 
-
 namespace Infrastructure;
 
 public interface ICourierCompanyRepository
@@ -10,8 +9,6 @@ public interface ICourierCompanyRepository
     void Add(CourierCompany courierCompany);
     void SaveChanges();
 }
-
-
 
 public class DbCourierCompanyRepository : ICourierCompanyRepository
 {

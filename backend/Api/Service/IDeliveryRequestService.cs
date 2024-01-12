@@ -1,13 +1,11 @@
 ﻿using Domain.DTO;
 using Domain.Model;
 
-namespace Api.Service
+namespace Api.Service;
+
+public interface IDeliveryRequestService
 {
-    public interface IDeliveryRequestService
-    {
-        List<DeliveryRequest> GetUserDeliveryRequests(string userId);
+    List<DeliveryRequest> GetUserDeliveryRequests(string userId);
 
-        Task<List<DeliveryRespondDTO>> GetOffers(InquiryDTO deliveryRequest);
-
-    }
+    Task<List<DeliveryRespondDTO>> GetOffers(InquiryDTO deliveryRequest);
 }

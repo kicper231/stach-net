@@ -1,5 +1,6 @@
 ﻿using Domain.Abstractions;
 using Domain.Model;
+
 namespace Infrastructure;
 
 public class DbRequestRepository : IDeliveryRequestRepository
@@ -21,15 +22,8 @@ public class DbRequestRepository : IDeliveryRequestRepository
 
     public void Add(DeliveryRequest delivery)
     {
-
         _context.DeliveryRequests.Add(delivery);
 
         _context.SaveChanges();
     }
-
-
-
-
 }
-
-

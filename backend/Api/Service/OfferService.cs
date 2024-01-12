@@ -1,9 +1,10 @@
-﻿using Domain;
+﻿using System.Net.Http.Headers;
+using System.Text.Json;
+using Domain;
 using Domain.Adapters;
 using Domain.DTO;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System.Text.Json;
 
 namespace Api.Service;
 
@@ -76,7 +77,7 @@ public class OfferService : IOfferService
 
         var accessToken = await GetTokenAsync();
 
-        inquirymessage.Headers.Authorization =new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        inquirymessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var response = await _httpSzymonClientOffer.SendAsync(inquirymessage);
         response.EnsureSuccessStatusCode();

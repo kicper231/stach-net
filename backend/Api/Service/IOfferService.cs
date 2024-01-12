@@ -1,13 +1,11 @@
 ﻿using Domain.DTO;
 
-namespace Api.Service
+namespace Api.Service;
+
+public interface IOfferService
 {
-    public interface IOfferService
-    {
+    public Task<DeliveryRespondDTO> GetOffersFromOurApi(InquiryDTO requestDTO);
 
-        public Task<DeliveryRespondDTO> GetOffersFromOurApi(InquiryDTO requestDTO);
-
-        public Task<DeliveryRespondDTO> GetOfferFromSzymonApi(InquiryDTO InquiryDTO);
-        public Task<string> GetTokenAsync();
-    }
+    public Task<DeliveryRespondDTO> GetOfferFromSzymonApi(InquiryDTO InquiryDTO);
+    public Task<string> GetTokenAsync();
 }

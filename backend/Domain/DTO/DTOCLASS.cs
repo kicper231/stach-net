@@ -28,7 +28,6 @@ public class AddressDTO
     public string City { get; set; }
     public string zipCode { get; set; }
     public string Country { get; set; }
-
 }
 
 public class PackageDTO
@@ -37,15 +36,9 @@ public class PackageDTO
     public double Height { get; set; }
     public double Length { get; set; }
     public double Weight { get; set; }
-
 }
 
-
-
-
-/// odebranie inquires od api 
-/// 
-
+/// odebranie inquires od api
 public class OffertDTO
 {
     public string InquiryId { get; set; }
@@ -62,14 +55,8 @@ public class PriceBreakdown
     public string Description { get; set; }
 }
 
-
-
-
-
 public class InquiryToOurApiDTO
 {
-
-
     public PackageDTO Package { get; set; }
     public AddressDTO SourceAddress { get; set; }
     public AddressDTO DestinationAddress { get; set; }
@@ -77,7 +64,6 @@ public class InquiryToOurApiDTO
     public bool Priority { get; set; }
     public bool WeekendDelivery { get; set; }
 }
-
 
 public class InquiryToSzymonDTO
 {

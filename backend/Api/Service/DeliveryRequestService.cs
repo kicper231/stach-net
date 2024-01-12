@@ -7,14 +7,16 @@ namespace Api.Service;
 
 public class DeliveryRequestService : IDeliveryRequestService
 {
+    private readonly IAddressRepository _addressRepository;
+    private readonly ICourierCompanyRepository _courierCompanyRepository;
+    private readonly IOfferService _httpOffersServise;
+    private readonly IPackageRepository _packageRepository;
     private readonly IDeliveryRequestRepository _repository;
     private readonly IUserRepository _userRepository;
-    private readonly IPackageRepository _packageRepository;
-    private readonly IAddressRepository _addressRepository;
-    private readonly IOfferService _httpOffersServise;
-    private readonly ICourierCompanyRepository _courierCompanyRepository;
 
-    public DeliveryRequestService(IDeliveryRequestRepository repository, IUserRepository repositoryuser, IPackageRepository repositorypackage, IAddressRepository repositoryaddress, IOfferService httpService, ICourierCompanyRepository courierCompanyRepository)
+    public DeliveryRequestService(IDeliveryRequestRepository repository, IUserRepository repositoryuser,
+        IPackageRepository repositorypackage, IAddressRepository repositoryaddress, IOfferService httpService,
+        ICourierCompanyRepository courierCompanyRepository)
     {
         _repository = repository;
         _userRepository = repositoryuser;
@@ -31,19 +33,15 @@ public class DeliveryRequestService : IDeliveryRequestService
 
     public async Task<List<DeliveryRespondDTO?>> GetOffers(InquiryDTO deliveryRequestDTO)
     {
-
-
-
         // dodanie do bazy danych requestu
-        DeliveryRequest addedRequestDelivery = CreateDeliveryRequest(deliveryRequestDTO);
-
-
+        var addedRequestDelivery = CreateDeliveryRequest(deliveryRequestDTO);
 
 
         //obsluga rownoległosci i zapytań wykorzystujac serwis offersservice
-        List<DeliveryRespondDTO?> offersToSend = new List<DeliveryRespondDTO?>();
+        var offersToSend = new List<DeliveryRespondDTO?>();
         var tasks = new List<Task<DeliveryRespondDTO?>>();
-        tasks.Add(SafeGetOffer(_httpOffersServise.GetOfferFromSzymonApi(deliveryRequestDTO))); //zabezpieczenie przed 404 
+        tasks.Add(SafeGetOffer(
+            _httpOffersServise.GetOfferFromSzymonApi(deliveryRequestDTO))); //zabezpieczenie przed 404 
         tasks.Add(SafeGetOffer(_httpOffersServise.GetOffersFromOurApi(deliveryRequestDTO)));
         var responseparrarel = await Task.WhenAll(tasks);
         offersToSend.AddRange(responseparrarel);
@@ -59,21 +57,15 @@ public class DeliveryRequestService : IDeliveryRequestService
             expiringAt = DateTime.Now.AddDays(1),
             InquiryId = "SomeInquiryId2",
             PriceBreakDown = new List<PriceBreakdown>
-    {
-        new PriceBreakdown { Amount = 90, Currency = "PLN", Description = "Podstawowa cena" },
-        new PriceBreakdown { Amount = 15, Currency = "PLN", Description = "Podatek VAT" },
-        new PriceBreakdown { Amount = 10, Currency = "PLN", Description = "Opłata za dostawę" },
-
-    }
+            {
+                new() { Amount = 90, Currency = "PLN", Description = "Podstawowa cena" },
+                new() { Amount = 15, Currency = "PLN", Description = "Podatek VAT" },
+                new() { Amount = 10, Currency = "PLN", Description = "Opłata za dostawę" }
+            }
         });
 
 
         return offersToSend;
-
-
-
-
-
     }
 
 
@@ -91,9 +83,6 @@ public class DeliveryRequestService : IDeliveryRequestService
     }
 
 
-
-
-
     public DeliveryRequest CreateDeliveryRequest(InquiryDTO deliveryRequestDTO)
     {
         var package = new Package
@@ -102,8 +91,7 @@ public class DeliveryRequestService : IDeliveryRequestService
             Width = deliveryRequestDTO.Package.Width,
             Length = deliveryRequestDTO.Package.Length,
 
-            Weight = deliveryRequestDTO.Package.Weight,
-
+            Weight = deliveryRequestDTO.Package.Weight
         };
         _packageRepository.Add(package);
 
@@ -153,14 +141,13 @@ public class DeliveryRequestService : IDeliveryRequestService
     }
 
 
-
     public void AddOffersToDatabase(DeliveryRespondDTO?[] deliveryRespondDTO, DeliveryRequest lastRequest)
     {
         foreach (var respond in deliveryRespondDTO)
         {
             if (respond == null) continue;
 
-            Offer offer = new Offer
+            var offer = new Offer
             {
                 OfferStatus = OfferStatus.Available,
                 InquiryId = respond.InquiryId,
@@ -168,17 +155,7 @@ public class DeliveryRequestService : IDeliveryRequestService
                 totalPrice = respond.totalPrice,
                 OfferValidity = respond.expiringAt,
                 DeliveryRequest = lastRequest
-
             };
-
-
-
-
-
-
-
         }
-
     }
-
 }

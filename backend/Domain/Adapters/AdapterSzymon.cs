@@ -2,8 +2,6 @@
 
 namespace Domain.Adapters;
 
-
-
 //raczej konwenter nie adapter ale cicho  jak starczy czasu to zmienie strukture kodu na adapter 
 public class SzymonApiAdapter
 {
@@ -28,7 +26,7 @@ public class SzymonApiAdapter
             DeliveryInWeekend = inquiryDTO.WeekendDelivery,
             Priority = inquiryDTO.Priority ? "High" : "Low",
             VipPackage = false,
-            IsCompany = false,
+            IsCompany = false
         };
     }
 }
