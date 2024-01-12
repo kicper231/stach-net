@@ -4,7 +4,7 @@ namespace Domain.Abstractions;
 
 public class OperationResult<T>
 {
-    public T? Data { get; set; } 
+    public T? Data { get; set; }
     public bool Success { get; set; }
     public string ErrorMessage { get; set; } = string.Empty;
 

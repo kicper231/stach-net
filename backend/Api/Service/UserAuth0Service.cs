@@ -1,7 +1,6 @@
 ﻿using Domain.Abstractions;
 using Domain.DTO;
 using Domain.Model;
-using Infrastructure;
 namespace Api.Service;
 
 
@@ -10,7 +9,7 @@ public interface IUserService
 {
     ServiceResult AddUser(DTO_UserFromAuth0 user);
     Task<ServiceResult> AddUserAsync(DTO_UserFromAuth0 user);
-     OperationResult<int> NumberOfLogins();
+    OperationResult<int> NumberOfLogins();
 
 }
 
@@ -23,7 +22,7 @@ public class UserService : IUserService
         var result = repository.NumberOfUserLogins();
         if (!result.Success)
         {
-            
+
         }
         return result;
     }
@@ -50,7 +49,7 @@ public class UserService : IUserService
             AddUser.FirstName = user.FirstName;
             AddUser.Email = user.Email;
             AddUser.LastName = user.LastName;
-            AddUser.CreatedAt= DateTime.Now;
+            AddUser.CreatedAt = DateTime.Now;
             AddUser.NumberOfLogins = 1;
             repository.Add(AddUser);
 

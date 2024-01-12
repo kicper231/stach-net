@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.DTO;
+﻿namespace Domain.DTO;
 
 public class DeliveryRespondDTO
 {
     public string CompanyName { get; set; }
 
-    public decimal Cost { get; set; }
-    public DateTime DeliveryDate { get; set; }
+    public double totalPrice { get; set; }
+    public DateTime expiringAt { get; set; }
     public string InquiryId { get; set; }
 
     public List<PriceBreakdown> PriceBreakDown { get; set; }
@@ -28,5 +22,5 @@ public class ErrorResponse
     public string ErrorMessage { get; set; }
     public string Severity { get; set; }
     public string ErrorCode { get; set; }
-   
+
 }

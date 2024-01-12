@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(ShopperContext))]
-    [Migration("20240108145123_zmianamala")]
-    partial class zmianamala
+    [Migration("20240112165347_zipcode")]
+    partial class zipcode
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,15 +54,15 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("zipCode")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("zipCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("AddressId");
 
@@ -132,11 +132,11 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Domain.Model.DeliveryRequest", b =>
                 {
-                    b.Property<int>("RequestId")
+                    b.Property<int>("DeliveryRequestId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryRequestId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -147,10 +147,10 @@ namespace Api.Migrations
                     b.Property<int>("DestinationAddressId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsCompany")
-                        .HasColumnType("bit");
-
                     b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Priority")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("RequestDate")
@@ -163,17 +163,15 @@ namespace Api.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserAuth0")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UserId")
-                        .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<bool>("VipPackage")
+                    b.Property<bool>("WeekendDelivery")
                         .HasColumnType("bit");
 
-                    b.HasKey("RequestId");
+                    b.HasKey("DeliveryRequestId");
 
                     b.HasIndex("DestinationAddressId");
 
@@ -202,6 +200,10 @@ namespace Api.Migrations
 
                     b.Property<int>("DeliveryRequestId")
                         .HasColumnType("int");
+
+                    b.Property<string>("InquiryId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OfferStatus")
                         .HasColumnType("int");
@@ -238,17 +240,8 @@ namespace Api.Migrations
                     b.Property<double>("Length")
                         .HasColumnType("float");
 
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("WeekendDelivery")
-                        .HasColumnType("bit");
-
                     b.Property<double>("Weight")
                         .HasColumnType("float");
-
-                    b.Property<int>("WeightUnit")
-                        .HasColumnType("int");
 
                     b.Property<double>("Width")
                         .HasColumnType("float");
@@ -338,8 +331,7 @@ namespace Api.Migrations
                     b.HasOne("Domain.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("DestinationAddress");
 

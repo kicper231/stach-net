@@ -1,29 +1,25 @@
 ﻿using Domain.Model;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.VisualBasic;
 
 namespace Infrastructure;
 
- // Zbiory reprezentujące tabele w bazie danych
+// Zbiory reprezentujące tabele w bazie danych
 
-    public class ShopperContext : DbContext
-    {
+public class ShopperContext : DbContext
+{
 
 
-       
-        public DbSet<User> Users { get; set; }
-        public DbSet<Package> Packages { get; set; }
-        public DbSet<Address> Addresses { get; set; }
-        public DbSet<DeliveryRequest> DeliveryRequests { get; set; }
-        public DbSet<Offer> Offers { get; set; }
-        public DbSet<CourierCompany> CourierCompanies { get; set; }
-        public DbSet<Delivery> Deliveries { get; set; }
-        
-        public ShopperContext(DbContextOptions options) : base(options) { }
+
+    public DbSet<User> Users { get; set; }
+    public DbSet<Package> Packages { get; set; }
+    public DbSet<Address> Addresses { get; set; }
+    public DbSet<DeliveryRequest> DeliveryRequests { get; set; }
+    public DbSet<Offer> Offers { get; set; }
+    public DbSet<CourierCompany> CourierCompanies { get; set; }
+    public DbSet<Delivery> Deliveries { get; set; }
+
+    public ShopperContext(DbContextOptions options) : base(options) { }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,7 +27,7 @@ namespace Infrastructure;
         // Package
         modelBuilder.Entity<Package>()
             .HasKey(p => p.PackageId);
-       
+
         modelBuilder.Entity<Package>()
             .Property(p => p.Weight)
             .IsRequired();
@@ -62,8 +58,8 @@ namespace Infrastructure;
      .HasOne(dr => dr.User)
      .WithMany()
      .HasForeignKey(dr => dr.UserId)
-     .IsRequired(false)  
-     .OnDelete(DeleteBehavior.Restrict); 
+     .IsRequired(false)
+     .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<DeliveryRequest>()
             .HasOne(dr => dr.Package)
@@ -90,7 +86,7 @@ namespace Infrastructure;
             .WithMany()
             .HasForeignKey(o => o.CourierCompanyId);
         modelBuilder.Entity<Offer>()
-            .Property(o => o.Price)
+            .Property(o => o.totalPrice)
             .HasColumnType("decimal(18, 2)")
             .IsRequired();
         modelBuilder.Entity<Offer>()
@@ -146,7 +142,7 @@ namespace Infrastructure;
         modelBuilder.Entity<Offer>()
             .HasIndex(o => o.CourierCompanyId);
 
-       
+
         modelBuilder.Entity<Delivery>()
             .HasIndex(d => d.CourierId);
 
@@ -156,11 +152,10 @@ namespace Infrastructure;
 
         //data seed 
 
-    //    modelBuilder.Entity<User>().HasData(
-    //    new User {  Auth0Id = "auth0-id-1", FirstName = "Jan", LastName = "Kowalski", Email = "jan.kowalski@example.com" },
-    //    new User { Auth0Id = "auth0-id-2", FirstName = "Anna", LastName = "Nowak", Email = "anna.nowak@example.com" }
-       
-    //);
+        modelBuilder.Entity<CourierCompany>().HasData(
+            new CourierCompany { CourierCompanyId = 1, Name = "StachnetCompany", ContactInfo = "https://courierapistachnet.azurewebsites.net/api", CreatedAt = DateAndTime.Now },
+            new CourierCompany { CourierCompanyId = 2, Name = "SzymonCompany", ContactInfo = "https://mini.currier.api.snet.com.pl", CreatedAt = DateAndTime.Now }
+        ); ;
     }
 
 

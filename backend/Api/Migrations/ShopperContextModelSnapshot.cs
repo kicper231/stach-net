@@ -90,6 +90,22 @@ namespace Api.Migrations
                     b.HasKey("CourierCompanyId");
 
                     b.ToTable("CourierCompanies");
+
+                    b.HasData(
+                        new
+                        {
+                            CourierCompanyId = 1,
+                            ContactInfo = "https://courierapistachnet.azurewebsites.net/api",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "StachnetCompany"
+                        },
+                        new
+                        {
+                            CourierCompanyId = 2,
+                            ContactInfo = "https://mini.currier.api.snet.com.pl",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "SzymonCompany"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Model.Delivery", b =>
@@ -208,7 +224,7 @@ namespace Api.Migrations
                     b.Property<DateTime>("OfferValidity")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Price")
+                    b.Property<decimal>("totalPrice")
                         .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("OfferId");

@@ -1,6 +1,5 @@
 ﻿using Domain.Abstractions;
 using Domain.Model;
-using Infrastructure;
 namespace Infrastructure;
 
 public class DbRequestRepository : IDeliveryRequestRepository

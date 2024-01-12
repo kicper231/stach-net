@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
-using Domain.Model;
+using Api.Service;
 using Domain.Abstractions;
 using Domain.DTO;
-using Api.Service;
+using Domain.Model;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 public class LoginResult
 {
@@ -13,8 +13,8 @@ public class LoginResult
 namespace Api.Controllers
 {
     [Route("api/users")]
-    [ApiController] 
-    [Produces("application/json")] 
+    [ApiController]
+    [Produces("application/json")]
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository repository;
@@ -26,19 +26,19 @@ namespace Api.Controllers
             this.userService = userService;
         }
 
-      
+
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)] 
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<List<User>> GetAll()
         {
             var users = repository.GetAll();
             return Ok(users);
         }
 
-       
+
         [HttpGet("{id}", Name = "GetUserById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)] 
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<User> GetById(string id)
         {
             var user = repository.GetByAuth0Id(id);
@@ -49,11 +49,11 @@ namespace Api.Controllers
             return Ok(user);
         }
 
-      
+
         [HttpPost]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status201Created)] 
-        [ProducesResponseType(StatusCodes.Status400BadRequest)] 
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<User>> Create([FromBody] DTO_UserFromAuth0 user)
         {
             var result = await userService.AddUserAsync(user);
@@ -68,7 +68,7 @@ namespace Api.Controllers
             }
         }
 
-        
+
         [HttpGet("ActiveUsers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
