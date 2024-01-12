@@ -49,7 +49,7 @@ namespace Api.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<string>("PostalCode")
+                    b.Property<string>("zipCode")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");

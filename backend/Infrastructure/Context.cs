@@ -48,7 +48,7 @@ namespace Infrastructure;
             .HasMaxLength(100)
             .IsRequired();
         modelBuilder.Entity<Address>()
-            .Property(a => a.PostalCode)
+            .Property(a => a.zipCode)
             .HasMaxLength(20)
             .IsRequired();
         modelBuilder.Entity<Address>()
