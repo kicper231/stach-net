@@ -60,6 +60,18 @@ public class InquiriesController : ControllerBase
         //    return BadRequest(errors);
         //}
         //{ // dla stacha
+        if (!ModelState.IsValid || DRDTO == null)
+        {
+            return BadRequest("Nieprawidłowe dane wejściowe"); // Bad Request, ponieważ model nie spełnia warunków
+        }
+
+
+        if (DRDTO.Package.Weight>=1000)
+        {
+            return BadRequest("Zbyt duża waga paczki"); 
+        }
+
+
         var response = await _Deliveryservice.GetOffers(DRDTO);
         if (response != null)
             return Ok(response); // Sukces
