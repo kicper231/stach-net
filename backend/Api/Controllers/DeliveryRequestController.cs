@@ -70,7 +70,10 @@ public class InquiriesController : ControllerBase
         {
             return BadRequest("Zbyt duża waga paczki"); 
         }
-
+        if (DRDTO.Package.Height>1000|| DRDTO.Package.Length > 1000 || DRDTO.Package.Width > 1000 )
+        {
+            return BadRequest("Zbyt duże wymiary paczki");
+        }
 
         var response = await _Deliveryservice.GetOffers(DRDTO);
         if (response != null)
