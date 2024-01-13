@@ -23,15 +23,15 @@ public class OfferService : IOfferService
         _httpTokenSzymonClient = clientFactory.CreateClient("SzymonToken");
     }
 
-    public async Task<string> GetTokenAsync()
+    public async Task<string> GetTokenAsync(string companyName)
     {
-        var tokenRequest = new HttpRequestMessage(HttpMethod.Post, _settings.TokenEndpoint)
+        var tokenRequest = new HttpRequestMessage(HttpMethod.Post, _settings.TokenEndpointSzymon)
         {
             Content = new FormUrlEncodedContent(new Dictionary<string, string>
             {
                 ["grant_type"] = "client_credentials",
-                ["client_id"] = _settings.ClientId,
-                ["client_secret"] = _settings.ClientSecret,
+                ["client_id"] = _settings.ClientIdSzymon,
+                ["client_secret"] = _settings.ClientSecretSzymon,
                 ["scope"] = _settings.Scope
             })
         };
@@ -60,9 +60,38 @@ public class OfferService : IOfferService
         return respond;
     }
 
-    public async Task<OfferRespondDTO> GetOfferSzymonID(OfferDTO a)
+    public async Task<OfferRespondDTO> GetOfferSzymonID(OfferDTO offerdto)
     {
-        return default;
+
+        OfferOurApiDTO data = new OfferOurApiDTO
+        {
+            Address = offerdto.Address,
+            Name = offerdto.Name,
+            InquiryId = offerdto.InquiryId,
+            Email = offerdto.Email
+
+        };
+
+        var inquirymessage = new HttpRequestMessage(HttpMethod.Post, $"{_httpSzymonClientOffer.BaseAddress}Offers")
+        {
+            Content = JsonContent.Create(data)
+        };
+
+
+        var accessToken = await GetTokenAsync("SzymonCompany");
+
+        inquirymessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        var response = await _httpSzymonClientOffer.SendAsync(inquirymessage);
+        response.EnsureSuccessStatusCode();
+        var responseBody = await response.Content.ReadAsStringAsync();
+        
+
+        var respond = await response.Content.ReadFromJsonAsync<OfferRespondDTO>();
+        
+
+
+        return respond;
     }
 
 

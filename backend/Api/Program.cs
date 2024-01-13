@@ -51,7 +51,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var OurUrl = $"{builder.Configuration["CourierApi:UrlLocal"]}"; //Url lub Urllocal
 var SzymonUrl = $"{builder.Configuration["IdentityManager:Url"]}";
-var TokenSzymonUrl = $"{builder.Configuration["IdentityManager:TokenEndpoint"]}";
+var TokenSzymonUrl = $"{builder.Configuration["IdentityManager:TokenEndpointSzymon"]}";
 
 builder.Services.AddHttpClient("OurClient", client => { client.BaseAddress = new Uri($"{OurUrl}"); });
 

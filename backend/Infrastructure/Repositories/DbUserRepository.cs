@@ -22,7 +22,7 @@ public class DbUserRepository : IUserRepository
         }
         catch (Exception ex)
         {
-            return OperationResult<int>.CreateFailure("Error occurred retrieving the number of logins.");
+            return OperationResult<int>.CreateFailure($"Error occurred retrieving the number of logins. {ex.Message} ");
         }
     }
 
