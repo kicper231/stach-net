@@ -9,7 +9,7 @@ export default function LandingPage() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${config.serverUri}/api/users/ActiveUsers`
+          `${config.serverUri}/users/activeusers`
         );
         setData(response.data);
       } catch (error) {

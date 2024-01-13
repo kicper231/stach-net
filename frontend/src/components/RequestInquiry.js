@@ -1,9 +1,10 @@
+import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { config } from "../config-development";
 
 export function RequestInquiry() {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     userAuth0: "TOKEN",
     package: {
@@ -17,7 +18,7 @@ export function RequestInquiry() {
       apartmentNumber: "",
       street: "Lubelska",
       city: "Lublin",
-      postalCode: "20-000",
+      zipCode: "20-000",
       country: "Polska",
     },
     destinationAddress: {
@@ -25,7 +26,7 @@ export function RequestInquiry() {
       apartmentNumber: "304",
       street: "Nowowiejska",
       city: "Warszawa",
-      postalCode: "000-00",
+      zipCode: "000-00",
       country: "Polska",
     },
     deliveryDate: "2024-02-29",
@@ -61,9 +62,21 @@ export function RequestInquiry() {
   };
 
   const handleSend = async () => {
-    // Send data logic
+    try {
+      const promise = axios.post(`${config.serverUri}/sendinquiry`, formData);
 
-    navigate("/delivery-request/offers", { state: { requestData: formData } });
+      navigate("/delivery-request/offers", {
+        state: { requestData: formData },
+      });
+
+      const response = await promise;
+
+      navigate("/delivery-request/offers", {
+        state: { requestData: formData, offers: response.data },
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -151,11 +164,11 @@ export function RequestInquiry() {
       </label>
       <br />
       <label>
-        postal code:
+        zip code:
         <input
           type="text"
-          name="postalCode"
-          value={formData.sourceAddress.postalCode}
+          name="zipCode"
+          value={formData.sourceAddress.zipCode}
           onChange={(e) => handleChange(e, "sourceAddress")}
         />
       </label>
@@ -212,11 +225,11 @@ export function RequestInquiry() {
       </label>
       <br />
       <label>
-        postal code:
+        zip code:
         <input
           type="text"
-          name="postalCode"
-          value={formData.destinationAddress.postalCode}
+          name="zipCode"
+          value={formData.destinationAddress.zipCode}
           onChange={(e) => handleChange(e, "destinationAddress")}
         />
       </label>
