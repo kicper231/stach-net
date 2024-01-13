@@ -28,7 +28,7 @@ export default function NavBar() {
         {isAuthenticated && AuthService.isCourier(user) && (
           <button
             onClick={() => {
-              /* Courier logic */
+              /* TODO Courier logic */
             }}
           >
             Courier
@@ -38,7 +38,7 @@ export default function NavBar() {
         {isAuthenticated && AuthService.isClient(user) && (
           <button
             onClick={() => {
-              /* Client logic */
+              /* TODO Client logic */
             }}
           >
             Client

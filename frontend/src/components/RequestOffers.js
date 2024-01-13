@@ -1,36 +1,25 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { config } from "../config-development";
 
 export function RequestOffers() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [offers, setOffers] = useState();
   const [noDataError, setNoDataError] = useState(false);
+  const [offers, setOffers] = useState(location.state.offers);
 
   useEffect(() => {
     const fetchData = async () => {
-      const requestData = location.state?.requestData;
+      const requestData = location.state.requestData;
 
       if (!requestData) {
         setNoDataError(true);
         return;
       }
-
-      try {
-        const response = await axios.post(
-          `${config.serverUri}/api/requestdelivery`,
-          requestData
-        );
-        setOffers(response.data);
-      } catch (error) {
-        console.error(error);
-      }
     };
 
     fetchData();
-  });
+    setOffers(location.state.offers);
+  }, [location.state.offers, location.state.requestData]);
 
   function offersList() {
     return (
@@ -47,7 +36,8 @@ export function RequestOffers() {
                 })
               }
             >
-              {offer.companyName} ({offer.price} PLN)
+              {offer.companyName} ({offer.totalPrice} PLN){" "}
+              {/* TODO Add currency to totalPrice */}
             </li>
           ))}
         </ul>
