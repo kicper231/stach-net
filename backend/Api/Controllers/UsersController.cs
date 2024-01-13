@@ -12,7 +12,7 @@ public class LoginResult
 
 namespace Api.Controllers
 {
-    [Route("api/users")]
+    [Route("users")]
     [ApiController]
     [Produces("application/json")]
     public class UsersController : ControllerBase
@@ -47,8 +47,8 @@ namespace Api.Controllers
         }
 
 
-        [HttpPost]
-        [Authorize]
+        [HttpPost("auth0add")]
+        //[Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<User>> Create([FromBody] DTO_UserFromAuth0 user)
@@ -61,7 +61,7 @@ namespace Api.Controllers
         }
 
 
-        [HttpGet("ActiveUsers")]
+        [HttpGet("activeusers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<LoginResult> GetNumberOfLogins()

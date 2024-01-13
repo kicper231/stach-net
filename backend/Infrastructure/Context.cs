@@ -161,6 +161,6 @@ public class ShopperContext : DbContext
                 CreatedAt = DateAndTime.Now
             }
         );
-        ;
+        
     }
 }

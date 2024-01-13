@@ -19,7 +19,7 @@ builder.Services.AddSingleton<IUserRepository, FakeUserRepository>();
 
 
 //builder.Services.AddScoped<IUserRepository, DbUserRepository>();
-builder.Services.AddScoped<IInquiries, Inquiries>();
+builder.Services.AddScoped<IDeliveryRequest, Inquiries>();
 //builder.Services.AddDbContextFactory<ShopperContext>(options =>
 //    options.UseSqlServer(
 //        builder.Configuration.GetConnectionString("HostowanaBaza"),

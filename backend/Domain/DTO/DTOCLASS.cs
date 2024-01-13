@@ -39,14 +39,7 @@ public class PackageDTO
 }
 
 /// odebranie inquires od api
-public class OffertDTO
-{
-    public string InquiryId { get; set; }
-    public decimal TotalPrice { get; set; }
-    public string Currency { get; set; }
-    public DateTime ExpiringAt { get; set; }
-    public List<PriceBreakdown> PriceBreakDown { get; set; }
-}
+
 
 public class PriceBreakdown
 {

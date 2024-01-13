@@ -1,17 +1,18 @@
 ﻿using Domain.DTO;
 using Domain.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 
 namespace Api.Service
 {
-    public interface IInquiries
+    public interface IDeliveryRequest
     {
         //List<DeliveryRequestDTO> GetUserDeliveryRequests(string userId);
-
+        OfferRespondDTO AcceptOffer(OfferDTO offer);
         InquiryDTO GetOffers(DeliveryRequestDTO deliveryRequest);
 
     }
-    public class Inquiries : IInquiries
+    public class Inquiries : IDeliveryRequest
     {
 
        public InquiryDTO GetOffers(DeliveryRequestDTO deliveryRequest)
@@ -35,6 +36,12 @@ namespace Api.Service
         }
 
 
+
+
+        public OfferRespondDTO AcceptOffer(OfferDTO offer)
+        {
+            return new OfferRespondDTO { OfferRequestId = new Guid("26967244-cdcf-4df6-92c0-bbb4e5687074"), ValidTo = DateAndTime.Now };
+        }
     }
 
 }

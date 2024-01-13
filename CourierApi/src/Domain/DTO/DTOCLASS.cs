@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -67,3 +68,50 @@ public class PriceBreakdown
     public string Currency { get; set; }
     public string Description { get; set; }
 }
+
+
+
+
+
+
+
+
+public class OfferDTO
+{
+   // public string Auth0Id { get; set; }
+    public string InquiryId { get; set; }
+    public string CompanyName { get; set; }
+
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public AddressDTO Address { get; set; }
+}
+
+
+
+public class OfferOurApiRespondDTO
+{
+    public Guid OfferRequestId { get; set; }
+    // public DateTime ValidTo { get; set; }
+}
+
+public class OfferOurApiDTO
+{
+   // public string Auth0Id { get; set; }
+    public string InquiryId { get; set; }
+    public string CompanyName { get; set; }
+
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public AddressDTO Address { get; set; }
+}
+
+
+
+public class OfferRespondDTO
+{
+    public Guid OfferRequestId { get; set; }
+    public DateTime ValidTo { get; set; }
+}
+
+

@@ -12,11 +12,11 @@ namespace Api.Controllers;
 //[Authorize] 
 public class InquiriesController : ControllerBase
 {
-    private readonly IDeliveryRequestService _inquiryservice;
+    private readonly IDeliveryRequestService _Deliveryservice;
 
     public InquiriesController(IDeliveryRequestService deliveryRequestService)
     {
-        _inquiryservice = deliveryRequestService;
+        _Deliveryservice = deliveryRequestService;
     }
 
     [HttpGet("getmyinquries")]
@@ -27,15 +27,15 @@ public class InquiriesController : ControllerBase
 
         if (string.IsNullOrEmpty(userId)) return Unauthorized("Brak identyfikatora użytkownika.");
 
-        var deliveryRequests = _inquiryservice.GetUserDeliveryRequests(userId);
+        var deliveryRequests = _Deliveryservice.GetUserDeliveryRequests(userId);
         return Ok(deliveryRequests);
     }
 
 
     [HttpPost("sendinquiry")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DeliveryRespondDTO))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(InquiryRespondDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
-    public async Task<ActionResult<DeliveryRespondDTO>> SendDeliveryRequest([FromBody] InquiryDTO DRDTO)
+    public async Task<ActionResult<InquiryRespondDTO>> SendDeliveryRequest([FromBody] InquiryDTO DRDTO)
     {
         //try if (DRDTO != null && DRDTO.Weight == 1000)
         //if (DRDTO != null && DRDTO.Package.Weight > 1000)
@@ -60,7 +60,7 @@ public class InquiriesController : ControllerBase
         //    return BadRequest(errors);
         //}
         //{ // dla stacha
-        var response = await _inquiryservice.GetOffers(DRDTO);
+        var response = await _Deliveryservice.GetOffers(DRDTO);
         if (response != null)
             return Ok(response); // Sukces
         return NotFound("Nie znaleziono ofert.");
@@ -75,4 +75,23 @@ public class InquiriesController : ControllerBase
         //    return StatusCode(404, $"{ex.Message}");
         //}
     }
+
+
+    [HttpPost("acceptoffer")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OfferRespondDTO))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
+    public async Task<IActionResult> AcceptedOffer([FromBody] OfferDTO ODTO )
+    {
+
+        try
+        {
+            var respond = await _Deliveryservice.acceptoffer(ODTO);
+            return Ok(respond);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        };
+    }
+
 }
