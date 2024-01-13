@@ -12,22 +12,29 @@ namespace Api.Controllers;
 //[Authorize] 
 public class InquiriesController : ControllerBase
 {
-    private readonly IDeliveryRequestService _Deliveryservice;
+    private readonly IDeliveryRequestService _deliveryservice;
 
     public InquiriesController(IDeliveryRequestService deliveryRequestService)
     {
-        _Deliveryservice = deliveryRequestService;
+        _deliveryservice = deliveryRequestService;
     }
 
-    [HttpGet("getmyinquries")]
-    [Authorize]
-    public ActionResult<List<DeliveryRequest>> GetMyDeliveryRequests()
+    [HttpGet("getmyinquiries/{idAuth0}")]
+    //[Authorize]
+    public ActionResult<List<UserInquiryDTO>> GetMyDeliveryRequests(string idAuth0)
     {
-        var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(idAuth0))
+        {
+            return BadRequest("Auth0 id użytkownika jest wymagane.");
+        }
 
-        if (string.IsNullOrEmpty(userId)) return Unauthorized("Brak identyfikatora użytkownika.");
+       
+        if (!_deliveryservice.UserExists(idAuth0))
+        {
+            return NotFound("Nie ma takiego uzytkownika.");
+        }
 
-        var deliveryRequests = _Deliveryservice.GetUserDeliveryRequests(userId);
+        var deliveryRequests = _deliveryservice.GetUserDeliveryRequests(idAuth0);
         return Ok(deliveryRequests);
     }
 
@@ -60,7 +67,7 @@ public class InquiriesController : ControllerBase
         //    return BadRequest(errors);
         //}
         //{ // dla stacha
-        var response = await _Deliveryservice.GetOffers(DRDTO);
+        var response = await _deliveryservice.GetOffers(DRDTO);
         if (response != null)
             return Ok(response); // Sukces
         return NotFound("Nie znaleziono ofert.");
@@ -85,7 +92,7 @@ public class InquiriesController : ControllerBase
 
         try
         {
-            var respond = await _Deliveryservice.acceptoffer(ODTO);
+            var respond = await _deliveryservice.acceptoffer(ODTO);
             return Ok(respond);
         }
         catch (KeyNotFoundException ex)

@@ -5,8 +5,10 @@ namespace Api.Service;
 
 public interface IDeliveryRequestService
 {
-    List<DeliveryRequest> GetUserDeliveryRequests(string userId);
+    List<UserInquiryDTO> GetUserDeliveryRequests(string userId);
 
     Task<List<InquiryRespondDTO>> GetOffers(InquiryDTO deliveryRequest);
     Task<OfferRespondDTO> acceptoffer(OfferDTO offerDTO);
+
+    bool UserExists(string idAuth0);
 }

@@ -1,4 +1,5 @@
 ﻿using Domain.DTO;
+using Domain.Model;
 
 namespace Domain.Adapters;
 
@@ -27,6 +28,37 @@ public class SzymonApiAdapter
             Priority = inquiryDTO.Priority ? "High" : "Low",
             VipPackage = false,
             IsCompany = false
+        };
+    }
+
+
+
+    public AddressDTO ConvertToAddressDTO(Address address)
+    {
+        if (address == null) return null;
+
+        return new AddressDTO
+        {
+            HouseNumber = address.HouseNumber,
+            ApartmentNumber = address.ApartmentNumber,
+            Street = address.Street,
+            City = address.City,
+            zipCode = address.zipCode,
+            Country = address.Country
+        };
+    }
+
+  
+    public PackageDTO ConvertToPackageDTO(Package package)
+    {
+        if (package == null) return null;
+
+        return new PackageDTO
+        {
+            Width = package.Width,
+            Height = package.Height,
+            Length = package.Length,
+            Weight = package.Weight
         };
     }
 }

@@ -6,6 +6,8 @@ using SendGrid.Helpers.Mail;
 using SendGrid;
 using Microsoft.VisualBasic;
 using System.Reflection.Metadata.Ecma335;
+using Domain.Adapters;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Service;
 
@@ -19,6 +21,7 @@ public class DeliveryRequestService : IDeliveryRequestService
     private readonly IUserRepository _userRepository;
     private readonly IOfferService _offerService;
     private readonly IOfferRepository _offerRepository;
+   
 
     public DeliveryRequestService(IDeliveryRequestRepository repository, IUserRepository repositoryuser,
         IPackageRepository repositorypackage, IAddressRepository repositoryaddress, IInquiryService httpService,
@@ -34,10 +37,30 @@ public class DeliveryRequestService : IDeliveryRequestService
         _offerRepository = offerRepository;
     }
 
-    public List<DeliveryRequest> GetUserDeliveryRequests(string userId)
+    public List<UserInquiryDTO> GetUserDeliveryRequests(string userId)
     {
-        return _repository.GetDeliveryRequestsByUserId(userId);
+
+        var user = _userRepository.GetByAuth0Id(userId);
+        
+        var deliveryRequests = _repository.GetDeliveryRequestsByUserId(userId);
+        SzymonApiAdapter _adapter = new SzymonApiAdapter();
+
+
+
+        return deliveryRequests.Select(dr => new UserInquiryDTO
+        {
+            Package = _adapter.ConvertToPackageDTO(dr.Package),
+            SourceAddress = _adapter.ConvertToAddressDTO(dr.SourceAddress),
+            DestinationAddress = _adapter.ConvertToAddressDTO(dr.DestinationAddress),
+            DeliveryDate = dr.DeliveryDate,
+            CreatedTime = dr.CreatedAt,
+            WeekendDelivery = dr.WeekendDelivery,
+            Priority = dr.Priority
+        }).ToList();
     }
+
+    
+
 
     public async Task<List<InquiryRespondDTO?>> GetOffers(InquiryDTO deliveryRequestDTO)
     {
@@ -225,5 +248,12 @@ public class DeliveryRequestService : IDeliveryRequestService
         //var response = await client.SendEmailAsync(msg);
     }
 
+
+
+    public bool UserExists(string idAuth0)
+    {
+        var user = _userRepository.GetByAuth0Id(idAuth0);
+        return user != null;
+    }
 
 }
