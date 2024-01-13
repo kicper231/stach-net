@@ -24,18 +24,38 @@ public class InquiryService : IInquiryService
         _httpTokenSzymonClient = clientFactory.CreateClient("SzymonToken");
     }
 
-    public async Task<string> GetTokenAsync()
+    public async Task<string?> GetTokenAsync(string companyname)
     {
-        var tokenRequest = new HttpRequestMessage(HttpMethod.Post, _settings.TokenEndpoint)
+        HttpRequestMessage? tokenRequest = null;  
+
+        switch (companyname)
         {
-            Content = new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                ["grant_type"] = "client_credentials",
-                ["client_id"] = _settings.ClientId,
-                ["client_secret"] = _settings.ClientSecret,
-                ["scope"] = _settings.Scope
-            })
-        };
+            case "StachnetCompany":
+             
+                break;
+
+            case "SzymonCompany":
+                tokenRequest = new HttpRequestMessage(HttpMethod.Post, _settings.TokenEndpointSzymon)
+                {
+                    Content = new FormUrlEncodedContent(new Dictionary<string, string>
+                    {
+                        ["grant_type"] = "client_credentials",
+                        ["client_id"] = _settings.ClientIdSzymon,
+                        ["client_secret"] = _settings.ClientSecretSzymon,
+                        ["scope"] = _settings.Scope
+                    })
+                };
+                break;
+
+            default:
+                throw new ArgumentException("Nieznana nazwa firmy", nameof(companyname));
+        }
+
+        if (tokenRequest == null)
+        {
+            throw new InvalidOperationException("TokenRequest nie został zainicjowany");
+        }
+
 
         var tokenResponse = await _httpTokenSzymonClient.SendAsync(tokenRequest);
         tokenResponse.EnsureSuccessStatusCode();
@@ -75,7 +95,7 @@ public class InquiryService : IInquiryService
         };
 
 
-        var accessToken = await GetTokenAsync();
+        var accessToken = await GetTokenAsync("SzymonCompany");
 
         inquirymessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 

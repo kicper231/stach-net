@@ -2,7 +2,7 @@
 
 namespace Domain.Adapters;
 
-//raczej konwenter nie adapter ale cicho  jak starczy czasu to zmienie strukture kodu na adapter 
+//raczej konwenter nie adapter ale cicho  jak starczy czasu to zmienie strukture kodu na adapter // jak bede wiedzial jak 
 public class SzymonApiAdapter
 {
     public InquiryToSzymonDTO ConvertToInquiryToSzymonDTO(InquiryDTO inquiryDTO)
