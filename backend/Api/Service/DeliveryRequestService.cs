@@ -2,6 +2,10 @@
 using Domain.DTO;
 using Domain.Model;
 using Infrastructure;
+using SendGrid.Helpers.Mail;
+using SendGrid;
+using Microsoft.VisualBasic;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Api.Service;
 
@@ -9,14 +13,16 @@ public class DeliveryRequestService : IDeliveryRequestService
 {
     private readonly IAddressRepository _addressRepository;
     private readonly ICourierCompanyRepository _courierCompanyRepository;
-    private readonly IOfferService _httpOffersServise;
+    private readonly IInquiryService _httpOffersServise;
     private readonly IPackageRepository _packageRepository;
     private readonly IDeliveryRequestRepository _repository;
     private readonly IUserRepository _userRepository;
+    private readonly IOfferService _offerService;
+    private readonly IOfferRepository _offerRepository;
 
     public DeliveryRequestService(IDeliveryRequestRepository repository, IUserRepository repositoryuser,
-        IPackageRepository repositorypackage, IAddressRepository repositoryaddress, IOfferService httpService,
-        ICourierCompanyRepository courierCompanyRepository)
+        IPackageRepository repositorypackage, IAddressRepository repositoryaddress, IInquiryService httpService,
+        ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository)
     {
         _repository = repository;
         _userRepository = repositoryuser;
@@ -24,6 +30,8 @@ public class DeliveryRequestService : IDeliveryRequestService
         _addressRepository = repositoryaddress;
         _httpOffersServise = httpService;
         _courierCompanyRepository = courierCompanyRepository;
+        _offerService = offerService;
+        _offerRepository = offerRepository;
     }
 
     public List<DeliveryRequest> GetUserDeliveryRequests(string userId)
@@ -31,17 +39,17 @@ public class DeliveryRequestService : IDeliveryRequestService
         return _repository.GetDeliveryRequestsByUserId(userId);
     }
 
-    public async Task<List<DeliveryRespondDTO?>> GetOffers(InquiryDTO deliveryRequestDTO)
+    public async Task<List<InquiryRespondDTO?>> GetOffers(InquiryDTO deliveryRequestDTO)
     {
         // dodanie do bazy danych requestu
         var addedRequestDelivery = CreateDeliveryRequest(deliveryRequestDTO);
-
+        if(deliveryRequestDTO.UserAuth0!=null)
+        SendMailToLoggedUser(deliveryRequestDTO.UserAuth0);
 
         //obsluga rownoległosci i zapytań wykorzystujac serwis offersservice
-        var offersToSend = new List<DeliveryRespondDTO?>();
-        var tasks = new List<Task<DeliveryRespondDTO?>>();
-        tasks.Add(SafeGetOffer(
-            _httpOffersServise.GetOfferFromSzymonApi(deliveryRequestDTO))); //zabezpieczenie przed 404 
+        var offersToSend = new List<InquiryRespondDTO?>();
+        var tasks = new List<Task<InquiryRespondDTO?>>();
+        tasks.Add(SafeGetOffer(_httpOffersServise.GetOfferFromSzymonApi(deliveryRequestDTO))); //zabezpieczenie przed 404 
         tasks.Add(SafeGetOffer(_httpOffersServise.GetOffersFromOurApi(deliveryRequestDTO)));
         var responseparrarel = await Task.WhenAll(tasks);
         offersToSend.AddRange(responseparrarel);
@@ -50,7 +58,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         AddOffersToDatabase(responseparrarel, addedRequestDelivery);
 
         //3 oferta na razie przykladowa
-        offersToSend.Add(new DeliveryRespondDTO
+        offersToSend.Add(new InquiryRespondDTO
         {
             CompanyName = "Company C",
             totalPrice = 120,
@@ -69,7 +77,44 @@ public class DeliveryRequestService : IDeliveryRequestService
     }
 
 
-    private async Task<DeliveryRespondDTO?> SafeGetOffer(Task<DeliveryRespondDTO> task)
+    public async Task<OfferRespondDTO?> acceptoffer(OfferDTO offerDTO)
+    {
+         //przypisanie uzytkownika jesli zalogowal sie w czasie lub po porostu podeslal 
+        if(offerDTO.Auth0Id!=null&& _userRepository.GetByAuth0Id(offerDTO.Auth0Id) != null)
+        {
+           _offerRepository.GetByInquiryId(offerDTO.InquiryId).DeliveryRequest.User=_userRepository.GetByAuth0Id(offerDTO.Auth0Id);
+        }
+        
+        
+        OfferRespondDTO? respond = default;
+
+        // jako ze są tylk 3 firmy zaimplementuje to bez adapter i fabryki (jak starczy czas) 
+        switch (offerDTO.CompanyName)
+        {
+            case "SzymonCompany":
+                {
+                   respond = await _offerService.GetOfferSzymonID(offerDTO);
+                    break;
+                }
+
+            case "StachnetCompany":
+                {
+                   respond = await _offerService.GetOfferOurID(offerDTO);
+                    break;
+                }
+
+            default:
+                throw new KeyNotFoundException("Nie znaleziono firmy: " + offerDTO.CompanyName);
+
+        }
+       
+      
+
+        return respond;
+    }
+
+    // otoczka dla odpowiedzi gdyby 404 nie wylapuje teog 
+    private async Task<InquiryRespondDTO?> SafeGetOffer(Task<InquiryRespondDTO> task)
     {
         try
         {
@@ -123,7 +168,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         var deliveryRequest = new DeliveryRequest
         {
             UserAuth0 = deliveryRequestDTO.UserAuth0,
-            // User = null,
+            User = deliveryRequestDTO.UserAuth0 != null ? _userRepository.GetByAuth0Id(deliveryRequestDTO.UserAuth0) : null,
             DeliveryDate = deliveryRequestDTO.DeliveryDate,
             Status = DeliveryRequestStatus.Pending,
 
@@ -140,10 +185,10 @@ public class DeliveryRequestService : IDeliveryRequestService
         return deliveryRequest;
     }
 
-
-    public void AddOffersToDatabase(DeliveryRespondDTO?[] deliveryRespondDTO, DeliveryRequest lastRequest)
+    // dodawnanie oferty do bazy danych 
+    public void AddOffersToDatabase(InquiryRespondDTO?[] InquiryRespondDTO, DeliveryRequest lastRequest)
     {
-        foreach (var respond in deliveryRespondDTO)
+        foreach (var respond in InquiryRespondDTO)
         {
             if (respond == null) continue;
 
@@ -154,8 +199,29 @@ public class DeliveryRequestService : IDeliveryRequestService
                 CourierCompany = _courierCompanyRepository.GetByName($"{respond.CompanyName}"),
                 totalPrice = respond.totalPrice,
                 OfferValidity = respond.expiringAt,
-                DeliveryRequest = lastRequest
+                DeliveryRequest = lastRequest,
+                
             };
+            _offerRepository.Add(offer);
+
         }
     }
+
+
+
+
+    public async void SendMailToLoggedUser(string userid)
+    {
+        // api do wysylania mail send grid nie chce dac nam konta xddd
+        //var client = new SendGridClient("twój_klucz_api");
+        //var from = new EmailAddress("test@example.com", "Example User");
+        //var subject = "Sending with SendGrid is Fun";
+        //var to = new EmailAddress("test@example.com", "Example User");
+        //var plainTextContent = "and easy to do anywhere, even with C#";
+        //var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
+        //var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+        //var response = await client.SendEmailAsync(msg);
+    }
+
+
 }

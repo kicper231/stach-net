@@ -7,5 +7,6 @@ public interface IDeliveryRequestService
 {
     List<DeliveryRequest> GetUserDeliveryRequests(string userId);
 
-    Task<List<DeliveryRespondDTO>> GetOffers(InquiryDTO deliveryRequest);
+    Task<List<InquiryRespondDTO>> GetOffers(InquiryDTO deliveryRequest);
+    Task<OfferRespondDTO> acceptoffer(OfferDTO offerDTO);
 }

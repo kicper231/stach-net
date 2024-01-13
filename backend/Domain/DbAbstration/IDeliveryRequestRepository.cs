@@ -1,6 +1,6 @@
 ﻿using Domain.Model;
 
-namespace Domain.Abstractions;
+namespace Domain. Abstractions;
 
 public interface IDeliveryRequestRepository
 {

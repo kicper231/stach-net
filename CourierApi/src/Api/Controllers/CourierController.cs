@@ -8,23 +8,33 @@ using Api.Service;
 namespace Api.Controllers
 {
 
-    [Route("inquiries")]
+    
     [ApiController]
     public class CourierController : ControllerBase
     {
-        private readonly IInquiries _deliveryRequestService;
-        public CourierController(IInquiries deliveryRequestService)
+        private readonly IDeliveryRequest _deliveryRequestService;
+        public CourierController(IDeliveryRequest deliveryRequestService)
         {
             _deliveryRequestService = deliveryRequestService;
         }
         // GET: api/<ValuesController>
-        [HttpPost]
+        [HttpPost("inquiries")]
         public async Task<ActionResult<InquiryDTO>> SendDeliveryRequest([FromBody] DeliveryRequestDTO DRDTO)
         {
             // Your existing code
             var response =  _deliveryRequestService.GetOffers(DRDTO);
 
             return Ok(response);  // This is now valid
+        }
+
+
+        [HttpPost("offers")]
+        public async Task<ActionResult<OfferRespondDTO>> GetOfferIdandAcceptOffer([FromBody] OfferDTO DRDTO)
+        {
+            
+            var response = _deliveryRequestService.AcceptOffer(DRDTO);
+
+            return Ok(response);  
         }
 
 

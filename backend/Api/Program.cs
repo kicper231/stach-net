@@ -79,8 +79,10 @@ builder.Services.AddScoped<IPackageRepository, DbPackageRepository>();
 builder.Services.AddScoped<IAddressRepository, DbAddressRepository>();
 builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IOfferService, OfferService>();
+builder.Services.AddScoped<IInquiryService, InquiryService>();
 builder.Services.AddScoped<ICourierCompanyRepository, DbCourierCompanyRepository>();
+builder.Services.AddScoped<IOfferService,OfferService>();
+builder.Services.AddScoped<IOfferRepository, DbOfferRepository>();
 
 builder.Services.Configure<IdentityManagerSettings>(builder.Configuration.GetSection("IdentityManager"));
 
@@ -88,9 +90,9 @@ builder.Services.Configure<IdentityManagerSettings>(builder.Configuration.GetSec
 builder.Services.AddScoped<IDeliveryRequestService, DeliveryRequestService>();
 
 
+
+
 // Konfiguracja factory do tworzenia DbContext, konkretnie ShopperContext, u�ywaj�c SQLite jako bazy danych
-
-
 builder.Services.AddDbContextFactory<ShopperContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("HostowanaBaza"),

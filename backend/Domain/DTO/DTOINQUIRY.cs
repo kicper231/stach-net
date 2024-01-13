@@ -1,6 +1,6 @@
 ﻿namespace Domain.DTO;
 
-public class DeliveryRespondDTO
+public class InquiryRespondDTO
 {
     public string CompanyName { get; set; }
 
@@ -9,7 +9,7 @@ public class DeliveryRespondDTO
     public string InquiryId { get; set; }
 
     public List<PriceBreakdown> PriceBreakDown { get; set; }
-    //public DeliveryRespondDTO(string text, int a, DateTime date)
+    //public InquiryRespondDTO(string text, int a, DateTime date)
     //{
     //    CompanyName = text;
     //    Cost = a;
