@@ -39,7 +39,7 @@ public class InquiriesController : ControllerBase
     }
 
 
-    [HttpPost("sendinquiry")]
+    [HttpPost("send-inquiry")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(InquiryRespondDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
     public async Task<ActionResult<InquiryRespondDTO>> SendDeliveryRequest([FromBody] InquiryDTO DRDTO)
@@ -84,7 +84,7 @@ public class InquiriesController : ControllerBase
     }
 
 
-    [HttpPost("acceptoffer")]
+    [HttpPost("accept-offer")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OfferRespondDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
     public async Task<IActionResult> AcceptedOffer([FromBody] OfferDTO ODTO )

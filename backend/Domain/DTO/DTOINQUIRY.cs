@@ -3,8 +3,9 @@
 public class InquiryRespondDTO
 {
     public string CompanyName { get; set; }
-
+    public string Currency { get; set; }
     public double totalPrice { get; set; }
+  
     public DateTime expiringAt { get; set; }
     public string InquiryId { get; set; }
 
