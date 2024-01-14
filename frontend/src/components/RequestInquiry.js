@@ -1,40 +1,39 @@
+import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-const serverUrl = process.env.SERVER_URL;
+import { config } from "../config-development";
 
 export function RequestInquiry() {
   const navigate = useNavigate();
-
+  const [waiting, setWaiting] = useState(false);
   const [formData, setFormData] = useState({
-    userAuth0: '12345abcdef',
+    userAuth0: "TOKEN",
     package: {
-        width: 15,
-        height: 10,
-        length: 20,
-        weight: 5.5,
+      width: 1.5,
+      height: 1,
+      length: 3,
+      weight: 10,
     },
     sourceAddress: {
-        houseNumber: '12A',
-        apartmentNumber: '3',
-        street: 'Kwiatowa',
-        city: 'Kraków',
-        postalCode: '30-001',
-        country: 'Polska',
+      houseNumber: "1",
+      apartmentNumber: "",
+      street: "Lubelska",
+      city: "Lublin",
+      zipCode: "20-000",
+      country: "Polska",
     },
     destinationAddress: {
-        houseNumber: '55B',
-        apartmentNumber: '7',
-        street: 'Wolności',
-        city: 'Warszawa',
-        postalCode: '00-950',
-        country: 'Polska',
+      houseNumber: "13",
+      apartmentNumber: "304",
+      street: "Nowowiejska",
+      city: "Warszawa",
+      zipCode: "000-00",
+      country: "Polska",
     },
-    deliveryDate: '2024-03-15',
-    priority: true,
-    weekendDelivery: true,
-});
-
+    deliveryDate: "2024-02-29",
+    priority: false,
+    weekendDelivery: false,
+  });
 
   const handleChange = (e, key = null) => {
     var value = e.target.value;
@@ -45,12 +44,6 @@ export function RequestInquiry() {
 
     if (e.target.name === "priority") {
       value = value === "option1" ? true : false;
-    }
-    if (e.target.name === "vipPackage") {
-      value = value === "option1" ? true : false;
-    }
-    if (e.target.name === "IsCompany") {
-      value = value === "option3" ? true : false;
     }
 
     if (key === null) {
@@ -69,23 +62,34 @@ export function RequestInquiry() {
     }
   };
 
-  const handleSubmit = async (e) => {
-   //e.preventDefault();
-   console.log(JSON.stringify(formData));
-  navigate("/delivery-request/offers", { state: { formData: formData } });
+  const handleSend = async () => {
+    try {
+      const promise = axios.post(`${config.serverUri}/send-inquiry`, formData);
 
-    
+      // navigate("/delivery-request/offers", {
+      //   state: { requestData: formData },
+      // });
+
+      setWaiting(true);
+
+      const response = await promise;
+
+      navigate("/delivery-request/offers", {
+        state: { requestData: formData, offers: response.data },
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  return (
-    <div className="overflow">
-      <form onSubmit={handleSubmit}>
-        <p>Package</p>
-
+  function form() {
+    return (
+      <>
+        <p>Package details:</p>
         <label>
-          width:
+          width (m):
           <input
-            type="text"
+            type="number"
             name="width"
             value={formData.package.width}
             onChange={(e) => handleChange(e, "package")}
@@ -93,20 +97,19 @@ export function RequestInquiry() {
         </label>
         <br />
         <label>
-        height:
+          height (m):
           <input
-            type="text"
-            name="dimensions"
+            type="number"
+            name="height"
             value={formData.package.height}
             onChange={(e) => handleChange(e, "package")}
           />
         </label>
         <br />
-        
         <label>
-        length:
+          length (m):
           <input
-            type="text"
+            type="number"
             name="length"
             value={formData.package.length}
             onChange={(e) => handleChange(e, "package")}
@@ -114,7 +117,7 @@ export function RequestInquiry() {
         </label>
         <br />
         <label>
-          Weight (kg):
+          weight (kg):
           <input
             type="number"
             name="weight"
@@ -122,67 +125,10 @@ export function RequestInquiry() {
             onChange={(e) => handleChange(e, "package")}
           />
         </label>
-        <br />
+
+        <p>Source address:</p>
         <label>
-          Priority:
-          <br />
-          <label>
-            <input
-              type="radio"
-              name="priority"
-              value="option1"
-              checked={formData.package.priority === true}
-              onChange={(e) => handleChange(e, "package")}
-              required
-            />
-            High
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="priority"
-              value="option2"
-              checked={formData.package.priority === false}
-              onChange={(e) => handleChange(e, "package")}
-              required
-            />
-            Low
-          </label>
-        </label>
-        <br />
-        <label>
-          Delivery at a weekend:
-          <input
-            type="checkbox"
-            name="weekendDelivery"
-            value={!formData.package.weekendDelivery}
-            onChange={(e) => handleChange(e, "package")}
-          />
-        </label>
-     
-        <p>Source address</p>
-        <label>
-        houseNumber:
-          <input
-            type="text"
-            name="houseNumber"
-            value={formData.sourceAddress.houseNumber}
-            onChange={(e) => handleChange(e, "sourceAddress")}
-          />
-        </label>
-        <br />
-        <label>
-        apartmentNumber:
-          <input
-            type="text"
-            name="apartmentNumber"
-            value={formData.sourceAddress.apartmentNumber}
-            onChange={(e) => handleChange(e, "sourceAddress")}
-          />
-        </label>
-        <br />
-        <label>
-          Street:
+          street:
           <input
             type="text"
             name="street"
@@ -192,7 +138,27 @@ export function RequestInquiry() {
         </label>
         <br />
         <label>
-          City:
+          house number:
+          <input
+            type="text"
+            name="houseNumber"
+            value={formData.sourceAddress.houseNumber}
+            onChange={(e) => handleChange(e, "sourceAddress")}
+          />
+        </label>
+        <br />
+        <label>
+          apartment number:
+          <input
+            type="text"
+            name="apartmentNumber"
+            value={formData.sourceAddress.apartmentNumber}
+            onChange={(e) => handleChange(e, "sourceAddress")}
+          />
+        </label>
+        <br />
+        <label>
+          city:
           <input
             type="text"
             name="city"
@@ -202,17 +168,17 @@ export function RequestInquiry() {
         </label>
         <br />
         <label>
-          Postal code:
+          zip code:
           <input
             type="text"
-            name="postalCode"
-            value={formData.sourceAddress.postalCode}
+            name="zipCode"
+            value={formData.sourceAddress.zipCode}
             onChange={(e) => handleChange(e, "sourceAddress")}
           />
         </label>
         <br />
         <label>
-          Country:
+          country:
           <input
             type="text"
             name="country"
@@ -221,29 +187,9 @@ export function RequestInquiry() {
           />
         </label>
 
-        <p>Destination address</p>
+        <p>Destination address:</p>
         <label>
-        houseNumber:
-          <input
-            type="text"
-            name="houseNumber"
-            value={formData.destinationAddress.houseNumber}
-            onChange={(e) => handleChange(e, "destinationAddress")}
-          />
-        </label>
-        <br />
-        <label>
-        apartmentNumber:
-          <input
-            type="text"
-            name="apartmentNumber"
-            value={formData.destinationAddress.apartmentNumber}
-            onChange={(e) => handleChange(e, "destinationAddress")}
-          />
-        </label>
-        <br />
-        <label>
-          Street:
+          street:
           <input
             type="text"
             name="street"
@@ -253,7 +199,27 @@ export function RequestInquiry() {
         </label>
         <br />
         <label>
-          City:
+          house number:
+          <input
+            type="text"
+            name="houseNumber"
+            value={formData.destinationAddress.houseNumber}
+            onChange={(e) => handleChange(e, "destinationAddress")}
+          />
+        </label>
+        <br />
+        <label>
+          apartment number:
+          <input
+            type="text"
+            name="apartmentNumber"
+            value={formData.destinationAddress.apartmentNumber}
+            onChange={(e) => handleChange(e, "destinationAddress")}
+          />
+        </label>
+        <br />
+        <label>
+          city:
           <input
             type="text"
             name="city"
@@ -263,17 +229,17 @@ export function RequestInquiry() {
         </label>
         <br />
         <label>
-          Postal code:
+          zip code:
           <input
             type="text"
-            name="postalCode"
-            value={formData.destinationAddress.postalCode}
+            name="zipCode"
+            value={formData.destinationAddress.zipCode}
             onChange={(e) => handleChange(e, "destinationAddress")}
           />
         </label>
         <br />
         <label>
-          Country:
+          country:
           <input
             type="text"
             name="country"
@@ -282,10 +248,9 @@ export function RequestInquiry() {
           />
         </label>
 
-        <p>Delivery date</p>
-
+        <p>Delivery details:</p>
         <label>
-          Date:
+          date:
           <input
             type="date"
             name="deliveryDate"
@@ -294,15 +259,52 @@ export function RequestInquiry() {
           />
         </label>
         <br />
-            
 
-      
-       
-       
+        <label>
+          priority:
+          <label>
+            <input
+              type="radio"
+              name="priority"
+              value="option1"
+              checked={formData.priority}
+              onChange={(e) => handleChange(e)}
+              required
+            />
+            high
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="priority"
+              value="option2"
+              checked={!formData.priority}
+              onChange={(e) => handleChange(e)}
+              required
+            />
+            low
+          </label>
+        </label>
+        <br />
+        <label>
+          delivery at a weekend:
+          <input
+            type="checkbox"
+            name="weekendDelivery"
+            value={!formData.weekendDelivery}
+            onChange={(e) => handleChange(e)}
+          />
+        </label>
+        <br />
+      </>
+    );
+  }
 
-        <br/>
-        <button type="submit">Send delivery request</button>
-      </form>
-    </div>
+  return (
+    <>
+      <div className="overflow">{form()}</div>
+      <button onClick={handleSend}>Send delivery request</button>
+      {waiting && <h1>Looking for offers . . .</h1>}
+    </>
   );
 }

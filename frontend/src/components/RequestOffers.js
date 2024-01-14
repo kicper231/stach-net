@@ -1,87 +1,54 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate, useLocation as useRouteLocation } from "react-router-dom";
-
-const serverUrl = process.env.REACT_APP_SERVER_URL;
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function RequestOffers() {
   const navigate = useNavigate();
-  const location = useRouteLocation();
-  const [offers, setOffers] = useState([
-    {
-      companyName: "Company A",
-      price: 100,
-      deliveryDate: new Date().toISOString(), 
-      inquiryId: "InquiryId1",
-     
-    },
-    {
-      companyName: "Company B",
-      price: 120,
-      deliveryDate: new Date().toISOString(), 
-      inquiryId: "InquiryId2",
-      
-    },
-  ]);  
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const location = useLocation();
+  const [noDataError, setNoDataError] = useState(false);
+  const [offers, setOffers] = useState(location.state.offers);
+  const [requestData, setRequestData] = useState();
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
+    setRequestData(location.state.requestData);
+    if (!location.state.requestData) {
+      setNoDataError(true);
+      return;
+    }
+    setOffers(location.state.offers);
+  }, [location.state.offers, location.state.requestData]);
 
-     
-      const formData = location.state?.formData;
-
-      if (!formData) {
-        setError("Brak danych formularza.");
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.post(`https://localhost:7161/api/requestdelivery`, formData, {
-          timeout: 30000, // 30 sekund timeout
-        });
-
-        if (response.status === 200) {
-          setOffers(response.data || []); // Ustaw nowe oferty
-        } else {
-          console.error("Nie udało się pobrać ofert:", response.statusText);
-          setError("Nie udało się pobrać ofert.");
-        }
-      } catch (error) {
-        if (error.code === 'ECONNABORTED') {
-          console.error("Timeout:", error.message);
-          setError("Przekroczono czas oczekiwania na odpowiedź.");
-        } else {
-          console.error("Wystąpił błąd:", error);
-          setError("Wystąpił błąd podczas pobierania ofert.");
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [location.state]);  
+  function offersList() {
+    return (
+      <>
+        <h1>Offers</h1>
+        <ul>
+          {offers.map((offer, index) => (
+            <li
+              key={index}
+              className="offer"
+              onClick={() =>
+                navigate("/delivery-request/summary", {
+                  state: { selectedOffer: offer, requestData: requestData },
+                })
+              }
+            >
+              {offer.companyName} ({offer.totalPrice} {offer.currency})
+            </li>
+          ))}
+        </ul>
+      </>
+    );
+  }
 
   return (
     <>
-      <h1>{isLoading ? "Czekamy na oferty..." : "Oferty"}</h1>
-      {error && <p>{error}</p>}
-      <ul>
-        {offers.map((offer, index) => (
-          <li
-            key={index}
-            className="offer"
-            onClick={() => navigate("/delivery-request/summary", { state: { selectedOffer: offer } })}
-          >
-            {offer.companyName} ({offer.price} PLN)
-          </li>
-        ))}
-      </ul>
+      {noDataError ? (
+        <h1>No request</h1>
+      ) : offers ? (
+        offersList()
+      ) : (
+        <h1>Looking for offers . . .</h1>
+      )}
     </>
   );
         }
