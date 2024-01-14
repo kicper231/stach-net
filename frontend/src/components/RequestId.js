@@ -1,18 +1,13 @@
 import { useEffect, useState } from "react";
-
-const serverUrl = process.env.SERVER_URL;
+import { useLocation } from "react-router-dom";
 
 export function RequestId() {
+  const location = useLocation();
   const [id, setId] = useState(-1);
 
   useEffect(() => {
-    fetch(`${serverUrl}/id`, { method: "GET" })
-      .then((response) => response.json())
-      .then((data) => {
-        setId(data);
-      })
-      .catch((error) => console.error(error));
-  });
+    setId(location.state.requestId.offerRequestId);
+  }, [location.state.requestId.offerRequestId]);
 
   return <h1>Your request id: {id}</h1>;
 }
