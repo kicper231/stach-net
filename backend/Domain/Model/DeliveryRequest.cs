@@ -3,6 +3,7 @@
 public class DeliveryRequest : BaseEntity
 {
     public int DeliveryRequestId { get; set; }
+    public Guid DeliveryRequestGuid { get; set;}
     public int? UserId { get; set; }
     public User? User { get; set; }
     public string? UserAuth0 { get; set; }

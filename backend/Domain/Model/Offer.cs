@@ -3,6 +3,8 @@
 public class Offer : BaseEntity
 {
     public int OfferId { get; set; }
+    public Guid OfferGuid { get; set; }
+
     public int DeliveryRequestId { get; set; }
     public required DeliveryRequest DeliveryRequest { get; set; }
     public required string  InquiryId { get; set; }

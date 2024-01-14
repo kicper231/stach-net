@@ -3,6 +3,7 @@
 public class Delivery : BaseEntity
 {
     public int DeliveryId { get; set; }
+    public Guid DeliveryGuid { get; set; }
     public int OfferId { get; set; }
     public Offer Offer { get; set; }
     public int? CourierId { get; set; }
