@@ -136,7 +136,7 @@ export function RequestInquiry() {
       <label>
         house number:
         <input
-          type="number"
+          type="text"
           name="houseNumber"
           value={formData.sourceAddress.houseNumber}
           onChange={(e) => handleChange(e, "sourceAddress")}
@@ -146,7 +146,7 @@ export function RequestInquiry() {
       <label>
         apartment number:
         <input
-          type="number"
+          type="text"
           name="apartmentNumber"
           value={formData.sourceAddress.apartmentNumber}
           onChange={(e) => handleChange(e, "sourceAddress")}
@@ -197,7 +197,7 @@ export function RequestInquiry() {
       <label>
         house number:
         <input
-          type="number"
+          type="text"
           name="houseNumber"
           value={formData.destinationAddress.houseNumber}
           onChange={(e) => handleChange(e, "destinationAddress")}
@@ -207,7 +207,7 @@ export function RequestInquiry() {
       <label>
         apartment number:
         <input
-          type="number"
+          type="text"
           name="apartmentNumber"
           value={formData.destinationAddress.apartmentNumber}
           onChange={(e) => handleChange(e, "destinationAddress")}

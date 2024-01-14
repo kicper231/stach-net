@@ -9,6 +9,7 @@ export function RequestSummary() {
   const navigate = useNavigate();
   const location = useLocation();
   const [offer, setOffer] = useState();
+  const [requestData, setRequestData] = useState();
   /* TODO Add SummaryData */
   // const [summaryData, setSummaryData] = useState({
   //   userAuth0: "NOT IMPLEMENTED",
@@ -48,8 +49,17 @@ export function RequestSummary() {
     /* If user logged fill userData */
 
     setOffer(location.state.selectedOffer);
+
+    setUserData({
+      ...userData,
+      courierCompany: location.state.selectedOffer.companyName,
+      inquiryId: location.state.selectedOffer.inquiryId,
+    });
+
+    setRequestData(location.state.requestData);
+
     // setSummaryData({ ...userData, ...location.state.requestData });
-  }, [location.state.selectedOffer]);
+  }, [location.state.selectedOffer, location.state.requestData, userData]);
 
   const handleChange = (e, key = null) => {
     var newUserData = userData;
@@ -194,7 +204,7 @@ export function RequestSummary() {
       );
 
       navigate("/delivery-request/id", {
-        state: response,
+        state: { requestId: response.data },
       });
     } catch (error) {
       console.error(error);
@@ -218,11 +228,16 @@ export function RequestSummary() {
     );
   }
 
+  function showSummary() {
+    return <div className="overflow">{renderObjectValues(requestData)}</div>;
+  }
+
   return (
     <>
       <h1>Summary</h1>
       <div className="columns">
         {!isAuthenticated && UserInformations()}
+        {showSummary()}
         <div className="overflow">{renderObjectValues(userData)}</div>
         {offerDetails()}
       </div>
