@@ -1,16 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-import { useState, useEffect } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-const serverUrl = process.env.SERVER_URL;
-
-const summaryData = {
-  PriceSplitOnTaxes: 12,
-  ServiceFee: 10,
-  DistanceFee: 2,
-  AdditionalFees: 0,
-};
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { config } from "../config-development";
 
 export function RequestSummary() {
 
@@ -18,42 +10,80 @@ export function RequestSummary() {
   const { isAuthenticated } = useAuth0();
   const navigate = useNavigate();
   const location = useLocation();
-  const selectedOffer = location.state?.selectedOffer;
-  console.log(selectedOffer);
-  const [imaginaryData, setImaginaryData] = useState({
-    userAuth0: "NOT IMPLEMENTED",
-    user: {
-      firstName: "Adam",
-      lastName: "Nowak",
-      email: "adam.nowak@gmail.com",
-      companyName: "DruteX",
-    },
-    userAddress: {
-      street: "Radomska 17",
+  const [offer, setOffer] = useState();
+  const [requestData, setRequestData] = useState();
+  /* TODO Add SummaryData */
+  // const [summaryData, setSummaryData] = useState({
+  //   userAuth0: "NOT IMPLEMENTED",
+  //   user: {
+  //     firstName: "Adam",
+  //     lastName: "Nowak",
+  //     email: "adam.nowak@gmail.com",
+  //     companyName: "DruteX",
+  //   },
+  //   userAddress: {
+  //     street: "Radomska 17",
+  //     city: "Radom",
+  //     postalCode: "000-01",
+  //     country: "Polska",
+  //   },
+  // });
+  const [userData, setUserData] = useState({
+    auth0Id: "TOKEN",
+    inquiryId: "string",
+    companyName: "DruteX",
+    courierCompany: "XXX",
+    firstName: "Adam",
+    lastName: "Nowak",
+    email: "adam.nowak@gmail.com",
+
+    address: {
+      houseNumber: "1",
+      apartmentNumber: "",
+      street: "Radomska",
       city: "Radom",
-      postalCode: "000-01",
+      zipCode: "00-001",
       country: "Polska",
     },
-    selectedOfferCompany:  selectedOffer.companyName,
-    selectedOfferId: selectedOffer.inquiryId,
   });
+
+  useEffect(() => {
+    /* If user logged fill userData */
+
+    setOffer(location.state.selectedOffer);
+
+    setUserData((data) => ({
+      ...data,
+      courierCompany: location.state.selectedOffer.companyName,
+      inquiryId: location.state.selectedOffer.inquiryId,
+    }));
+
+    setRequestData(location.state.requestData);
+
+    // setSummaryData({ ...userData, ...location.state.requestData });
+  }, [location.state.selectedOffer, location.state.requestData]);
+
   const handleChange = (e, key = null) => {
-    var value = e.target.value;
+    var newUserData = userData;
 
     if (key === null) {
-      setImaginaryData({
-        ...imaginaryData,
-        [e.target.name]: value,
-      });
+      newUserData = {
+        ...userData,
+        [e.target.name]: e.target.value,
+      };
     } else {
-      setImaginaryData({
-        ...imaginaryData,
+      newUserData = {
+        ...userData,
         [key]: {
-          ...imaginaryData[key],
-          [e.target.name]: value,
+          ...userData[key],
+          [e.target.name]: e.target.value,
         },
-      });
+      };
     }
+
+    setUserData(newUserData);
+    // setSummaryData((prev) => ({ ...newUserData, ...prev }));
+    // console.log("SUMMARY", summaryData.address.street);
   };
 
   
@@ -65,104 +95,197 @@ export function RequestSummary() {
           Consider log in or <br />
           an account creation
         </h1>
+
         <label>
-          Name:
+          first name:
           <input
             type="text"
             name="firstName"
-            value={imaginaryData.user.firstName}
-            onChange={(e) => handleChange(e, "user")}
+            value={userData.firstName}
+            onChange={handleChange}
           />
         </label>
         <br />
         <label>
-          Nazwisko:
+          last name:
           <input
             type="text"
             name="lastName"
-            value={imaginaryData.user.lastName}
-            onChange={(e) => handleChange(e, "user")}
+            value={userData.lastName}
+            onChange={handleChange}
           />
         </label>
         <br />
         <label>
-          Ulica:
-          <input
-            type="text"
-            name="street"
-            value={imaginaryData.userAddress.street}
-            onChange={(e) => handleChange(e, "userAddress")}
-          />
-        </label>
-        <br />
-        <label>
-          Miasto:
-          <input
-            type="text"
-            name="city"
-            value={imaginaryData.userAddress.city}
-            onChange={(e) => handleChange(e, "userAddress")}
-          />
-        </label>
-        <br />
-        <label>
-          Kod pocztowy:
-          <input
-            type="text"
-            name="postalCode"
-            value={imaginaryData.userAddress.postalCode}
-            onChange={(e) => handleChange(e, "userAddress")}
-          />
-        </label>
-        <br />
-        <label>
-          Kraj:
-          <input
-            type="text"
-            name="country"
-            value={imaginaryData.userAddress.country}
-            onChange={(e) => handleChange(e, "userAddress")}
-          />
-        </label>
-        <br />
-        <label>
-          E-mail:
-          <input
-            type="email"
-            name="email"
-            value={imaginaryData.user.email}
-            onChange={(e) => handleChange(e, "user")}
-          />
-        </label>
-        <br />
-        <label>
-          Nazwa firmy:
+          company name:
           <input
             type="text"
             name="companyName"
-            value={imaginaryData.user.companyName}
-            onChange={(e) => handleChange(e, "user")}
+            value={userData.companyName}
+            onChange={handleChange}
+          />
+        </label>
+        <br />
+        <label>
+          e-mail:
+          <input
+            type="email"
+            name="email"
+            value={userData.email}
+            onChange={handleChange}
+          />
+        </label>
+
+        <p>address</p>
+        <label>
+          street:
+          <input
+            type="text"
+            name="street"
+            value={userData.address.street}
+            onChange={(e) => handleChange(e, "address")}
+          />
+        </label>
+        <br />
+        <label>
+          house number:
+          <input
+            type="text"
+            name="houseNumber"
+            value={userData.address.houseNumber}
+            onChange={(e) => handleChange(e, "address")}
+          />
+        </label>
+        <br />
+        <label>
+          apartment number:
+          <input
+            type="text"
+            name="apartmentNumber"
+            value={userData.address.apartmentNumber}
+            onChange={(e) => handleChange(e, "address")}
+          />
+        </label>
+        <br />
+        <label>
+          city:
+          <input
+            type="text"
+            name="city"
+            value={userData.address.city}
+            onChange={(e) => handleChange(e, "address")}
+          />
+        </label>
+        <br />
+        <label>
+          zip code:
+          <input
+            type="text"
+            name="zipCode"
+            value={userData.address.zipCode}
+            onChange={(e) => handleChange(e, "address")}
+          />
+        </label>
+        <br />
+        <label>
+          country:
+          <input
+            type="text"
+            name="country"
+            value={userData.address.country}
+            onChange={(e) => handleChange(e, "address")}
           />
         </label>
       </div>
     );
   }
 
-  function handleClick() {
-    const sendDataToServer = async () => {
-      try {
-        const response = await axios.post(
-          `${serverUrl}/delivery-request/submit`,
-          imaginaryData
-        );
-        console.log("Data sent successfully:", response.data);
-      } catch (error) {
-        console.error("Error sending data to the server:", error);
-      }
-    };
+  const handleClick = async () => {
+    try {
+      const response = await axios.post(
+        `${config.serverUri}/accept-offer`,
+        userData
+      );
 
-    sendDataToServer();
-    navigate("/delivery-request/id");
+      navigate("/delivery-request/id", {
+        state: { requestId: response.data },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  function offerDetails() {
+    return (
+      <div>
+        <p>Company: {offer?.companyName}</p>
+        <p>Total price: {offer?.totalPrice} PLN</p>{" "}
+        {/* TODO Add totalPrice currency */}
+        <ul>
+          {offer?.priceBreakDown.map((price, index) => (
+            <li key={index}>
+              {price.description}: {price.amount} {price.currency}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
+  function showSummary() {
+    if (!requestData) {
+      return <h1>No request data</h1>;
+    }
+
+    return (
+      <ul>
+        <li>
+          <strong>package dimensions:</strong>
+          <br />
+          {requestData.package.width}m x {requestData.package.height}m x{" "}
+          {requestData.package.length}m
+        </li>
+        <li>
+          <strong>package weight:</strong> {requestData.package.weight}kg
+        </li>
+
+        <li>
+          <strong>source address:</strong>
+          <br />
+          {requestData.sourceAddress.street}{" "}
+          {requestData.sourceAddress.houseNumber}
+          {requestData.sourceAddress.apartmentNumber &&
+            " / " + requestData.sourceAddress.apartmentNumber}
+          <br />
+          {requestData.sourceAddress.city} {requestData.sourceAddress.zipCode},{" "}
+          {requestData.sourceAddress.country}
+        </li>
+
+        <li>
+          <strong>source address:</strong>
+          <br />
+          {requestData.destinationAddress.street}{" "}
+          {requestData.destinationAddress.houseNumber}
+          {requestData.destinationAddress.apartmentNumber &&
+            " / " + requestData.destinationAddress.apartmentNumber}
+          <br />
+          {requestData.destinationAddress.city}{" "}
+          {requestData.destinationAddress.zipCode},{" "}
+          {requestData.destinationAddress.country}
+        </li>
+
+        <li>
+          <strong>delivery date:</strong> {requestData.deliveryDate}
+        </li>
+        <li>
+          <strong>priority:</strong> {requestData.priority ? "yes" : "no"}
+        </li>
+        <li>
+          <strong>weekend delivery:</strong>{" "}
+          {requestData.weekendDelivery ? "yes" : "no"}
+        </li>
+      </ul>
+    );
   }
 
   return (
@@ -170,8 +293,10 @@ export function RequestSummary() {
       <h1>Summary</h1>
       <div className="columns">
         {!isAuthenticated && UserInformations()}
-        <div className="overflow">{renderObjectValues(imaginaryData)}</div>
-        {selectedOffer && renderObjectValues(selectedOffer)} {/* Wyświetlanie szczegółów wybranej oferty */}
+        {showSummary()}
+        {offerDetails()}
+        <div className="overflow">{renderObjectValues(userData)}</div>{" "}
+        {/* TODO Remove userData */}
       </div>
       <button onClick={handleClick}>Submit a request</button>
     </>

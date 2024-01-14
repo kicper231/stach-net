@@ -3,14 +3,12 @@ import LoginButton from "./LoginButton";
 import LogoutButton from "./LogoutButton";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
+import { AuthService } from "./AuthService";
 
 export default function NavBar() {
-  const { isAuthenticated,user } = useAuth0();
+  const { isAuthenticated, user } = useAuth0();
   const navigate = useNavigate();
 
-  const isCourier = user && Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) && user["https://stachnet.azurewebsites.net//roles"].includes('Curier');
-  const isClient = user && Array.isArray(user["https://stachnet.azurewebsites.net//roles"]) && user["https://stachnet.azurewebsites.net//roles"].includes('Client');
-  //console.log(isCourier);
   return (
     <div className="navBar">
       <div className="leftSide">
@@ -27,17 +25,25 @@ export default function NavBar() {
         )}
         {isAuthenticated && <LogoutButton />}
 
-
-        {isAuthenticated && isCourier && (
-          
-          <button onClick={() => {/* kurierlogika */}}> KURIER</button>
+        {isAuthenticated && AuthService.isCourier(user) && (
+          <button
+            onClick={() => {
+              /* TODO Courier logic */
+            }}
+          >
+            Courier
+          </button>
         )}
 
-        {isAuthenticated && isClient && (
-          
-          <button onClick={() => {/* kurierlogika */}}> Client</button>
+        {isAuthenticated && AuthService.isClient(user) && (
+          <button
+            onClick={() => {
+              /* TODO Client logic */
+            }}
+          >
+            Client
+          </button>
         )}
-        
       </div>
     </div>
   );
