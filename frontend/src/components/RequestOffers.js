@@ -6,18 +6,14 @@ export function RequestOffers() {
   const location = useLocation();
   const [noDataError, setNoDataError] = useState(false);
   const [offers, setOffers] = useState(location.state.offers);
+  const [requestData, setRequestData] = useState();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const requestData = location.state.requestData;
-
-      if (!requestData) {
-        setNoDataError(true);
-        return;
-      }
-    };
-
-    fetchData();
+    setRequestData(location.state.requestData);
+    if (!location.state.requestData) {
+      setNoDataError(true);
+      return;
+    }
     setOffers(location.state.offers);
   }, [location.state.offers, location.state.requestData]);
 
@@ -32,7 +28,7 @@ export function RequestOffers() {
               className="offer"
               onClick={() =>
                 navigate("/delivery-request/summary", {
-                  state: { selectedOffer: offer },
+                  state: { selectedOffer: offer, requestData: requestData },
                 })
               }
             >
