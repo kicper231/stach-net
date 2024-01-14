@@ -36,7 +36,7 @@ namespace Api.Controllers
         }
 
 
-        [HttpGet("{id}", Name = "GetUserById")]
+        [HttpGet("{id}", Name = "Get-User-By-Id")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<User> GetById(string id)
@@ -47,7 +47,7 @@ namespace Api.Controllers
         }
 
 
-        [HttpPost("auth0add")]
+        [HttpPost("auth0-add")]
         //[Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -75,8 +75,9 @@ public class DeliveryRequestService : IDeliveryRequestService
         tasks.Add(SafeGetOffer(_httpOffersServise.GetOfferFromSzymonApi(deliveryRequestDTO))); //zabezpieczenie przed 404 
         tasks.Add(SafeGetOffer(_httpOffersServise.GetOffersFromOurApi(deliveryRequestDTO)));
         var responseparrarel = await Task.WhenAll(tasks);
+        
         offersToSend.AddRange(responseparrarel);
-
+        offersToSend.RemoveAll(offer => offer == null);
         //dodaje przyjete oferty do bazy danych moze uzytkownik je zaakceptuje
         AddOffersToDatabase(responseparrarel, addedRequestDelivery);
 
@@ -85,6 +86,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         {
             CompanyName = "Company C",
             totalPrice = 120,
+            Currency="PLN",
             expiringAt = DateTime.Now.AddDays(1),
             InquiryId = "SomeInquiryId2",
             PriceBreakDown = new List<PriceBreakdown>
@@ -112,7 +114,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         OfferRespondDTO? respond = default;
 
         // jako ze są tylk 3 firmy zaimplementuje to bez adapter i fabryki (jak starczy czas) 
-        switch (offerDTO.CompanyName)
+        switch (offerDTO.CourierCompany)
         {
             case "SzymonCompany":
                 {
@@ -127,7 +129,7 @@ public class DeliveryRequestService : IDeliveryRequestService
                 }
 
             default:
-                throw new KeyNotFoundException("Nie znaleziono firmy: " + offerDTO.CompanyName);
+                throw new KeyNotFoundException("Nie znaleziono firmy: " + offerDTO.CourierCompany);
 
         }
        

@@ -50,9 +50,19 @@ public class OfferService : IOfferService
     }
 
 
-    public async Task<OfferRespondDTO> GetOfferOurID(OfferDTO offerDto)
+    public async Task<OfferRespondDTO> GetOfferOurID(OfferDTO offerdto)
     {
-        var response = await _httpOurClientOffer.PostAsJsonAsync("/offers", offerDto);
+
+        OfferSzymonApiDTO data = new OfferSzymonApiDTO
+        {
+            Address = offerdto.Address,
+            Name = offerdto.firstName,
+            InquiryId = offerdto.InquiryId,
+            Email = offerdto.Email
+
+        };
+
+        var response = await _httpOurClientOffer.PostAsJsonAsync("/offers", data);
         var responseBody = await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
         var respond = await response.Content.ReadFromJsonAsync< OfferRespondDTO>();
@@ -63,10 +73,10 @@ public class OfferService : IOfferService
     public async Task<OfferRespondDTO> GetOfferSzymonID(OfferDTO offerdto)
     {
 
-        OfferOurApiDTO data = new OfferOurApiDTO
+        OfferSzymonApiDTO data = new OfferSzymonApiDTO
         {
             Address = offerdto.Address,
-            Name = offerdto.Name,
+            Name = offerdto.firstName,
             InquiryId = offerdto.InquiryId,
             Email = offerdto.Email
 

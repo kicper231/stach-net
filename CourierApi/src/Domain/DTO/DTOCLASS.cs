@@ -58,6 +58,7 @@ public class InquiryDTO
     public string InquiryId { get; set; }
     public double TotalPrice { get; set; }
     public string Currency { get; set; }
+    
     public DateTime ExpiringAt { get; set; }
     public List<PriceBreakdown> PriceBreakDown { get; set; }
 }
