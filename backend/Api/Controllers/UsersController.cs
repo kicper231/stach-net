@@ -61,7 +61,7 @@ namespace Api.Controllers
         }
 
 
-        [HttpGet("activeusers")]
+        [HttpGet("active-users")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<LoginResult> GetNumberOfLogins()
