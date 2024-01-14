@@ -1,35 +1,33 @@
 ﻿using Domain.Abstractions;
 using Domain.DTO;
 using Domain.Model;
-using Infrastructure;
+
 namespace Api.Service;
-
-
 
 public interface IUserService
 {
     ServiceResult AddUser(DTO_UserFromAuth0 user);
     Task<ServiceResult> AddUserAsync(DTO_UserFromAuth0 user);
-     OperationResult<int> NumberOfLogins();
-
+    OperationResult<int> NumberOfLogins();
 }
 
 public class UserService : IUserService
 {
     private readonly IUserRepository repository;
 
+    public UserService(IUserRepository repository)
+    {
+        this.repository = repository;
+    }
+
     public OperationResult<int> NumberOfLogins()
     {
         var result = repository.NumberOfUserLogins();
         if (!result.Success)
         {
-            
         }
+
         return result;
-    }
-    public UserService(IUserRepository repository)
-    {
-        this.repository = repository;
     }
 
 
@@ -45,12 +43,12 @@ public class UserService : IUserService
                 return new ServiceResult(false, "Użytkownik już istnieje.", 409);
             }
 
-            User AddUser = new User();
+            var AddUser = new User();
             AddUser.Auth0Id = user.Auth0Id;
             AddUser.FirstName = user.FirstName;
             AddUser.Email = user.Email;
             AddUser.LastName = user.LastName;
-            AddUser.CreatedAt= DateTime.Now;
+            AddUser.CreatedAt = DateTime.Now;
             AddUser.NumberOfLogins = 1;
             repository.Add(AddUser);
 
@@ -80,7 +78,7 @@ public class UserService : IUserService
                 return new ServiceResult(false, "Użytkownik już istnieje.", 409);
             }
 
-            User AddUser = new User
+            var AddUser = new User
             {
                 Auth0Id = user.Auth0Id,
                 FirstName = user.FirstName,
@@ -99,18 +97,10 @@ public class UserService : IUserService
             return new ServiceResult(false, "Wystąpił błąd: " + ex.Message, 500);
         }
     }
-
-
-
 }
 
 public class ServiceResult
 {
-    public bool Success { get; }
-    public string Message { get; }
-    public int StatusCode { get; }
-    public User user { get; }
-
     public ServiceResult(bool success, string message, int statusCode, User data = null)
     {
         Success = success;
@@ -118,4 +108,9 @@ public class ServiceResult
         StatusCode = statusCode;
         user = data;
     }
+
+    public bool Success { get; }
+    public string Message { get; }
+    public int StatusCode { get; }
+    public User user { get; }
 }

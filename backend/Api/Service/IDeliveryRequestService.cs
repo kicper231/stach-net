@@ -1,14 +1,14 @@
 ﻿using Domain.DTO;
 using Domain.Model;
-using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Service
+namespace Api.Service;
+
+public interface IDeliveryRequestService
 {
-    public interface IDeliveryRequestService
-    {
-        List<DeliveryRequest> GetUserDeliveryRequests(string userId);
-        Task<DeliveryRespondDTO> Add(DeliveryRequestDTO deliveryRequest);
+    List<UserInquiryDTO> GetUserDeliveryRequests(string userId);
 
+    Task<List<InquiryRespondDTO>> GetOffers(InquiryDTO deliveryRequest);
+    Task<OfferRespondDTO> acceptoffer(OfferDTO offerDTO);
 
-    }
+    bool UserExists(string idAuth0);
 }

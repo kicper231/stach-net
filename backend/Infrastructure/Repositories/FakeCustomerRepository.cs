@@ -1,6 +1,3 @@
-using Domain.Model;
-using Domain.Abstractions;
-
 //namespace Infrastructure
 //{
 //    public class FakeCustomerRepository : ICustomerRepository
@@ -26,22 +23,22 @@ using Domain.Abstractions;
 
 //        public Customer GetById(int id)
 //        {
-           
+
 //            customers.TryGetValue(id, out var customer);
 //            return customer;
 //        }
 
 //        public void Add(Customer customer)
 //        {
-            
+
 //            if (customers.ContainsKey(customer.Id))
 //            {
 //                throw new InvalidOperationException("Klient o tym ID ju¿ istnieje.");
 //            }
 
-            
+
 //            customers[customer.Id] = customer;
 //        }
 //    }
-    
+
 //}
