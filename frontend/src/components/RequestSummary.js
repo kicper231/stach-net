@@ -215,8 +215,9 @@ export function RequestSummary() {
     return (
       <div>
         <p>Company: {offer?.companyName}</p>
-        <p>Total price: {offer?.totalPrice} PLN</p>{" "}
-        {/* TODO Add totalPrice currency */}
+        <p>
+          Total price: {offer?.totalPrice} {offer?.currency}
+        </p>
         <ul>
           {offer?.priceBreakDown.map((price, index) => (
             <li key={index}>
