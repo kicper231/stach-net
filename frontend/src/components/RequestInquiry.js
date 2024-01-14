@@ -66,10 +66,6 @@ export function RequestInquiry() {
     try {
       const promise = axios.post(`${config.serverUri}/send-inquiry`, formData);
 
-      // navigate("/delivery-request/offers", {
-      //   state: { requestData: formData },
-      // });
-
       setWaiting(true);
 
       const response = await promise;
