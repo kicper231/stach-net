@@ -136,7 +136,7 @@ export function RequestSummary() {
         <label>
           house number:
           <input
-            type="number"
+            type="text"
             name="houseNumber"
             value={userData.address.houseNumber}
             onChange={(e) => handleChange(e, "address")}
@@ -146,7 +146,7 @@ export function RequestSummary() {
         <label>
           apartment number:
           <input
-            type="number"
+            type="text"
             name="apartmentNumber"
             value={userData.address.apartmentNumber}
             onChange={(e) => handleChange(e, "address")}
