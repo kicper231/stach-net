@@ -50,16 +50,16 @@ export function RequestSummary() {
 
     setOffer(location.state.selectedOffer);
 
-    setUserData({
-      ...userData,
+    setUserData((data) => ({
+      ...data,
       courierCompany: location.state.selectedOffer.companyName,
       inquiryId: location.state.selectedOffer.inquiryId,
-    });
+    }));
 
     setRequestData(location.state.requestData);
 
     // setSummaryData({ ...userData, ...location.state.requestData });
-  }, [location.state.selectedOffer, location.state.requestData, userData]);
+  }, [location.state.selectedOffer, location.state.requestData]);
 
   const handleChange = (e, key = null) => {
     var newUserData = userData;
@@ -229,7 +229,59 @@ export function RequestSummary() {
   }
 
   function showSummary() {
-    return <div className="overflow">{renderObjectValues(requestData)}</div>;
+    if (!requestData) {
+      return <h1>No request data</h1>;
+    }
+
+    return (
+      <ul>
+        <li>
+          <strong>package dimensions:</strong>
+          <br />
+          {requestData.package.width}m x {requestData.package.height}m x{" "}
+          {requestData.package.length}m
+        </li>
+        <li>
+          <strong>package weight:</strong> {requestData.package.weight}kg
+        </li>
+
+        <li>
+          <strong>source address:</strong>
+          <br />
+          {requestData.sourceAddress.street}{" "}
+          {requestData.sourceAddress.houseNumber}
+          {requestData.sourceAddress.apartmentNumber &&
+            " / " + requestData.sourceAddress.apartmentNumber}
+          <br />
+          {requestData.sourceAddress.city} {requestData.sourceAddress.zipCode},{" "}
+          {requestData.sourceAddress.country}
+        </li>
+
+        <li>
+          <strong>source address:</strong>
+          <br />
+          {requestData.destinationAddress.street}{" "}
+          {requestData.destinationAddress.houseNumber}
+          {requestData.destinationAddress.apartmentNumber &&
+            " / " + requestData.destinationAddress.apartmentNumber}
+          <br />
+          {requestData.destinationAddress.city}{" "}
+          {requestData.destinationAddress.zipCode},{" "}
+          {requestData.destinationAddress.country}
+        </li>
+
+        <li>
+          <strong>delivery date:</strong> {requestData.deliveryDate}
+        </li>
+        <li>
+          <strong>priority:</strong> {requestData.priority ? "yes" : "no"}
+        </li>
+        <li>
+          <strong>weekend delivery:</strong>{" "}
+          {requestData.weekendDelivery ? "yes" : "no"}
+        </li>
+      </ul>
+    );
   }
 
   return (
@@ -238,8 +290,9 @@ export function RequestSummary() {
       <div className="columns">
         {!isAuthenticated && UserInformations()}
         {showSummary()}
-        <div className="overflow">{renderObjectValues(userData)}</div>
         {offerDetails()}
+        <div className="overflow">{renderObjectValues(userData)}</div>{" "}
+        {/* TODO Remove userData */}
       </div>
       <button onClick={handleClick}>Submit a request</button>
     </>
