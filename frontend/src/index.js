@@ -13,6 +13,7 @@ const audience = process.env.REACT_APP_AUDIENCE;
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
+
 const providerConfig = {
   domain: domain,
   clientId: clientId,
