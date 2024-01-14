@@ -47,7 +47,7 @@ export function RequestOffers() {
       ) : offers ? (
         offersList()
       ) : (
-        <h1>Looking for offers...</h1>
+        <h1>Looking for offers . . .</h1>
       )}
     </>
   );
