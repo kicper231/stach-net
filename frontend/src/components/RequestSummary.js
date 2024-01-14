@@ -1,73 +1,78 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-const serverUrl = process.env.SERVER_URL;
-
-const summaryData = {
-  PriceSplitOnTaxes: 12,
-  ServiceFee: 10,
-  DistanceFee: 2,
-  AdditionalFees: 0,
-};
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { config } from "../config-development";
 
 export function RequestSummary() {
   const { isAuthenticated } = useAuth0();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [offer, setOffer] = useState();
+  /* TODO Add SummaryData */
+  // const [summaryData, setSummaryData] = useState({
+  //   userAuth0: "NOT IMPLEMENTED",
+  //   user: {
+  //     firstName: "Adam",
+  //     lastName: "Nowak",
+  //     email: "adam.nowak@gmail.com",
+  //     companyName: "DruteX",
+  //   },
+  //   userAddress: {
+  //     street: "Radomska 17",
+  //     city: "Radom",
+  //     postalCode: "000-01",
+  //     country: "Polska",
+  //   },
+  // });
+  const [userData, setUserData] = useState({
+    auth0Id: "TOKEN",
+    inquiryId: "string",
+    companyName: "DruteX",
+    /* TODO Change name */
+    name: "Adam Nowak",
+    // firstName: "Adam",
+    // lastName: "Nowak",
+    email: "adam.nowak@gmail.com",
 
-  const [imaginaryData, setImaginaryData] = useState({
-    userAuth0: "NOT IMPLEMENTED",
-    user: {
-      firstName: "Adam",
-      lastName: "Nowak",
-      email: "adam.nowak@gmail.com",
-      companyName: "DruteX",
-    },
-    userAddress: {
-      street: "Radomska 17",
+    address: {
+      houseNumber: "1",
+      apartmentNumber: "",
+      street: "Radomska",
       city: "Radom",
-      postalCode: "000-01",
+      zipCode: "00-001",
       country: "Polska",
     },
-    package: {
-      dimensions: "0.2m x 0.3m x 0.4m",
-      weight: 10,
-      priority: false,
-      weekendDelivery: false,
-    },
-    sourceAddress: {
-      street: "Lubelska 13",
-      city: "Lublin",
-      postalCode: "20-000",
-      country: "Polska",
-    },
-    destinationAddress: {
-      street: "Nowowiejska 2",
-      city: "Warszawa",
-      postalCode: "000-00",
-      country: "Polska",
-    },
-    deliveryDate: "2024-2-27",
   });
 
+  useEffect(() => {
+    /* If user logged fill userData */
+
+    setOffer(location.state.selectedOffer);
+    // setSummaryData({ ...userData, ...location.state.requestData });
+  }, [location.state.selectedOffer]);
+
   const handleChange = (e, key = null) => {
-    var value = e.target.value;
+    var newUserData = userData;
 
     if (key === null) {
-      setImaginaryData({
-        ...imaginaryData,
-        [e.target.name]: value,
-      });
+      newUserData = {
+        ...userData,
+        [e.target.name]: e.target.value,
+      };
     } else {
-      setImaginaryData({
-        ...imaginaryData,
+      newUserData = {
+        ...userData,
         [key]: {
-          ...imaginaryData[key],
-          [e.target.name]: value,
+          ...userData[key],
+          [e.target.name]: e.target.value,
         },
-      });
+      };
     }
+
+    setUserData(newUserData);
+    // setSummaryData((prev) => ({ ...newUserData, ...prev }));
+    // console.log("SUMMARY", summaryData.address.street);
   };
 
   function UserInformations() {
@@ -77,13 +82,14 @@ export function RequestSummary() {
           Consider log in or <br />
           an account creation
         </h1>
-        <label>
+
+        {/* <label>
           Name:
           <input
             type="text"
             name="firstName"
-            value={imaginaryData.user.firstName}
-            onChange={(e) => handleChange(e, "user")}
+            value={userData.user.firstName}
+            onChange={handleChange}
           />
         </label>
         <br />
@@ -92,89 +98,126 @@ export function RequestSummary() {
           <input
             type="text"
             name="lastName"
-            value={imaginaryData.user.lastName}
-            onChange={(e) => handleChange(e, "user")}
+            value={userData.user.lastName}
+            onChange={handleChange}
           />
         </label>
-        <br />
+        <br /> */}
+
         <label>
-          Ulica:
-          <input
-            type="text"
-            name="street"
-            value={imaginaryData.userAddress.street}
-            onChange={(e) => handleChange(e, "userAddress")}
-          />
-        </label>
-        <br />
-        <label>
-          Miasto:
-          <input
-            type="text"
-            name="city"
-            value={imaginaryData.userAddress.city}
-            onChange={(e) => handleChange(e, "userAddress")}
-          />
-        </label>
-        <br />
-        <label>
-          Kod pocztowy:
-          <input
-            type="text"
-            name="postalCode"
-            value={imaginaryData.userAddress.postalCode}
-            onChange={(e) => handleChange(e, "userAddress")}
-          />
-        </label>
-        <br />
-        <label>
-          Kraj:
-          <input
-            type="text"
-            name="country"
-            value={imaginaryData.userAddress.country}
-            onChange={(e) => handleChange(e, "userAddress")}
-          />
-        </label>
-        <br />
-        <label>
-          E-mail:
-          <input
-            type="email"
-            name="email"
-            value={imaginaryData.user.email}
-            onChange={(e) => handleChange(e, "user")}
-          />
-        </label>
-        <br />
-        <label>
-          Nazwa firmy:
+          company name:
           <input
             type="text"
             name="companyName"
-            value={imaginaryData.user.companyName}
-            onChange={(e) => handleChange(e, "user")}
+            value={userData.companyName}
+            onChange={handleChange}
+          />
+        </label>
+        <br />
+        <label>
+          e-mail:
+          <input
+            type="email"
+            name="email"
+            value={userData.email}
+            onChange={handleChange}
+          />
+        </label>
+
+        <p>address</p>
+        <label>
+          street:
+          <input
+            type="text"
+            name="street"
+            value={userData.address.street}
+            onChange={(e) => handleChange(e, "address")}
+          />
+        </label>
+        <br />
+        <label>
+          house number:
+          <input
+            type="number"
+            name="houseNumber"
+            value={userData.address.houseNumber}
+            onChange={(e) => handleChange(e, "address")}
+          />
+        </label>
+        <br />
+        <label>
+          apartment number:
+          <input
+            type="number"
+            name="apartmentNumber"
+            value={userData.address.apartmentNumber}
+            onChange={(e) => handleChange(e, "address")}
+          />
+        </label>
+        <br />
+        <label>
+          city:
+          <input
+            type="text"
+            name="city"
+            value={userData.address.city}
+            onChange={(e) => handleChange(e, "address")}
+          />
+        </label>
+        <br />
+        <label>
+          zip code:
+          <input
+            type="text"
+            name="zipCode"
+            value={userData.address.zipCode}
+            onChange={(e) => handleChange(e, "address")}
+          />
+        </label>
+        <br />
+        <label>
+          country:
+          <input
+            type="text"
+            name="country"
+            value={userData.address.country}
+            onChange={(e) => handleChange(e, "address")}
           />
         </label>
       </div>
     );
   }
 
-  function handleClick() {
-    const sendDataToServer = async () => {
-      try {
-        const response = await axios.post(
-          `${serverUrl}/delivery-request/submit`,
-          imaginaryData
-        );
-        console.log("Data sent successfully:", response.data);
-      } catch (error) {
-        console.error("Error sending data to the server:", error);
-      }
-    };
+  const handleClick = async () => {
+    try {
+      const response = await axios.post(
+        `${config.serverUri}/acceptoffer`,
+        userData
+      );
 
-    sendDataToServer();
-    navigate("/delivery-request/id");
+      navigate("/delivery-request/id", {
+        state: response,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  function offerDetails() {
+    return (
+      <div>
+        <p>Company: {offer?.companyName}</p>
+        <p>Total price: {offer?.totalPrice} PLN</p>{" "}
+        {/* TODO Add totalPrice currency */}
+        <ul>
+          {offer?.priceBreakDown.map((price, index) => (
+            <li key={index}>
+              {price.description}: {price.amount} {price.currency}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
   }
 
   return (
@@ -182,8 +225,8 @@ export function RequestSummary() {
       <h1>Summary</h1>
       <div className="columns">
         {!isAuthenticated && UserInformations()}
-        <div className="overflow">{renderObjectValues(imaginaryData)}</div>
-        {renderObjectValues(summaryData)}
+        <div className="overflow">{renderObjectValues(userData)}</div>
+        {offerDetails()}
       </div>
       <button onClick={handleClick}>Submit a request</button>
     </>
