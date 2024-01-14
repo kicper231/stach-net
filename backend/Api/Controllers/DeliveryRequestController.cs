@@ -1,51 +1,104 @@
-﻿using Api.Service;
+﻿using System.Security.Claims;
+using Api.Service;
 using Domain.DTO;
 using Domain.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Api.Controllers;
 
-
 [ApiController]
-[Route("api/requestdelivery")]
+//[Route()]
 //[Authorize] 
-public class DeliveryRequestController : ControllerBase
+public class InquiriesController : ControllerBase
 {
-    private readonly IDeliveryRequestService _deliveryRequestService;
+    private readonly IDeliveryRequestService _deliveryservice;
 
-    public DeliveryRequestController(IDeliveryRequestService deliveryRequestService)
+    public InquiriesController(IDeliveryRequestService deliveryRequestService)
     {
-        _deliveryRequestService = deliveryRequestService;
+        _deliveryservice = deliveryRequestService;
     }
 
-    [HttpGet("getmyinquries")]
-    [Authorize]
-    public ActionResult<List<DeliveryRequest>> GetMyDeliveryRequests()
+    [HttpGet("get-my-inquiries/{idAuth0}")]
+    //[Authorize]
+    public ActionResult<List<UserInquiryDTO>> GetMyDeliveryRequests(string idAuth0)
     {
-        var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-        if (string.IsNullOrEmpty(userId))
+        if (string.IsNullOrEmpty(idAuth0))
         {
-            return Unauthorized("Brak identyfikatora użytkownika.");
+            return BadRequest("Auth0 id użytkownika jest wymagane.");
         }
 
-        var deliveryRequests = _deliveryRequestService.GetUserDeliveryRequests(userId);
+       
+        if (!_deliveryservice.UserExists(idAuth0))
+        {
+            return NotFound("Nie ma takiego uzytkownika.");
+        }
+
+        var deliveryRequests = _deliveryservice.GetUserDeliveryRequests(idAuth0);
         return Ok(deliveryRequests);
     }
 
 
-
-
-    [HttpPost]
-    public async Task<ActionResult<DeliveryRespondDTO>> SendDeliveryRequest([FromBody]DeliveryRequestDTO DRDTO)
+    [HttpPost("send-inquiry")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(InquiryRespondDTO))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
+    public async Task<ActionResult<InquiryRespondDTO>> SendDeliveryRequest([FromBody] InquiryDTO DRDTO)
     {
-        //
-        var response = await _deliveryRequestService.Add(DRDTO);
+        //try if (DRDTO != null && DRDTO.Weight == 1000)
+        //if (DRDTO != null && DRDTO.Package.Weight > 1000)
+        //{
+        //    ModelState.AddModelError("Weight", "Waga nie może wynosić dokładnie 1000.");
+        //}
 
-        return Ok(response);
+        //// Sprawdź, czy ModelState.IsValid jest false po dodaniu błędów
+        //if (!ModelState.IsValid)
+        //{
+        //    var errors = ModelState.Keys
+        //        .SelectMany(key => ModelState[key].Errors.Select(error => new ErrorResponse
+        //        {
+        //            PropertyName = key,
+        //            ErrorMessage = error.ErrorMessage,
+        //            Severity = "Error",
+        //            ErrorCode = "ValidationError",
+        //        }))
+        //        .ToList();
+
+
+        //    return BadRequest(errors);
+        //}
+        //{ // dla stacha
+        var response = await _deliveryservice.GetOffers(DRDTO);
+        if (response != null)
+            return Ok(response); // Sukces
+        return NotFound("Nie znaleziono ofert.");
+        //}
+        //catch (HttpRequestException ex)
+        //{
+        //    if (ex.StatusCode == HttpStatusCode.BadRequest)
+        //    {
+        //        return BadRequest("Błąd żądania: " + ex.Message);
+        //    }
+        //    // Obsługa innych wyjątków
+        //    return StatusCode(404, $"{ex.Message}");
+        //}
     }
 
-  
+
+    [HttpPost("accept-offer")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OfferRespondDTO))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
+    public async Task<IActionResult> AcceptedOffer([FromBody] OfferDTO ODTO )
+    {
+
+        try
+        {
+            var respond = await _deliveryservice.acceptoffer(ODTO);
+            return Ok(respond);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        };
+    }
+
 }

@@ -30,6 +30,10 @@ namespace Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AddressId"));
 
+                    b.Property<string>("ApartmentNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("City")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -43,15 +47,19 @@ namespace Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PostalCode")
+                    b.Property<string>("HouseNumber")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("zipCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("AddressId");
 
@@ -82,6 +90,22 @@ namespace Api.Migrations
                     b.HasKey("CourierCompanyId");
 
                     b.ToTable("CourierCompanies");
+
+                    b.HasData(
+                        new
+                        {
+                            CourierCompanyId = 1,
+                            ContactInfo = "https://courierapistachnet.azurewebsites.net/api",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "StachnetCompany"
+                        },
+                        new
+                        {
+                            CourierCompanyId = 2,
+                            ContactInfo = "https://mini.currier.api.snet.com.pl",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "SzymonCompany"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Model.Delivery", b =>
@@ -121,11 +145,11 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Domain.Model.DeliveryRequest", b =>
                 {
-                    b.Property<int>("RequestId")
+                    b.Property<int>("DeliveryRequestId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryRequestId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -139,6 +163,9 @@ namespace Api.Migrations
                     b.Property<int>("PackageId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
 
@@ -149,13 +176,15 @@ namespace Api.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserAuth0")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("RequestId");
+                    b.Property<bool>("WeekendDelivery")
+                        .HasColumnType("bit");
+
+                    b.HasKey("DeliveryRequestId");
 
                     b.HasIndex("DestinationAddressId");
 
@@ -185,13 +214,17 @@ namespace Api.Migrations
                     b.Property<int>("DeliveryRequestId")
                         .HasColumnType("int");
 
+                    b.Property<string>("InquiryId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("OfferStatus")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("OfferValidity")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Price")
+                    b.Property<decimal>("totalPrice")
                         .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("OfferId");
@@ -214,18 +247,16 @@ namespace Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Dimensions")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<double>("Height")
+                        .HasColumnType("float");
 
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("WeekendDelivery")
-                        .HasColumnType("bit");
+                    b.Property<double>("Length")
+                        .HasColumnType("float");
 
                     b.Property<double>("Weight")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Width")
                         .HasColumnType("float");
 
                     b.HasKey("PackageId");
@@ -313,8 +344,7 @@ namespace Api.Migrations
                     b.HasOne("Domain.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("DestinationAddress");
 

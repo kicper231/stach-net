@@ -5,6 +5,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { config } from "../config-development";
 
 export function RequestSummary() {
+
+  
   const { isAuthenticated } = useAuth0();
   const navigate = useNavigate();
   const location = useLocation();
@@ -83,6 +85,8 @@ export function RequestSummary() {
     // setSummaryData((prev) => ({ ...newUserData, ...prev }));
     // console.log("SUMMARY", summaryData.address.street);
   };
+
+  
 
   function UserInformations() {
     return (
@@ -297,6 +301,7 @@ export function RequestSummary() {
       <button onClick={handleClick}>Submit a request</button>
     </>
   );
+
 }
 
 const renderObjectValues = (obj) => {

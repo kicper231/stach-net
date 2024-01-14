@@ -1,6 +1,7 @@
 ﻿using Domain.Abstractions;
 using Domain.Model;
-using Infrastructure;
+using Microsoft.EntityFrameworkCore;
+
 namespace Infrastructure;
 
 public class DbRequestRepository : IDeliveryRequestRepository
@@ -17,20 +18,17 @@ public class DbRequestRepository : IDeliveryRequestRepository
     {
         return _context.DeliveryRequests
             .Where(dr => dr.UserAuth0 == userId)
+             
+        .Include(dr => dr.Package)
+        .Include(dr => dr.SourceAddress)
+        .Include(dr => dr.DestinationAddress)
             .ToList();
     }
 
     public void Add(DeliveryRequest delivery)
     {
-
         _context.DeliveryRequests.Add(delivery);
 
         _context.SaveChanges();
     }
-
-
-
-
 }
-
-
