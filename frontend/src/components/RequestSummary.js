@@ -10,27 +10,11 @@ export function RequestSummary() {
   const location = useLocation();
   const [offer, setOffer] = useState();
   const [requestData, setRequestData] = useState();
-  /* TODO Add SummaryData */
-  // const [summaryData, setSummaryData] = useState({
-  //   userAuth0: "NOT IMPLEMENTED",
-  //   user: {
-  //     firstName: "Adam",
-  //     lastName: "Nowak",
-  //     email: "adam.nowak@gmail.com",
-  //     companyName: "DruteX",
-  //   },
-  //   userAddress: {
-  //     street: "Radomska 17",
-  //     city: "Radom",
-  //     postalCode: "000-01",
-  //     country: "Polska",
-  //   },
-  // });
   const [userData, setUserData] = useState({
     auth0Id: "TOKEN",
-    inquiryId: "string",
+    inquiryId: "NOT_CHANGED",
     companyName: "DruteX",
-    courierCompany: "XXX",
+    courierCompany: "NOT_CHANGED",
     firstName: "Adam",
     lastName: "Nowak",
     email: "adam.nowak@gmail.com",
@@ -57,8 +41,6 @@ export function RequestSummary() {
     }));
 
     setRequestData(location.state.requestData);
-
-    // setSummaryData({ ...userData, ...location.state.requestData });
   }, [location.state.selectedOffer, location.state.requestData]);
 
   const handleChange = (e, key = null) => {
@@ -80,8 +62,6 @@ export function RequestSummary() {
     }
 
     setUserData(newUserData);
-    // setSummaryData((prev) => ({ ...newUserData, ...prev }));
-    // console.log("SUMMARY", summaryData.address.street);
   };
 
   function UserInformations() {
