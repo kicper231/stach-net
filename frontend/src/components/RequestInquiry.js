@@ -63,7 +63,7 @@ export function RequestInquiry() {
 
   const handleSend = async () => {
     try {
-      const promise = axios.post(`${config.serverUri}/sendinquiry`, formData);
+      const promise = axios.post(`${config.serverUri}/send-inquiry`, formData);
 
       navigate("/delivery-request/offers", {
         state: { requestData: formData },

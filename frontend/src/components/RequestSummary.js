@@ -29,10 +29,9 @@ export function RequestSummary() {
     auth0Id: "TOKEN",
     inquiryId: "string",
     companyName: "DruteX",
-    /* TODO Change name */
-    name: "Adam Nowak",
-    // firstName: "Adam",
-    // lastName: "Nowak",
+    courierCompany: "XXX",
+    firstName: "Adam",
+    lastName: "Nowak",
     email: "adam.nowak@gmail.com",
 
     address: {
@@ -83,27 +82,26 @@ export function RequestSummary() {
           an account creation
         </h1>
 
-        {/* <label>
-          Name:
+        <label>
+          first name:
           <input
             type="text"
             name="firstName"
-            value={userData.user.firstName}
+            value={userData.firstName}
             onChange={handleChange}
           />
         </label>
         <br />
         <label>
-          Nazwisko:
+          last name:
           <input
             type="text"
             name="lastName"
-            value={userData.user.lastName}
+            value={userData.lastName}
             onChange={handleChange}
           />
         </label>
-        <br /> */}
-
+        <br />
         <label>
           company name:
           <input
@@ -191,7 +189,7 @@ export function RequestSummary() {
   const handleClick = async () => {
     try {
       const response = await axios.post(
-        `${config.serverUri}/acceptoffer`,
+        `${config.serverUri}/accept-offer`,
         userData
       );
 

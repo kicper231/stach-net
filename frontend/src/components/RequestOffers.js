@@ -32,8 +32,7 @@ export function RequestOffers() {
                 })
               }
             >
-              {offer.companyName} ({offer.totalPrice} PLN){" "}
-              {/* TODO Add currency to totalPrice */}
+              {offer.companyName} ({offer.totalPrice} {offer.currency})
             </li>
           ))}
         </ul>
