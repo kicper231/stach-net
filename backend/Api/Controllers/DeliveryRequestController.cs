@@ -19,7 +19,7 @@ public class InquiriesController : ControllerBase
         _deliveryservice = deliveryRequestService;
     }
 
-    [HttpGet("getmyinquiries/{idAuth0}")]
+    [HttpGet("get-my-inquiries/{idAuth0}")]
     //[Authorize]
     public ActionResult<List<UserInquiryDTO>> GetMyDeliveryRequests(string idAuth0)
     {
