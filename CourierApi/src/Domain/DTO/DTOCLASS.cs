@@ -81,7 +81,7 @@ public class OfferDTO
 {
    // public string Auth0Id { get; set; }
     public string InquiryId { get; set; }
-    public string CompanyName { get; set; }
+  //  public string CompanyName { get; set; }
 
     public string Name { get; set; }
     public string Email { get; set; }
