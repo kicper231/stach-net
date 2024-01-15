@@ -3,7 +3,7 @@ import "./components/button.css";
 import NavBar from "./components/NavBar";
 import Profile from "./components/Profile";
 import Menu from "./components/Menu";
-import { Requests } from "./components/Requests";
+import { Inquiries } from "./components/Inquiries";
 
 import { RequestInquiry } from "./components/RequestInquiry";
 import { RequestOffers } from "./components/RequestOffers";
@@ -34,7 +34,7 @@ export default function App() {
           />
           <Route
             path="/requests/*"
-            element={isAuthenticated ? <Requests /> : AccessDenied()}
+            element={isAuthenticated ? <Inquiries /> : AccessDenied()}
           />
           <Route
             path="/delivery-request/inquiry"
