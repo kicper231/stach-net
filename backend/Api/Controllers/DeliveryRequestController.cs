@@ -1,4 +1,6 @@
-﻿using System.Security.Claims;
+﻿using System.Linq.Expressions;
+using System.Net;
+using System.Security.Claims;
 using Api.Service;
 using Domain.DTO;
 using Domain.Model;
@@ -20,7 +22,7 @@ public class InquiriesController : ControllerBase
     }
 
     [HttpGet("get-my-inquiries/{idAuth0}")]
-    [Authorize("client:permission")]
+   // [Authorize("client:permission")]
     public ActionResult<List<UserInquiryDTO>> GetMyDeliveryRequests(string idAuth0)
     {
         if (string.IsNullOrEmpty(idAuth0))
@@ -98,7 +100,33 @@ public class InquiriesController : ControllerBase
         catch (KeyNotFoundException ex)
         {
             return NotFound(ex.Message);
-        };
+        }
+        catch (HttpRequestException ex)
+        {
+           
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+        }
+        catch(InvalidOperationException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
+
+    [HttpPost("add-delivery")]
+   // [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(AddDeliveryRespondDTO))]
+   // [ProducesResponseType(StatusCodes.Status400BadRequest,Type=typeof(KeyNotFoundException))]
+    public  async Task<IActionResult> AddDeliveryToYourAccount(AddDeliveryDTO AddDeliveryDTO)
+    {
+        try { 
+            AddDeliveryRespondDTO respond = await _deliveryservice.AddDeliveryToAccount(AddDeliveryDTO);
+            return Ok(respond);
+        }
+        catch(KeyNotFoundException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        
+    }
 }

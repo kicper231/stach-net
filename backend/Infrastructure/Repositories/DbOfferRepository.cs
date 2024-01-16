@@ -1,4 +1,5 @@
 ﻿using Domain.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
 
@@ -20,12 +21,14 @@ public class DbOfferRepository : IOfferRepository
 
     public Offer? GetByInquiryId(string id)
     {
-        return _context.Offers.FirstOrDefault(a => a.InquiryId == id);
+        return _context.Offers.Include(o => o.DeliveryRequest)
+                          .FirstOrDefault(a => a.InquiryId == id);
     }
 
     public void Add(Offer offer)
     {
         _context.Offers.Add(offer);
+       
         _context.SaveChanges();
     }
 }

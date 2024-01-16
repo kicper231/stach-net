@@ -22,13 +22,13 @@ public class DeliveryRequestService : IDeliveryRequestService
     private readonly IUserRepository _userRepository;
     private readonly IOfferService _offerService;
     private readonly IOfferRepository _offerRepository;
-
+    private readonly IDeliveryRepository _deliveryRepository;
     private readonly IInquiryServiceFactory _inquiryServiceFactory;
    
 
     public DeliveryRequestService(IDeliveryRequestRepository repository, IUserRepository repositoryuser,
         IPackageRepository repositorypackage, IAddressRepository repositoryaddress, 
-        ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository, IInquiryServiceFactory inquiryServiceFactory,IEmailService Iemail)
+        ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository, IInquiryServiceFactory inquiryServiceFactory,IEmailService Iemail, IDeliveryRepository delivery)
     {
         _repository = repository;
         _userRepository = repositoryuser;
@@ -40,6 +40,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         _offerRepository = offerRepository;
         _inquiryServiceFactory = inquiryServiceFactory;
         _emailService = Iemail;
+        _deliveryRepository = delivery;
     }
 
     public List<UserInquiryDTO> GetUserDeliveryRequests(string userId)
@@ -66,7 +67,7 @@ public class DeliveryRequestService : IDeliveryRequestService
 
     
 
-
+    //  
     public async Task<List<InquiryRespondDTO?>> GetOffers(InquiryDTO deliveryRequestDTO)
     {
         // dodanie do bazy danych requestu
@@ -108,11 +109,16 @@ public class DeliveryRequestService : IDeliveryRequestService
         return offersToSend;
     }
 
-
+    // akcpetowanie oferty przekierowanie do offer
     public async Task<OfferRespondDTO?> acceptoffer(OfferDTO offerDTO)
     {
-         //przypisanie uzytkownika jesli zalogowal sie w czasie lub po porostu podeslal 
-        if(offerDTO.Auth0Id!=null&& _userRepository.GetByAuth0Id(offerDTO.Auth0Id) != null)
+        Offer? offer = _offerRepository.GetByInquiryId(offerDTO.InquiryId);
+        if (offer == null)
+        {
+            throw new InvalidOperationException("Offer not found for the given inquiry ID.");
+        }
+        //przypisanie uzytkownika jesli zalogowal sie w czasie lub po porostu podeslal 
+        if (offerDTO.Auth0Id!=null&& _userRepository.GetByAuth0Id(offerDTO.Auth0Id) != null)
         {
            _offerRepository.GetByInquiryId(offerDTO.InquiryId).DeliveryRequest.User=_userRepository.GetByAuth0Id(offerDTO.Auth0Id);
         }
@@ -139,11 +145,19 @@ public class DeliveryRequestService : IDeliveryRequestService
                 throw new KeyNotFoundException("Nie znaleziono firmy: " + offerDTO.CourierCompany);
 
         }
-       
-      
 
 
+        Delivery delivery = new Delivery
+        {
+            Offer = offer,
+            DeliveryDate = offer.DeliveryRequest.DeliveryDate,
+            DeliveryStatus = DeliveryStatus.WaitingToAccept,
+            ApiId = respond.OfferRequestId
+        };
 
+       Guid PublicId= _deliveryRepository.Add(delivery);
+
+        respond.OfferRequestId = PublicId;
         return respond;
     }
 
@@ -243,19 +257,38 @@ public class DeliveryRequestService : IDeliveryRequestService
 
 
 
+    // dodawanie delivery do profilu 
 
-    public async void SendMailToLoggedUser(string userid)
+    public async Task<AddDeliveryRespondDTO> AddDeliveryToAccount(AddDeliveryDTO add)
     {
-        // api do wysylania mail send grid nie chce dac nam konta xddd
-        //var client = new SendGridClient("twój_klucz_api");
-        //var from = new EmailAddress("test@example.com", "Example User");
-        //var subject = "Sending with SendGrid is Fun";
-        //var to = new EmailAddress("test@example.com", "Example User");
-        //var plainTextContent = "and easy to do anywhere, even with C#";
-        //var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
-        //var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-        //var response = await client.SendEmailAsync(msg);
+        Delivery delivery = await _deliveryRepository.FindAsync(add.DeliveryID);
+        if (delivery == null)
+        {
+            throw new KeyNotFoundException("Nie znaleziono dostawy o podanym ID.");
+        }
+
+        if (delivery.Offer.DeliveryRequest.User != null)
+        {
+            throw new KeyNotFoundException("Już ma przypisanego użytkownika (ciebie jesli nikomu nie udostępniles id) .");
+        }
+
+       
+        delivery.Offer.DeliveryRequest.User = await _userRepository.GetByAuth0IdAsync(add.UserAuth0);
+        delivery.Offer.DeliveryRequest.UserAuth0 = add.UserAuth0;
+
+
+        _deliveryRepository.Update(delivery);
+        await _deliveryRepository.SaveChangesAsync();
+
+      
+        var responseDTO = new AddDeliveryRespondDTO
+        {
+            
+        };
+
+        return responseDTO;
     }
+
 
 
 

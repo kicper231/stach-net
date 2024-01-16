@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 
 
-namespace Api.Service;
+namespace Api.Service.OfferServices;
 public class OfferService : IOfferService
 {
     private readonly HttpClient _httpOurClientOffer;
@@ -66,8 +66,8 @@ public class OfferService : IOfferService
         var response = await _httpOurClientOffer.PostAsJsonAsync("/offers", data);
         var responseBody = await response.Content.ReadAsStringAsync();
         response.EnsureSuccessStatusCode();
-        var respond = await response.Content.ReadFromJsonAsync< OfferRespondDTO>();
-        
+        var respond = await response.Content.ReadFromJsonAsync<OfferRespondDTO>();
+
         return respond;
     }
 
@@ -96,10 +96,10 @@ public class OfferService : IOfferService
         var response = await _httpSzymonClientOffer.SendAsync(inquirymessage);
         response.EnsureSuccessStatusCode();
         var responseBody = await response.Content.ReadAsStringAsync();
-        
+
 
         var respond = await response.Content.ReadFromJsonAsync<OfferRespondDTO>();
-        
+
 
 
         return respond;

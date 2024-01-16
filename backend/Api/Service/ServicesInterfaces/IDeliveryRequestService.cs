@@ -11,4 +11,5 @@ public interface IDeliveryRequestService
     Task<OfferRespondDTO> acceptoffer(OfferDTO offerDTO);
 
     bool UserExists(string idAuth0);
+    Task<AddDeliveryRespondDTO> AddDeliveryToAccount(AddDeliveryDTO add);
 }
