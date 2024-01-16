@@ -1,9 +1,11 @@
 using Api;
 using Api.Authorization;
 using Api.Service;
+using Api.Service.OfferServices;
 using Domain;
 using Domain.Abstractions;
 using Infrastructure;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -84,7 +86,7 @@ builder.Services.AddScoped<ICourierCompanyRepository, DbCourierCompanyRepository
 builder.Services.AddScoped<IOfferService,OfferService>();
 builder.Services.AddScoped<IOfferRepository, DbOfferRepository>();
 builder.Services.AddScoped<IInquiryServiceFactory, InquiryServiceFactory>();
-
+builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
 builder.Services.Configure<IdentityManagerSettings>(builder.Configuration.GetSection("IdentityManager"));
 
 

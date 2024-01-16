@@ -113,10 +113,12 @@ public class ShopperContext : DbContext
             .HasOne(d => d.Offer)
             .WithMany()
             .HasForeignKey(d => d.OfferId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Delivery>()
             .HasOne(d => d.Courier)
             .WithMany()
+            .IsRequired(false)
             .HasForeignKey(d => d.CourierId);
 
         // User
