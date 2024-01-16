@@ -117,9 +117,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 //autoryzacja pozniej
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("read:messages",
-        policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
+    options.AddPolicy("client:permission",
+        policy => policy.Requirements.Add(new HasScopeRequirement("client:permission", domain)));
+    options.AddPolicy("courier:permission",
+        policy => policy.Requirements.Add(new HasScopeRequirement("courier:permission", domain)));
+    options.AddPolicy("serviceworker:permission",
+        policy => policy.Requirements.Add(new HasScopeRequirement("serviceworker:permission", domain)));
 });
+
+
 
 
 builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
