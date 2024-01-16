@@ -4,6 +4,8 @@ public class InquiryDTO
 {
     public string UserAuth0 { get; set; }
 
+    public Guid InquiryDTOGuid { get; set; }
+       
     public PackageDTO Package { get; set; }
     public AddressDTO SourceAddress { get; set; }
     public AddressDTO DestinationAddress { get; set; }
