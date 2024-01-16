@@ -64,13 +64,14 @@ public class DeliveryRequestService : IDeliveryRequestService
             totalPrice = 120,
             expiringAt = DateTime.Now.AddDays(1),
             InquiryId = "SomeInquiryId2",
+            InquiryRespondDTOGuid = Guid.NewGuid(),
             PriceBreakDown = new List<PriceBreakdown>
             {
                 new() { Amount = 90, Currency = "PLN", Description = "Podstawowa cena" },
                 new() { Amount = 15, Currency = "PLN", Description = "Podatek VAT" },
                 new() { Amount = 10, Currency = "PLN", Description = "Opłata za dostawę" }
             }
-        });
+        }); ;
 
 
         return offersToSend;
@@ -173,7 +174,7 @@ public class DeliveryRequestService : IDeliveryRequestService
             User = deliveryRequestDTO.UserAuth0 != null ? _userRepository.GetByAuth0Id(deliveryRequestDTO.UserAuth0) : null,
             DeliveryDate = deliveryRequestDTO.DeliveryDate,
             Status = DeliveryRequestStatus.Pending,
-            DeliveryRequestGuid = deliveryRequestDTO.InquiryDTOGuid,
+            //DeliveryRequestGuid = deliveryRequestDTO.InquiryDTOGuid,
             Package = package,
             SourceAddress = sourceAddress,
             DestinationAddress = destinationAddress,
@@ -198,7 +199,7 @@ public class DeliveryRequestService : IDeliveryRequestService
             {
                 OfferStatus = OfferStatus.Available,
                 InquiryId = respond.InquiryId,
-                OfferGuid=lastRequest.DeliveryRequestGuid,
+                OfferGuid=respond.InquiryRespondDTOGuid,
                 CourierCompany = _courierCompanyRepository.GetByName($"{respond.CompanyName}"),
                 totalPrice = respond.totalPrice,
                 OfferValidity = respond.expiringAt,
