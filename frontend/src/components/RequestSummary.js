@@ -5,7 +5,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { config } from "../config-development";
 
 export function RequestSummary() {
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, user, isLoading, getAccessTokenSilently } =
+    useAuth0();
   const navigate = useNavigate();
   const location = useLocation();
   const [offer, setOffer] = useState();
@@ -30,7 +31,36 @@ export function RequestSummary() {
   });
 
   useEffect(() => {
-    /* If user logged fill userData */
+    const getToken = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        setUserData((data) => ({ ...data, auth0Id: token }));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const getUserData = async () => {
+      try {
+        const response = await axios.get(
+          `${config.serverUri}/users/${user.sub}`
+        );
+
+        setUserData((data) => ({
+          ...data,
+          firstName: response.data.firstName,
+          lastName: response.data.lastName,
+          email: response.data.email,
+        }));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (isAuthenticated) {
+      getToken();
+      getUserData();
+    }
 
     setOffer(location.state.selectedOffer);
 
@@ -41,7 +71,14 @@ export function RequestSummary() {
     }));
 
     setRequestData(location.state.requestData);
-  }, [location.state.selectedOffer, location.state.requestData]);
+  }, [
+    location.state.selectedOffer,
+    location.state.requestData,
+    isLoading,
+    isAuthenticated,
+    user.sub,
+    getAccessTokenSilently,
+  ]);
 
   const handleChange = (e, key = null) => {
     var newUserData = userData;
@@ -67,10 +104,12 @@ export function RequestSummary() {
   function UserInformations() {
     return (
       <div>
-        <h1>
-          Consider log in or <br />
-          an account creation
-        </h1>
+        {!isAuthenticated && (
+          <p>
+            Consider log in or <br />
+            an account creation
+          </p>
+        )}
 
         <label>
           first name:
@@ -269,42 +308,42 @@ export function RequestSummary() {
     <>
       <h1>Summary</h1>
       <div className="columns">
-        {!isAuthenticated && UserInformations()}
+        {UserInformations()}
         {showSummary()}
         {offerDetails()}
-        <div className="overflow">{renderObjectValues(userData)}</div>{" "}
-        {/* TODO Remove userData */}
+        {/* TODO For debbuging uncomment line below */}
+        {/* <div className="overflow">{renderObjectValues(userData)}</div> */}
       </div>
       <button onClick={handleClick}>Submit a request</button>
     </>
   );
 }
 
-const renderObjectValues = (obj) => {
-  return (
-    <ul>
-      {Object.entries(obj).map(([key, value]) => (
-        <li key={key}>
-          {typeof value === "object" ? (
-            <>
-              <strong>{key}:</strong>
-              {renderObjectValues(value)}
-            </>
-          ) : value === true ? (
-            <>
-              <strong>{key}:</strong> true
-            </>
-          ) : value === false ? (
-            <>
-              <strong>{key}:</strong> false
-            </>
-          ) : (
-            <>
-              <strong>{key}:</strong> {value}
-            </>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
-};
+// const renderObjectValues = (obj) => {
+//   return (
+//     <ul>
+//       {Object.entries(obj).map(([key, value]) => (
+//         <li key={key}>
+//           {typeof value === "object" ? (
+//             <>
+//               <strong>{key}:</strong>
+//               {renderObjectValues(value)}
+//             </>
+//           ) : value === true ? (
+//             <>
+//               <strong>{key}:</strong> true
+//             </>
+//           ) : value === false ? (
+//             <>
+//               <strong>{key}:</strong> false
+//             </>
+//           ) : (
+//             <>
+//               <strong>{key}:</strong> {value}
+//             </>
+//           )}
+//         </li>
+//       ))}
+//     </ul>
+//   );
+// };
