@@ -3,7 +3,7 @@
 public class InquiryRespondDTO
 {
     public string CompanyName { get; set; }
-
+    public Guid InquiryRespondDTOGuid { get; set; }
     public double totalPrice { get; set; }
     public DateTime expiringAt { get; set; }
     public string InquiryId { get; set; }
