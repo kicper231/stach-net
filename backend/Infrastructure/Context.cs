@@ -55,6 +55,10 @@ public class ShopperContext : DbContext
         // DeliveryRequest
         modelBuilder.Entity<DeliveryRequest>().HasKey(p => p.DeliveryRequestId);
         modelBuilder.Entity<DeliveryRequest>()
+            .Property(dr => dr.DeliveryRequestGuid)
+            .HasMaxLength(100)
+            .IsRequired();    
+        modelBuilder.Entity<DeliveryRequest>()
             .HasOne(dr => dr.User)
             .WithMany()
             .HasForeignKey(dr => dr.UserId)
@@ -81,6 +85,9 @@ public class ShopperContext : DbContext
         // Offer
         modelBuilder.Entity<Offer>()
             .HasKey(o => o.OfferId);
+        modelBuilder.Entity<Offer>()
+            .Property(o => o.OfferGuid)
+            .IsRequired();
         modelBuilder.Entity<Offer>()
             .HasOne(o => o.CourierCompany)
             .WithMany()

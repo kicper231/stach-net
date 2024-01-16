@@ -173,7 +173,7 @@ public class DeliveryRequestService : IDeliveryRequestService
             User = deliveryRequestDTO.UserAuth0 != null ? _userRepository.GetByAuth0Id(deliveryRequestDTO.UserAuth0) : null,
             DeliveryDate = deliveryRequestDTO.DeliveryDate,
             Status = DeliveryRequestStatus.Pending,
-
+            DeliveryRequestGuid = deliveryRequestDTO.InquiryDTOGuid,
             Package = package,
             SourceAddress = sourceAddress,
             DestinationAddress = destinationAddress,
@@ -198,6 +198,7 @@ public class DeliveryRequestService : IDeliveryRequestService
             {
                 OfferStatus = OfferStatus.Available,
                 InquiryId = respond.InquiryId,
+                OfferGuid=lastRequest.DeliveryRequestGuid,
                 CourierCompany = _courierCompanyRepository.GetByName($"{respond.CompanyName}"),
                 totalPrice = respond.totalPrice,
                 OfferValidity = respond.expiringAt,
