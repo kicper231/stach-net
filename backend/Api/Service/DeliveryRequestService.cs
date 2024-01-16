@@ -48,7 +48,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         var user = _userRepository.GetByAuth0Id(userId);
         
         var deliveryRequests = _repository.GetDeliveryRequestsByUserId(userId);
-        SzymonApiAdapter _adapter = new SzymonApiAdapter();
+        ApiAdapter _adapter = new ApiAdapter();
 
 
 

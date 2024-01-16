@@ -20,7 +20,7 @@ public class InquiriesController : ControllerBase
     }
 
     [HttpGet("get-my-inquiries/{idAuth0}")]
-    //[Authorize]
+    [Authorize("client:permission")]
     public ActionResult<List<UserInquiryDTO>> GetMyDeliveryRequests(string idAuth0)
     {
         if (string.IsNullOrEmpty(idAuth0))
