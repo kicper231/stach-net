@@ -1,5 +1,4 @@
-﻿using Api.Service;
-using Domain.Adapters;
+﻿using Domain.Adapters;
 using Domain.DTO;
 using Domain;
 using Microsoft.Extensions.Options;
@@ -7,6 +6,8 @@ using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
+
+namespace Api.Service;
 public class OfferService : IOfferService
 {
     private readonly HttpClient _httpOurClientOffer;

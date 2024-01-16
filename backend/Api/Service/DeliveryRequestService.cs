@@ -9,32 +9,37 @@ using System.Reflection.Metadata.Ecma335;
 using Domain.Adapters;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace Api.Service;
 
 public class DeliveryRequestService : IDeliveryRequestService
 {
     private readonly IAddressRepository _addressRepository;
     private readonly ICourierCompanyRepository _courierCompanyRepository;
-    private readonly IInquiryService _httpOffersServise;
+    private readonly IEmailService _emailService;
     private readonly IPackageRepository _packageRepository;
     private readonly IDeliveryRequestRepository _repository;
     private readonly IUserRepository _userRepository;
     private readonly IOfferService _offerService;
     private readonly IOfferRepository _offerRepository;
+
+    private readonly IInquiryServiceFactory _inquiryServiceFactory;
    
 
     public DeliveryRequestService(IDeliveryRequestRepository repository, IUserRepository repositoryuser,
-        IPackageRepository repositorypackage, IAddressRepository repositoryaddress, IInquiryService httpService,
-        ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository)
+        IPackageRepository repositorypackage, IAddressRepository repositoryaddress, 
+        ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository, IInquiryServiceFactory inquiryServiceFactory,IEmailService Iemail)
     {
         _repository = repository;
         _userRepository = repositoryuser;
         _packageRepository = repositorypackage;
         _addressRepository = repositoryaddress;
-        _httpOffersServise = httpService;
+      
         _courierCompanyRepository = courierCompanyRepository;
         _offerService = offerService;
         _offerRepository = offerRepository;
+        _inquiryServiceFactory = inquiryServiceFactory;
+        _emailService = Iemail;
     }
 
     public List<UserInquiryDTO> GetUserDeliveryRequests(string userId)
@@ -66,14 +71,16 @@ public class DeliveryRequestService : IDeliveryRequestService
     {
         // dodanie do bazy danych requestu
         var addedRequestDelivery = CreateDeliveryRequest(deliveryRequestDTO);
-        if(deliveryRequestDTO.UserAuth0!=null)
-        SendMailToLoggedUser(deliveryRequestDTO.UserAuth0);
-
+        if (deliveryRequestDTO.UserAuth0 != null && UserExists(deliveryRequestDTO.UserAuth0))
+         {
+            User? user = GetUser(deliveryRequestDTO.UserAuth0);
+        _emailService.AfterInquiry(deliveryRequestDTO, user.FirstName,user.Email);
+        }
         //obsluga rownoległosci i zapytań wykorzystujac serwis offersservice
         var offersToSend = new List<InquiryRespondDTO?>();
         var tasks = new List<Task<InquiryRespondDTO?>>();
-        tasks.Add(SafeGetOffer(_httpOffersServise.GetOfferFromSzymonApi(deliveryRequestDTO))); //zabezpieczenie przed 404 
-        tasks.Add(SafeGetOffer(_httpOffersServise.GetOffersFromOurApi(deliveryRequestDTO)));
+        tasks.Add(SafeGetOffer(_inquiryServiceFactory.CreateService("SzymonCompany").GetOffers(deliveryRequestDTO)));//zabezpieczenie przed 404 
+        tasks.Add(SafeGetOffer(_inquiryServiceFactory.CreateService("StachnetCompany").GetOffers(deliveryRequestDTO)));//zabezpieczenie przed 404 
         var responseparrarel = await Task.WhenAll(tasks);
         
         offersToSend.AddRange(responseparrarel);
@@ -256,6 +263,11 @@ public class DeliveryRequestService : IDeliveryRequestService
     {
         var user = _userRepository.GetByAuth0Id(idAuth0);
         return user != null;
+    }
+    public User? GetUser(string idAuth0)
+    {
+        var user = _userRepository.GetByAuth0Id(idAuth0);
+        return user;
     }
 
 }

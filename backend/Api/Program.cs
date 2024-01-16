@@ -79,16 +79,17 @@ builder.Services.AddScoped<IPackageRepository, DbPackageRepository>();
 builder.Services.AddScoped<IAddressRepository, DbAddressRepository>();
 builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IInquiryService, InquiryService>();
+
 builder.Services.AddScoped<ICourierCompanyRepository, DbCourierCompanyRepository>();
 builder.Services.AddScoped<IOfferService,OfferService>();
 builder.Services.AddScoped<IOfferRepository, DbOfferRepository>();
+builder.Services.AddScoped<IInquiryServiceFactory, InquiryServiceFactory>();
 
 builder.Services.Configure<IdentityManagerSettings>(builder.Configuration.GetSection("IdentityManager"));
 
 
 builder.Services.AddScoped<IDeliveryRequestService, DeliveryRequestService>();
-
+builder.Services.AddScoped<IEmailService,EmailService>();
 
 
 

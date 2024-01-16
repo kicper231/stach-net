@@ -56,7 +56,10 @@ namespace Api.Controllers
             var result = await userService.AddUserAsync(user);
 
             if (result.Success)
-                return CreatedAtRoute("GetUserById", new { id = result.user.UserId }, result.user);
+            {
+                return Ok(result);
+            }
+               
             return BadRequest(result.Message);
         }
 

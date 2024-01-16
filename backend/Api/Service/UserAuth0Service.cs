@@ -2,14 +2,9 @@
 using Domain.DTO;
 using Domain.Model;
 
-namespace Api.Service;
 
-public interface IUserService
-{
-    ServiceResult AddUser(DTO_UserFromAuth0 user);
-    Task<ServiceResult> AddUserAsync(DTO_UserFromAuth0 user);
-    OperationResult<int> NumberOfLogins();
-}
+
+namespace Api.Service;
 
 public class UserService : IUserService
 {
