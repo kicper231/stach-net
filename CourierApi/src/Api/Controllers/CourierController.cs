@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Domain.DTO;
 using Api.Service;
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Api.Controllers
@@ -13,9 +15,11 @@ namespace Api.Controllers
     public class CourierController : ControllerBase
     {
         private readonly IDeliveryRequest _deliveryRequestService;
-        public CourierController(IDeliveryRequest deliveryRequestService)
+        private readonly ShopperContext _context;
+        public CourierController(IDeliveryRequest deliveryRequestService,ShopperContext context)
         {
             _deliveryRequestService = deliveryRequestService;
+            _context = context;
         }
         // GET: api/<ValuesController>
         [HttpPost("inquiries")]
@@ -37,7 +41,27 @@ namespace Api.Controllers
             return Ok(response);  
         }
 
-
+        [HttpPost("status")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
+        public async Task<IActionResult> GetStatus([FromBody] Guid ODTO)
+        {
+            try
+            {
+                // Poczekaj na POST z GUID
+                // Wyszukaj GUID w bazie danych
+                var deliveryRequest = await _context.Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == ODTO));
+                if (deliveryRequest == null)
+                {
+                    return NotFound($"Nie znaleziono DeliveryRequest o GUID: {ODTO}");
+                }
+                return Ok(deliveryRequest.DeliveryStatus);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            };
+        }
 
 
     }

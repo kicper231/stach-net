@@ -56,6 +56,7 @@ public class PackageDTO
 public class InquiryDTO
 {
     public string InquiryId { get; set; }
+    public Guid InquiryDTOGuid { get; set; }
     public double TotalPrice { get; set; }
     public string Currency { get; set; }
     public DateTime ExpiringAt { get; set; }
@@ -114,4 +115,11 @@ public class OfferRespondDTO
     public DateTime ValidTo { get; set; }
 }
 
+public class ErrorResponse
+{
+    public string PropertyName { get; set; }
+    public string ErrorMessage { get; set; }
+    public string Severity { get; set; }
+    public string ErrorCode { get; set; }
+}
 
