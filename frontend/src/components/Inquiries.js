@@ -33,8 +33,28 @@ export function Inquiries() {
   }, [user.sub, getAccessTokenSilently]);
 
   function InquiriesTable() {
+    const [addedInquiryId, setAddedInquiryId] = useState("");
+    const [isError, setIsError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("Error");
+
+    const handleAdd = async () => {
+      try {
+        await axios.post(`${config.serverUri}/add-delivery`, {
+          deliveryID: addedInquiryId,
+          userAuth0: user.sub,
+        });
+
+        window.location.reload();
+      } catch (error) {
+        setIsError(true);
+        typeof error.response.data === "string" &&
+          setErrorMessage(error.response.data);
+        console.error(error);
+      }
+    };
+
     return (
-      <>
+      <div className="overflow">
         <h1>Inquiries</h1>
 
         <ul>
@@ -53,7 +73,18 @@ export function Inquiries() {
             </li>
           ))}
         </ul>
-      </>
+
+        <button onClick={handleAdd}>Add inquiry</button>
+        <br />
+        <input
+          type="text"
+          value={addedInquiryId}
+          placeholder="added inquiry id"
+          onChange={(e) => setAddedInquiryId(e.target.value)}
+        />
+        <br />
+        {isError && <h1 className="red">{errorMessage}</h1>}
+      </div>
     );
   }
 
