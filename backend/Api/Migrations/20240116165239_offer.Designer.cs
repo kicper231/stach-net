@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(ShopperContext))]
-    partial class ShopperContextModelSnapshot : ModelSnapshot
+    [Migration("20240116165239_offer")]
+    partial class offer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,14 +99,14 @@ namespace Api.Migrations
                         {
                             CourierCompanyId = 1,
                             ContactInfo = "https://courierapistachnet.azurewebsites.net/api",
-                            CreatedAt = new DateTime(2024, 1, 16, 21, 5, 37, 352, DateTimeKind.Local).AddTicks(1323),
+                            CreatedAt = new DateTime(2024, 1, 16, 17, 52, 39, 588, DateTimeKind.Local).AddTicks(90),
                             Name = "StachnetCompany"
                         },
                         new
                         {
                             CourierCompanyId = 2,
                             ContactInfo = "https://mini.currier.api.snet.com.pl",
-                            CreatedAt = new DateTime(2024, 1, 16, 21, 5, 37, 352, DateTimeKind.Local).AddTicks(1365),
+                            CreatedAt = new DateTime(2024, 1, 16, 17, 52, 39, 588, DateTimeKind.Local).AddTicks(182),
                             Name = "SzymonCompany"
                         });
                 });
@@ -115,9 +118,6 @@ namespace Api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryId"));
-
-                    b.Property<Guid>("ApiId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("CourierId")
                         .HasColumnType("int");
@@ -136,9 +136,6 @@ namespace Api.Migrations
 
                     b.Property<DateTime>("PickupDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<Guid>("PublicID")
-                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("DeliveryId");
 
