@@ -1,5 +1,6 @@
 ﻿using Domain.DTO;
 using Domain.Model;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Service;
 
@@ -12,4 +13,6 @@ public interface IDeliveryRequestService
 
     bool UserExists(string idAuth0);
     Task<AddDeliveryRespondDTO> AddDeliveryToAccount(AddDeliveryDTO add);
+
+    Task<string> CancelDelivery(CancelDeliveryDTO cancelDeliveryDTO);
 }
