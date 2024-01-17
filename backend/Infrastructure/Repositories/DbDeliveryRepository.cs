@@ -54,4 +54,17 @@ public  class DeliveryRepository:IDeliveryRepository
         await _context.SaveChangesAsync();
     }
 
+
+
+    public List<Delivery> GetDeliveriesWithOffersAndRequests(IEnumerable<int> deliveryRequestIds)
+    {
+        var deliveries = _context.Deliveries
+            .Include(d => d.Offer)
+                .ThenInclude(o => o.DeliveryRequest)
+            .Where(d => deliveryRequestIds.Contains(d.Offer.DeliveryRequestId))
+            .ToList();
+
+        return deliveries;
+    }
+
 }
