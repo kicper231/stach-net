@@ -1,9 +1,12 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using Api.Service;
 using Domain.DTO;
 using Domain.Model;
+using Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers;
 
@@ -13,11 +16,15 @@ namespace Api.Controllers;
 public class InquiriesController : ControllerBase
 {
     private readonly IDeliveryRequestService _Deliveryservice;
+    private readonly ShopperContext _context;
 
-    public InquiriesController(IDeliveryRequestService deliveryRequestService)
+    public InquiriesController(IDeliveryRequestService deliveryRequestService,ShopperContext context)
     {
         _Deliveryservice = deliveryRequestService;
+        _context = context;
     }
+    
+
 
     [HttpGet("getmyinquries")]
     [Authorize]
@@ -66,11 +73,11 @@ public class InquiriesController : ControllerBase
         }
 
 
-        if (DRDTO.Package.Weight>=1000)
+        if (DRDTO.Package.Weight >= 1000)
         {
-            return BadRequest("Zbyt duża waga paczki"); 
+            return BadRequest("Zbyt duża waga paczki");
         }
-        if (DRDTO.Package.Height>1000|| DRDTO.Package.Length > 1000 || DRDTO.Package.Width > 1000 )
+        if (DRDTO.Package.Height > 1000 || DRDTO.Package.Length > 1000 || DRDTO.Package.Width > 1000)
         {
             return BadRequest("Zbyt duże wymiary paczki");
         }
@@ -95,13 +102,35 @@ public class InquiriesController : ControllerBase
     [HttpPost("acceptoffer")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OfferRespondDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
-    public async Task<IActionResult> AcceptedOffer([FromBody] OfferDTO ODTO )
+    public async Task<IActionResult> AcceptedOffer([FromBody] OfferDTO ODTO)
     {
 
         try
         {
             var respond = await _Deliveryservice.acceptoffer(ODTO);
             return Ok(respond);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        };
+    }
+
+    [HttpPost("status")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
+    public async Task<IActionResult> GetStatus([FromBody] Guid ODTO)
+    {
+        try
+        {
+            // Poczekaj na POST z GUID
+            // Wyszukaj GUID w bazie danych
+            var deliveryRequest = await _context.DeliveryRequests.FirstOrDefaultAsync(d =>( d.DeliveryRequestGuid == ODTO));
+            if (deliveryRequest == null)
+            {
+                return NotFound($"Nie znaleziono DeliveryRequest o GUID: {ODTO}");
+            }
+            return Ok(deliveryRequest.Status);
         }
         catch (KeyNotFoundException ex)
         {

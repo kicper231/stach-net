@@ -9,4 +9,5 @@ public interface IDeliveryRequestService
 
     Task<List<InquiryRespondDTO>> GetOffers(InquiryDTO deliveryRequest);
     Task<OfferRespondDTO> acceptoffer(OfferDTO offerDTO);
+    
 }
