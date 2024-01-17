@@ -69,15 +69,10 @@ public class DbUserRepository : IUserRepository
     public async Task<User> GetByAuth0IdAsync(string auth0Id)
     {
         User? result= await context.Users.FirstOrDefaultAsync(u => u.Auth0Id == auth0Id);
-        if(result==null)
-        {
-            throw new KeyNotFoundException("Nie znaleziono usera");
-        }
-        else
-        {
+       
             return result;
 
-        }
+        
        
     }
 }

@@ -64,12 +64,12 @@ public class UserService : IUserService
     {
         try
         {
-            // Asynchronicznie pobierz użytkownika.
+            
             var existingUser = await repository.GetByAuth0IdAsync(user.Auth0Id);
             if (existingUser != null)
             {
                 existingUser.NumberOfLogins++;
-                await repository.SaveChangesAsync(); // Asynchroniczne zapisywanie zmian.
+                await repository.SaveChangesAsync(); 
                 return new ServiceResult(false, "Użytkownik już istnieje.", 409);
             }
 
@@ -83,7 +83,7 @@ public class UserService : IUserService
                 NumberOfLogins = 1
             };
 
-            await repository.AddAsync(AddUser); // Załóżmy, że AddAsync to asynchroniczna wersja metody Add.
+            await repository.AddAsync(AddUser); 
 
             return new ServiceResult(true, "Użytkownik został dodany.", 201, AddUser);
         }
