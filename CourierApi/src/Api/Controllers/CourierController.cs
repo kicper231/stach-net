@@ -5,6 +5,8 @@ using Domain.DTO;
 using Api.Service;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Domain.Model;
+using Microsoft.VisualBasic;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Api.Controllers
@@ -25,8 +27,27 @@ namespace Api.Controllers
         [HttpPost("inquiries")]
         public async Task<ActionResult<InquiryDTO>> SendDeliveryRequest([FromBody] DeliveryRequestDTO DRDTO)
         {
+            if (!ModelState.IsValid || DRDTO == null)
+            {
+                return BadRequest("Nieprawidłowe dane wejściowe"); // Bad Request, ponieważ model nie spełnia warunków
+            }
+
+
+            if (DRDTO.Package.Weight >= 1000)
+            {
+                return BadRequest("Zbyt duża waga paczki");
+            }
+            if (DRDTO.Package.Height > 1000 || DRDTO.Package.Length > 1000 || DRDTO.Package.Width > 1000)
+            {
+                return BadRequest("Zbyt duże wymiary paczki");
+            }
             // Your existing code
             var response =  _deliveryRequestService.GetOffers(DRDTO);
+            SaveInDatabase(DRDTO, response);
+            
+            //await _context.SaveChangesAsync();
+            //// Zapisz zmiany w bazie danych
+            //await _context.SaveChangesAsync();
 
             return Ok(response);  // This is now valid
         }
@@ -62,7 +83,64 @@ namespace Api.Controllers
                 return NotFound(ex.Message);
             };
         }
+        void SaveInDatabaseDeliveryRequest(DeliveryRequestDTO DRDTO,InquiryDTO response)
+        {
+            var PackageDB = new Package
+            {
+                Width = DRDTO.Package.Width,
+                Height = DRDTO.Package.Height,
+                Weight = DRDTO.Package.Weight,
+                Length = DRDTO.Package.Length
+            };
+            
+            _context.Packages.Add(PackageDB);
+            _context.SaveChanges();
+            int PackageID = PackageDB.PackageId;
 
+            var SourceAddressDB = new Address
+            { 
+                HouseNumber=DRDTO.SourceAddress.HouseNumber,
+                City=DRDTO.SourceAddress.City,
+                Country=DRDTO.SourceAddress.Country,
+                zipCode=DRDTO.SourceAddress.zipCode,
+                Street=DRDTO.SourceAddress.Street,
+                ApartmentNumber=DRDTO.SourceAddress.ApartmentNumber           
+            };
+            _context.Addresses.Add(SourceAddressDB);
+            _context.SaveChanges();
+        
+        int SourceAddressID = SourceAddressDB.AddressId;
+
+            var DestinationAddressDB = new Address
+            {
+                HouseNumber = DRDTO.DestinationAddress.HouseNumber,
+                City = DRDTO.DestinationAddress.City,
+                Country = DRDTO.DestinationAddress.Country,
+                zipCode = DRDTO.DestinationAddress.zipCode,
+                Street = DRDTO.DestinationAddress.Street,
+                ApartmentNumber = DRDTO.DestinationAddress.ApartmentNumber
+            };
+            _context.Addresses.Add(DestinationAddressDB);
+            _context.SaveChanges();
+            int DestinationAddressID = DestinationAddressDB.AddressId;
+            
+            var DeliveryRequestDB = new DeliveryRequest
+            {
+                PackageId = PackageID,
+                SourceAddressId=SourceAddressID,
+                DestinationAddressId=DestinationAddressID,                
+                DeliveryDate=DRDTO.DeliveryDate,
+                RequestDate=DateTime.Now,
+                Status=DeliveryRequestStatus.Pending,
+                WeekendDelivery=DRDTO.WeekendDelivery,
+                Priority=(DRDTO.Priority==true)?PackagePriority.High:PackagePriority.Low,
+                DeliveryRequestGuid=response.InquiryDTOGuid
+
+            };
+            _context.DeliveryRequests.Add(DeliveryRequestDB);
+            _context.SaveChanges();
+
+        }
 
     }
 }

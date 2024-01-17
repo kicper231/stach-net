@@ -10,6 +10,7 @@ namespace Api.Service
         //List<DeliveryRequestDTO> GetUserDeliveryRequests(string userId);
         OfferRespondDTO AcceptOffer(OfferDTO offer);
         InquiryDTO GetOffers(DeliveryRequestDTO deliveryRequest);
+        
 
     }
     public class Inquiries : IDeliveryRequest
@@ -36,7 +37,7 @@ namespace Api.Service
 
         }
 
-
+        
 
 
         public OfferRespondDTO AcceptOffer(OfferDTO offer)
