@@ -18,7 +18,7 @@ public class DeliveryRequestService : IDeliveryRequestService
     private readonly ICourierCompanyRepository _courierCompanyRepository;
     private readonly IEmailService _emailService;
     private readonly IPackageRepository _packageRepository;
-    private readonly IDeliveryRequestRepository _repository;
+    private readonly IDeliveryRequestRepository _inquiryRepository;
     private readonly IUserRepository _userRepository;
     private readonly IOfferService _offerService;
     private readonly IOfferRepository _offerRepository;
@@ -30,7 +30,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         IPackageRepository repositorypackage, IAddressRepository repositoryaddress, 
         ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository, IInquiryServiceFactory inquiryServiceFactory,IEmailService Iemail, IDeliveryRepository delivery)
     {
-        _repository = repository;
+        _inquiryRepository = repository;
         _userRepository = repositoryuser;
         _packageRepository = repositorypackage;
         _addressRepository = repositoryaddress;
@@ -48,21 +48,51 @@ public class DeliveryRequestService : IDeliveryRequestService
 
         var user = _userRepository.GetByAuth0Id(userId);
         
-        var deliveryRequests = _repository.GetDeliveryRequestsByUserId(userId);
+        var deliveryRequests = _inquiryRepository.GetDeliveryRequestsByUserId(userId);
         ApiAdapter _adapter = new ApiAdapter();
 
+        var deliveryRequestIds = deliveryRequests.Select(dr => dr.DeliveryRequestId);
+        var deliveries = _deliveryRepository.GetDeliveriesWithOffersAndRequests(deliveryRequestIds);
 
+        //return deliveryRequests.Select(dr => new UserInquiryDTO
+        //{
+        //    Package = _adapter.ConvertToPackageDTO(dr.Package),
+        //    SourceAddress = _adapter.ConvertToAddressDTO(dr.SourceAddress),
+        //    DestinationAddress = _adapter.ConvertToAddressDTO(dr.DestinationAddress),
+        //    DeliveryDate = dr.DeliveryDate,
+        //    CreatedTime = dr.CreatedAt,
+        //    WeekendDelivery = dr.WeekendDelivery,
+        //    Priority = dr.Priority
+        //}).ToList();
 
-        return deliveryRequests.Select(dr => new UserInquiryDTO
+        var inquiries = deliveryRequests.Select(dr =>
         {
-            Package = _adapter.ConvertToPackageDTO(dr.Package),
-            SourceAddress = _adapter.ConvertToAddressDTO(dr.SourceAddress),
-            DestinationAddress = _adapter.ConvertToAddressDTO(dr.DestinationAddress),
-            DeliveryDate = dr.DeliveryDate,
-            CreatedTime = dr.CreatedAt,
-            WeekendDelivery = dr.WeekendDelivery,
-            Priority = dr.Priority
+            var delivery = deliveries.FirstOrDefault(d => d.Offer.DeliveryRequestId == dr.DeliveryRequestId);
+            var deliveryDto = delivery != null ? new UserDeliveryDTO
+            {
+                Currency = "PLN", 
+                totalPrice = delivery.Offer.totalPrice,
+                PublicID = delivery.PublicID,
+                DeliveryStatus = delivery.DeliveryStatus
+            } : null;
+
+            return new UserInquiryDTO
+            {
+                Package = _adapter.ConvertToPackageDTO(dr.Package),
+                SourceAddress = _adapter.ConvertToAddressDTO(dr.SourceAddress),
+                DestinationAddress = _adapter.ConvertToAddressDTO(dr.DestinationAddress),
+                DeliveryDate = dr.DeliveryDate,
+                CreatedTime = dr.CreatedAt,
+                WeekendDelivery = dr.WeekendDelivery,
+                Priority = dr.Priority,
+                DeliveryInfo = deliveryDto
+            };
         }).ToList();
+
+
+
+
+        return inquiries;
     }
 
     
@@ -228,7 +258,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         };
         deliveryRequest.CreatedAt = DateTime.Now;
 
-        _repository.Add(deliveryRequest);
+        _inquiryRepository.Add(deliveryRequest);
 
         return deliveryRequest;
     }

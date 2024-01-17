@@ -10,4 +10,6 @@ public interface IDeliveryRepository
     public void Update(Delivery delivery);
 
     public  Task SaveChangesAsync();
+
+    public List<Delivery> GetDeliveriesWithOffersAndRequests(IEnumerable<int> deliveryRequestIds);
 }

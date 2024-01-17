@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System.ComponentModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +61,8 @@ builder.Services.AddHttpClient("OurClient", client => { client.BaseAddress = new
 builder.Services.AddHttpClient("SzymonClient", client => { client.BaseAddress = new Uri($"{SzymonUrl}"); });
 
 builder.Services.AddHttpClient("SzymonToken", client => { client.BaseAddress = new Uri($"{TokenSzymonUrl}"); });
+
+builder.Services.AddHostedService<MyBackgroundWorker>();
 //System.Console.WriteLine(builder.Configuration["CourierApi:Url"]);
 
 //cors polityka 
