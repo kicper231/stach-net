@@ -8,6 +8,8 @@ export function RequestInquiry() {
   const { isAuthenticated, user } = useAuth0();
   const navigate = useNavigate();
   const [waiting, setWaiting] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("Error");
   const [formData, setFormData] = useState({
     userAuth0: isAuthenticated ? user?.sub : "TOKEN",
     package: {
@@ -65,6 +67,7 @@ export function RequestInquiry() {
   };
 
   const handleSend = async () => {
+    setIsError(false);
     try {
       const promise = axios.post(`${config.serverUri}/send-inquiry`, formData);
 
@@ -76,6 +79,10 @@ export function RequestInquiry() {
         state: { requestData: formData, offers: response.data },
       });
     } catch (error) {
+      setWaiting(false);
+      setIsError(true);
+      typeof error.response.data === "string" &&
+        setErrorMessage(error.response.data);
       console.error(error);
     }
   };
@@ -302,6 +309,7 @@ export function RequestInquiry() {
       <div className="overflow">{form()}</div>
       <button onClick={handleSend}>Send delivery request</button>
       {waiting && <h1>Looking for offers . . .</h1>}
+      {isError && <h1 className="red">{errorMessage}</h1>}
     </>
   );
 }
