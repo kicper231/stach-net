@@ -77,7 +77,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         return offersToSend;
     }
 
-
+   
     public async Task<OfferRespondDTO?> acceptoffer(OfferDTO offerDTO)
     {
          //przypisanie uzytkownika jesli zalogowal sie w czasie lub po porostu podeslal 
