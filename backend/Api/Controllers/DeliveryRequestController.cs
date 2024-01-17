@@ -125,12 +125,12 @@ public class InquiriesController : ControllerBase
         {
             // Poczekaj na POST z GUID
             // Wyszukaj GUID w bazie danych
-            var deliveryRequest = await _context.DeliveryRequests.FirstOrDefaultAsync(d =>( d.DeliveryRequestGuid == ODTO));
+            var deliveryRequest = await _context.Deliveries.FirstOrDefaultAsync(d =>( d.DeliveryGuid == ODTO));
             if (deliveryRequest == null)
             {
                 return NotFound($"Nie znaleziono DeliveryRequest o GUID: {ODTO}");
             }
-            return Ok(deliveryRequest.Status);
+            return Ok(deliveryRequest.DeliveryStatus);
         }
         catch (KeyNotFoundException ex)
         {
