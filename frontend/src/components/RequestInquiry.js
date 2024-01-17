@@ -3,7 +3,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { config } from "../config-development";
 
+
 export function RequestInquiry() {
+
   const navigate = useNavigate();
   const [waiting, setWaiting] = useState(false);
   const [formData, setFormData] = useState({
@@ -34,6 +36,8 @@ export function RequestInquiry() {
     priority: false,
     weekendDelivery: false,
   });
+
+
 
   const handleChange = (e, key = null) => {
     var value = e.target.value;

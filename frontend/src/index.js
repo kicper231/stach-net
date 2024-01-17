@@ -15,6 +15,7 @@ const providerConfig = {
   clientId: config.auth0clientId,
   authorizationParams: {
     redirect_uri: window.location.origin,
+    ...(config.audience ? { audience: config.audience } : null),
   },
 };
 

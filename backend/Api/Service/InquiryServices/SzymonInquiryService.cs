@@ -54,8 +54,8 @@ public class SzymonInquiryService : IInquiryService
 
     public async Task<InquiryRespondDTO> GetOffers(InquiryDTO requestDTO)
     {
-        var szymonApiAdapter = new SzymonApiAdapter();
-        var inquiryToSzymonDTO = szymonApiAdapter.ConvertToInquiryToSzymonDTO(requestDTO);
+        var ApiAdapter = new ApiAdapter();
+        var inquiryToSzymonDTO = ApiAdapter.ConvertToInquiryToSzymonDTO(requestDTO);
 
         var inquirymessage = new HttpRequestMessage(HttpMethod.Post, $"{_httpClient.BaseAddress}Inquires")
         {
