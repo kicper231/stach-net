@@ -18,8 +18,12 @@ div.contextHolder {
 }
 
 .overflow {
-  overflow-y: scroll;
+  overflow-y: auto;
   height: calc(80vh - 200px);
+}
+
+.red {
+  color: red;
 }
 
 * {

@@ -9,7 +9,7 @@ export function RequestInquiry() {
   const navigate = useNavigate();
   const [waiting, setWaiting] = useState(false);
   const [formData, setFormData] = useState({
-    userAuth0: isAuthenticated ? user?.sub : null,
+    userAuth0: isAuthenticated ? user?.sub : "TOKEN",
     package: {
       width: 1.5,
       height: 1,
