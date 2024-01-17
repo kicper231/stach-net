@@ -41,19 +41,19 @@ namespace Api.Controllers
             return Ok(response);  
         }
 
-        [HttpPost("status")]
+        [HttpGet("status/{OfferGuid}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
-        public async Task<IActionResult> GetStatus([FromBody] Guid ODTO)
+        public async Task<IActionResult> GetStatus([FromBody] Guid OfferGuid)
         {
             try
             {
                 // Poczekaj na POST z GUID
                 // Wyszukaj GUID w bazie danych
-                var deliveryRequest = await _context.Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == ODTO));
+                var deliveryRequest = await _context.Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == OfferGuid));
                 if (deliveryRequest == null)
                 {
-                    return NotFound($"Nie znaleziono DeliveryRequest o GUID: {ODTO}");
+                    return NotFound($"Nie znaleziono DeliveryRequest o GUID: {OfferGuid}");
                 }
                 return Ok(deliveryRequest.DeliveryStatus);
             }

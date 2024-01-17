@@ -83,6 +83,7 @@ public class OfferDTO
     public string InquiryId { get; set; }
     public string CompanyName { get; set; }
 
+    public Guid OfferDTOGuid { get; set; }
     public string Name { get; set; }
     public string Email { get; set; }
     public AddressDTO Address { get; set; }

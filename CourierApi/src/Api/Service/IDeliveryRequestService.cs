@@ -22,6 +22,7 @@ namespace Api.Service
                 InquiryId = "123abc",
                 TotalPrice = 150.99,
                 Currency = "USD",
+                InquiryDTOGuid = Guid.NewGuid(),
                 ExpiringAt = DateTime.Now.AddDays(7),
                 PriceBreakDown = new List<PriceBreakdown>
     {
@@ -40,7 +41,7 @@ namespace Api.Service
 
         public OfferRespondDTO AcceptOffer(OfferDTO offer)
         {
-            return new OfferRespondDTO { OfferRequestId = new Guid("26967244-cdcf-4df6-92c0-bbb4e5687074"), ValidTo = DateAndTime.Now };
+            return new OfferRespondDTO { OfferRequestId=offer.OfferDTOGuid, ValidTo = DateAndTime.Now };
         }
     }
 
