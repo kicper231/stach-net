@@ -7,24 +7,30 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 export function Inquiries() {
   const navigate = useNavigate();
-  const { user } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
   const [inquiries, setInquiries] = useState([]);
 
   useEffect(() => {
     const getInquirues = async () => {
       try {
+        const token = await getAccessTokenSilently();
         const response = await axios.get(
-          `${config.serverUri}/get-my-inquiries/${user.sub}`
+          `${config.serverUri}/get-my-inquiries/${user.sub}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         setInquiries(response.data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
 
     getInquirues();
-  }, [user.sub]);
+  }, [user.sub, getAccessTokenSilently]);
 
   function InquiriesTable() {
     return (
