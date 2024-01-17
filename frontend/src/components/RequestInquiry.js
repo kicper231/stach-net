@@ -2,12 +2,14 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { config } from "../config-development";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export function RequestInquiry() {
+  const { isAuthenticated, user } = useAuth0();
   const navigate = useNavigate();
   const [waiting, setWaiting] = useState(false);
   const [formData, setFormData] = useState({
-    userAuth0: "TOKEN",
+    userAuth0: isAuthenticated ? user?.sub : null,
     package: {
       width: 1.5,
       height: 1,

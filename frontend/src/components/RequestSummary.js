@@ -5,8 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { config } from "../config-development";
 
 export function RequestSummary() {
-  const { isAuthenticated, user, isLoading, getAccessTokenSilently } =
-    useAuth0();
+  const { isAuthenticated, user, isLoading } = useAuth0();
   const navigate = useNavigate();
   const location = useLocation();
   const [offer, setOffer] = useState();
@@ -31,16 +30,7 @@ export function RequestSummary() {
   });
 
   useEffect(() => {
-    const getToken = async () => {
-      try {
-        const token = await getAccessTokenSilently();
-        setUserData((data) => ({ ...data, auth0Id: token }));
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    const getUserData = async () => {
+    const changeUserData = async () => {
       try {
         const response = await axios.get(
           `${config.serverUri}/users/${user?.sub}`
@@ -48,6 +38,7 @@ export function RequestSummary() {
 
         setUserData((data) => ({
           ...data,
+          auth0Id: user?.sub,
           firstName: response.data.firstName,
           lastName: response.data.lastName,
           email: response.data.email,
@@ -58,8 +49,7 @@ export function RequestSummary() {
     };
 
     if (isAuthenticated) {
-      getToken();
-      getUserData();
+      changeUserData();
     }
 
     setOffer(location.state.selectedOffer);
@@ -77,7 +67,6 @@ export function RequestSummary() {
     isLoading,
     isAuthenticated,
     user?.sub,
-    getAccessTokenSilently,
   ]);
 
   const handleChange = (e, key = null) => {
