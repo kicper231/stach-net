@@ -8,6 +8,7 @@ using Microsoft.VisualBasic;
 using System.Reflection.Metadata.Ecma335;
 using Domain.Adapters;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 
 namespace Api.Service;
@@ -24,17 +25,17 @@ public class DeliveryRequestService : IDeliveryRequestService
     private readonly IOfferRepository _offerRepository;
     private readonly IDeliveryRepository _deliveryRepository;
     private readonly IInquiryServiceFactory _inquiryServiceFactory;
-   
+
 
     public DeliveryRequestService(IDeliveryRequestRepository repository, IUserRepository repositoryuser,
-        IPackageRepository repositorypackage, IAddressRepository repositoryaddress, 
-        ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository, IInquiryServiceFactory inquiryServiceFactory,IEmailService Iemail, IDeliveryRepository delivery)
+        IPackageRepository repositorypackage, IAddressRepository repositoryaddress,
+        ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository, IInquiryServiceFactory inquiryServiceFactory, IEmailService Iemail, IDeliveryRepository delivery)
     {
         _inquiryRepository = repository;
         _userRepository = repositoryuser;
         _packageRepository = repositorypackage;
         _addressRepository = repositoryaddress;
-      
+
         _courierCompanyRepository = courierCompanyRepository;
         _offerService = offerService;
         _offerRepository = offerRepository;
@@ -47,7 +48,7 @@ public class DeliveryRequestService : IDeliveryRequestService
     {
 
         var user = _userRepository.GetByAuth0Id(userId);
-        
+
         var deliveryRequests = _inquiryRepository.GetDeliveryRequestsByUserId(userId);
         ApiAdapter _adapter = new ApiAdapter();
 
@@ -70,7 +71,7 @@ public class DeliveryRequestService : IDeliveryRequestService
             var delivery = deliveries.FirstOrDefault(d => d.Offer.DeliveryRequestId == dr.DeliveryRequestId);
             var deliveryDto = delivery != null ? new UserDeliveryDTO
             {
-                Currency = "PLN", 
+                Currency = "PLN",
                 totalPrice = delivery.Offer.totalPrice,
                 PublicID = delivery.PublicID,
                 DeliveryStatus = delivery.DeliveryStatus
@@ -95,7 +96,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         return inquiries;
     }
 
-    
+
 
     //  
     public async Task<List<InquiryRespondDTO?>> GetOffers(InquiryDTO deliveryRequestDTO)
@@ -103,9 +104,9 @@ public class DeliveryRequestService : IDeliveryRequestService
         // dodanie do bazy danych requestu
         var addedRequestDelivery = CreateDeliveryRequest(deliveryRequestDTO);
         if (deliveryRequestDTO.UserAuth0 != null && UserExists(deliveryRequestDTO.UserAuth0))
-         {
+        {
             User? user = GetUser(deliveryRequestDTO.UserAuth0);
-        _emailService.AfterInquiry(deliveryRequestDTO, user.FirstName,user.Email);
+            _emailService.AfterInquiry(deliveryRequestDTO, user.FirstName, user.Email);
         }
         //obsluga rownoległosci i zapytań wykorzystujac serwis offersservice
         var offersToSend = new List<InquiryRespondDTO?>();
@@ -113,7 +114,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         tasks.Add(SafeGetOffer(_inquiryServiceFactory.CreateService("SzymonCompany").GetOffers(deliveryRequestDTO)));//zabezpieczenie przed 404 
         tasks.Add(SafeGetOffer(_inquiryServiceFactory.CreateService("StachnetCompany").GetOffers(deliveryRequestDTO)));//zabezpieczenie przed 404 
         var responseparrarel = await Task.WhenAll(tasks);
-        
+
         offersToSend.AddRange(responseparrarel);
         offersToSend.RemoveAll(offer => offer == null);
         //dodaje przyjete oferty do bazy danych moze uzytkownik je zaakceptuje
@@ -124,7 +125,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         {
             CompanyName = "Company C",
             totalPrice = 120,
-            Currency="PLN",
+            Currency = "PLN",
             expiringAt = DateTime.Now.AddDays(1),
             InquiryId = "SomeInquiryId2",
             PriceBreakDown = new List<PriceBreakdown>
@@ -148,12 +149,12 @@ public class DeliveryRequestService : IDeliveryRequestService
             throw new InvalidOperationException("Offer not found for the given inquiry ID.");
         }
         //przypisanie uzytkownika jesli zalogowal sie w czasie lub po porostu podeslal 
-        if (offerDTO.Auth0Id!=null&& _userRepository.GetByAuth0Id(offerDTO.Auth0Id) != null)
+        if (offerDTO.Auth0Id != null && _userRepository.GetByAuth0Id(offerDTO.Auth0Id) != null)
         {
-           _offerRepository.GetByInquiryId(offerDTO.InquiryId).DeliveryRequest.User=_userRepository.GetByAuth0Id(offerDTO.Auth0Id);
+            _offerRepository.GetByInquiryId(offerDTO.InquiryId).DeliveryRequest.User = _userRepository.GetByAuth0Id(offerDTO.Auth0Id);
         }
-        
-        
+
+
         OfferRespondDTO? respond = default;
 
         // jako ze są tylk 3 firmy zaimplementuje to bez adapter i fabryki (jak starczy czas) 
@@ -161,13 +162,13 @@ public class DeliveryRequestService : IDeliveryRequestService
         {
             case "SzymonCompany":
                 {
-                   respond = await _offerService.GetOfferSzymonID(offerDTO);
+                    respond = await _offerService.GetOfferSzymonID(offerDTO);
                     break;
                 }
 
             case "StachnetCompany":
                 {
-                   respond = await _offerService.GetOfferOurID(offerDTO);
+                    respond = await _offerService.GetOfferOurID(offerDTO);
                     break;
                 }
 
@@ -185,7 +186,7 @@ public class DeliveryRequestService : IDeliveryRequestService
             ApiId = respond.OfferRequestId
         };
 
-       Guid PublicId= _deliveryRepository.Add(delivery);
+        Guid PublicId = _deliveryRepository.Add(delivery);
 
         respond.OfferRequestId = PublicId;
         return respond;
@@ -278,7 +279,7 @@ public class DeliveryRequestService : IDeliveryRequestService
                 totalPrice = respond.totalPrice,
                 OfferValidity = respond.expiringAt,
                 DeliveryRequest = lastRequest,
-                
+
             };
             _offerRepository.Add(offer);
 
@@ -302,7 +303,7 @@ public class DeliveryRequestService : IDeliveryRequestService
             throw new KeyNotFoundException("Już ma przypisanego użytkownika (ciebie jesli nikomu nie udostępniles id) .");
         }
 
-       
+
         delivery.Offer.DeliveryRequest.User = await _userRepository.GetByAuth0IdAsync(add.UserAuth0);
         delivery.Offer.DeliveryRequest.UserAuth0 = add.UserAuth0;
 
@@ -310,10 +311,10 @@ public class DeliveryRequestService : IDeliveryRequestService
         _deliveryRepository.Update(delivery);
         await _deliveryRepository.SaveChangesAsync();
 
-      
+
         var responseDTO = new AddDeliveryRespondDTO
         {
-            
+
         };
 
         return responseDTO;
@@ -321,6 +322,31 @@ public class DeliveryRequestService : IDeliveryRequestService
 
 
 
+    public async Task<string> CancelDelivery(CancelDeliveryDTO cancelDeliveryDTO)
+    {
+        var response = await _deliveryRepository.FindAsync(cancelDeliveryDTO.PublicID);
+
+        if (response == null)  throw new KeyNotFoundException("nie ma takiego public id w bazie");
+        if(response.Offer.DeliveryRequest.UserAuth0!=cancelDeliveryDTO.UserAuth0)
+        {
+          throw new  KeyNotFoundException("nie jestes userem ktory jest przypisany do tego zamowienia");
+        }
+
+        response.DeliveryStatus = DeliveryStatus.CancelledByClient;
+         _deliveryRepository.Update(response);
+       await  _deliveryRepository.SaveChangesAsync();
+
+
+        return "Udalo sie!";
+    }
+
+    
+
+
+
+
+
+    // do przeniesienia
 
     public bool UserExists(string idAuth0)
     {
