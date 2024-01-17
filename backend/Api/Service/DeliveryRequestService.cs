@@ -74,7 +74,7 @@ public class DeliveryRequestService : IDeliveryRequestService
                 Currency = "PLN",
                 totalPrice = delivery.Offer.totalPrice,
                 PublicID = delivery.PublicID,
-                DeliveryStatus = delivery.DeliveryStatus
+                DeliveryStatus = delivery.DeliveryStatus.ToString()
             } : null;
 
             return new UserInquiryDTO
