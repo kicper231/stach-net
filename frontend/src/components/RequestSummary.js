@@ -43,7 +43,7 @@ export function RequestSummary() {
     const getUserData = async () => {
       try {
         const response = await axios.get(
-          `${config.serverUri}/users/${user.sub}`
+          `${config.serverUri}/users/${user?.sub}`
         );
 
         setUserData((data) => ({
@@ -76,7 +76,7 @@ export function RequestSummary() {
     location.state.requestData,
     isLoading,
     isAuthenticated,
-    user.sub,
+    user?.sub,
     getAccessTokenSilently,
   ]);
 
