@@ -80,4 +80,48 @@ public  class DeliveryRepository:IDeliveryRepository
         return deliveries;
     }
 
+    public async Task<List<Delivery>> FindAcceptedDelivery()
+    {
+        var deliveries = await _context.Deliveries
+            .Where(d => d.Courier == null && d.DeliveryStatus == DeliveryStatus.AcceptedByWorker).Include(d => d.Offer)
+        .ThenInclude(o => o.DeliveryRequest)
+            .ThenInclude(dr => dr.Package)
+    .Include(d => d.Offer)
+        .ThenInclude(o => o.DeliveryRequest)
+            .ThenInclude(dr => dr.SourceAddress)
+    .Include(d => d.Offer)
+        .ThenInclude(o => o.DeliveryRequest)
+            .ThenInclude(dr => dr.DestinationAddress)
+    .Include(d => d.Offer)
+        .ThenInclude(o => o.DeliveryRequest)
+            .ThenInclude(dr => dr.User)
+    .Include(d => d.Courier)
+            .ToListAsync();
+
+        return deliveries;
+    }
+
+
+    public async Task<List<Delivery>> FindDeliveriesByCourierId(string courierId)
+    {
+        var deliveries = await _context.Deliveries
+        .Where(d => d.Courier != null && d.Courier.Auth0Id == courierId)
+        .Include(d => d.Offer)
+            .ThenInclude(o => o.DeliveryRequest)
+                .ThenInclude(dr => dr.Package)
+        .Include(d => d.Offer)
+            .ThenInclude(o => o.DeliveryRequest)
+                .ThenInclude(dr => dr.SourceAddress)
+        .Include(d => d.Offer)
+            .ThenInclude(o => o.DeliveryRequest)
+                .ThenInclude(dr => dr.DestinationAddress)
+        .Include(d => d.Offer)
+            .ThenInclude(o => o.DeliveryRequest)
+                .ThenInclude(dr => dr.User)
+        .Include(d => d.Courier)
+        .ToListAsync();
+
+        return deliveries;
+    }
+
 }
