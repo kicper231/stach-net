@@ -15,6 +15,7 @@ namespace Api.Controllers
 
     
     [ApiController]
+    //[Authorize]
     public class CourierController : ControllerBase
     {
         private readonly IDeliveryRequest _deliveryRequestService;

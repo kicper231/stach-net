@@ -151,6 +151,7 @@ public class ClientService : IClientService
         //przypisanie uzytkownika jesli zalogowal sie w czasie lub po porostu podeslal 
         if (offerDTO.Auth0Id != null && _userRepository.GetByAuth0Id(offerDTO.Auth0Id) != null)
         {
+               
             _offerRepository.GetByInquiryId(new Guid(offerDTO.InquiryId)).DeliveryRequest.User = _userRepository.GetByAuth0Id(offerDTO.Auth0Id);
         }
 
@@ -201,7 +202,7 @@ public class ClientService : IClientService
         }
         catch (HttpRequestException e)
         {
-            Console.WriteLine($"Błąd podczas wykonywania żądania: {e.Message} {e.Data}");
+            Console.WriteLine($"Error While: {e.Message} {e.Data}");
             return null;
         }
     }
@@ -295,12 +296,12 @@ public class ClientService : IClientService
         Delivery delivery = await _deliveryRepository.FindAsync(add.DeliveryID);
         if (delivery == null)
         {
-            throw new KeyNotFoundException("Nie znaleziono dostawy o podanym ID.");
+            throw new KeyNotFoundException("Dont find delivery with that id");
         }
 
         if (delivery.Offer.DeliveryRequest.User != null)
         {
-            throw new KeyNotFoundException("Już ma przypisanego użytkownika (ciebie jesli nikomu nie udostępniles id) .");
+            throw new KeyNotFoundException("Delivery already have user (probably you).");
         }
 
 
@@ -326,10 +327,10 @@ public class ClientService : IClientService
     {
         var response = await _deliveryRepository.FindAsync(cancelDeliveryDTO.PublicID);
 
-        if (response == null)  throw new KeyNotFoundException("nie ma takiego public id w bazie");
+        if (response == null)  throw new KeyNotFoundException("Cant find that deliveryid in database");
         if(response.Offer.DeliveryRequest.UserAuth0!=cancelDeliveryDTO.UserAuth0)
         {
-          throw new  KeyNotFoundException("nie jestes userem ktory jest przypisany do tego zamowienia");
+          throw new  KeyNotFoundException("You arent user assigned to that delivery");
         }
 
         response.DeliveryStatus = DeliveryStatus.CancelledByClient;
@@ -337,7 +338,7 @@ public class ClientService : IClientService
        await  _deliveryRepository.SaveChangesAsync();
 
 
-        return "Udalo sie!";
+        return "Ok!";
     }
 
     

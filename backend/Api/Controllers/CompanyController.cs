@@ -23,7 +23,7 @@ public class CompanyController : ControllerBase
 
     [HttpGet("officeworker/get-all-deliveries")]
     // [Authorize("officeworker:permissions")]
-    public async Task<ActionResult<List<DTOIOD>>> GetCompanyInquiry()
+    public async Task<ActionResult<List<DTOIOD>>> GetCompanyDelivery()
     {
 
         try {
@@ -42,57 +42,6 @@ public class CompanyController : ControllerBase
        
      
     }
-   
-
-
-    [HttpGet("courier/get-all-available-delivery")]
-    // [Authorize("officeworker:permissions")]
-    public async Task<ActionResult<List<DTOIOD>>> GetCompanyCourierInquiry()
-    {
-
-        try
-        {
-
-            var deliveryRequests = await _companyService.GetIavailableIODCourierAsync();
-            return Ok(deliveryRequests);
-        }
-
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-
-
-
-
-
-    }
-
-
-
-    [HttpGet("courier/get-all-my-delivery/{Auth0Id}")]
-    // [Authorize("officeworker:permissions")]
-    public async Task<ActionResult<List<DTOIOD>>> GetCompanyCourierAllInquiry(string Auth0Id)
-    {
-
-        try
-        {
-
-            var deliveryRequests = await _companyService.GetIODCourierMyDeliveryAsync(Auth0Id);
-            return Ok(deliveryRequests);
-        }
-
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-
-
-
-
-
-    }
-
 
 
     [HttpPost("officeworker/change-delivery-status")]
@@ -100,22 +49,21 @@ public class CompanyController : ControllerBase
 
     // [Authorize("officeworker:permissions")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(InquiryRespondDTO))]
-    
+
     public async Task<IActionResult> ChangeStatusByWorker(ChangeDeliveryStatusDTO Data)
     {
 
         try
         {
-           var respond= await _companyService.ChangeStatusByWorker(Data);
+            var respond = await _companyService.ChangeStatusByWorker(Data);
             return Ok(respond);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
 
     }
-
 
     [HttpGet("get-delivery/{deliveryid}")]
     // [Authorize("officeworker:permissions")] kurier i office worker
@@ -141,6 +89,60 @@ public class CompanyController : ControllerBase
     }
 
 
+
+    [HttpGet("courier/get-all-available-delivery")]
+    // [Authorize("officeworker:permissions")]
+    public async Task<ActionResult<List<DTOIOD>>> GetCompanyCourierAllDelivery()
+    {
+
+        try
+        {
+
+            var deliveryRequests = await _companyService.GetAvailableIOD();
+            return Ok(deliveryRequests);
+        }
+
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+
+
+
+
+    }
+
+
+
+    [HttpGet("courier/get-all-my-delivery/{Auth0Id}")]
+    // [Authorize("officeworker:permissions")]
+    public async Task<ActionResult<List<DTOIOD>>> GetCompanyCourierDelivery(string Auth0Id)
+    {
+
+        try
+        {
+
+            var deliveryRequests = await _companyService.GetCourierIOD(Auth0Id);
+            return Ok(deliveryRequests);
+        }
+
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+
+
+
+
+    }
+
+
+
+   
+
+  
 
     [HttpPost("courier/change-delivery-status")]
     public async Task<IActionResult> ChangeStatusByCourier(ChangeDeliveryStatusDTO Data)
