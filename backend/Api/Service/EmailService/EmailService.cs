@@ -27,7 +27,7 @@ public class EmailService: IEmailService
       
 
         string subject = string.Format("New inquiry");
-        string body = string.Format("Hej! Przeslanie inquiry powiodlo się! Dziękujemy za zaufanie naszej firmie {0} ~ Stachnet",name);
+        string body = string.Format($"Hej! Przeslanie inquiry powiodlo się! Dziękujemy za zaufanie naszej firmie {name} ~ Stachnet");
         EmailContent emailContent = new EmailContent(subject);
         emailContent.PlainText = body;
         string toEmailAddress = $"{email}";
