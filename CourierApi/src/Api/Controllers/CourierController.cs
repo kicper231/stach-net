@@ -7,6 +7,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Domain.Model;
 using Microsoft.VisualBasic;
+using Azure;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Api.Controllers
@@ -43,7 +44,7 @@ namespace Api.Controllers
             }
             // Your existing code
             var response =  _deliveryRequestService.GetOffers(DRDTO);
-            SaveInDatabase(DRDTO, response);
+            SaveInDatabaseDeliveryRequest(DRDTO, response);
             
             //await _context.SaveChangesAsync();
             //// Zapisz zmiany w bazie danych
@@ -58,6 +59,7 @@ namespace Api.Controllers
         {
             
             var response = _deliveryRequestService.AcceptOffer(DRDTO);
+            SaveInDatabaseDelivery(DRDTO);
 
             return Ok(response);  
         }
@@ -69,8 +71,7 @@ namespace Api.Controllers
         {
             try
             {
-                // Poczekaj na POST z GUID
-                // Wyszukaj GUID w bazie danych
+                
                 var deliveryRequest = await _context.Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == OfferGuid));
                 if (deliveryRequest == null)
                 {
@@ -83,6 +84,34 @@ namespace Api.Controllers
                 return NotFound(ex.Message);
             };
         }
+
+        [HttpPost("status/ChangeStatus")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GuidInt))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
+        public async Task<IActionResult> SetStatus([FromBody] GuidInt OfferGuid)
+        {
+            try
+            {
+                var delivery = await _context.Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == OfferGuid.g));
+                if (delivery == null)
+                {
+                    return NotFound($"Nie znaleziono DeliveryRequest o GUID: {OfferGuid.g}");
+                }
+                else
+                {
+                    delivery.DeliveryStatus  = (DeliveryStatus)Enum.ToObject(typeof(DeliveryStatus), OfferGuid.i);
+                    _context.SaveChanges();
+                    return Ok("Status updated successfully");
+                }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            };
+
+        }
+
+
         void SaveInDatabaseDeliveryRequest(DeliveryRequestDTO DRDTO,InquiryDTO response)
         {
             var PackageDB = new Package
@@ -109,7 +138,7 @@ namespace Api.Controllers
             _context.Addresses.Add(SourceAddressDB);
             _context.SaveChanges();
         
-        int SourceAddressID = SourceAddressDB.AddressId;
+            int SourceAddressID = SourceAddressDB.AddressId;
 
             var DestinationAddressDB = new Address
             {
@@ -142,5 +171,16 @@ namespace Api.Controllers
 
         }
 
+
+        void SaveInDatabaseDelivery(OfferDTO DRDTO)
+        {
+            var DeliveryDB = new Delivery
+            {
+                DeliveryGuid = DRDTO.OfferDTOGuid,              
+                DeliveryStatus=DeliveryStatus.AcceptedByWorker
+            };
+            _context.Deliveries.Add(DeliveryDB);
+            _context.SaveChanges();
+        }
     }
 }
