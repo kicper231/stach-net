@@ -61,12 +61,7 @@ namespace Infrastructure
                 .Property(dr => dr.DeliveryRequestGuid)
                 .HasMaxLength(100)
                 .IsRequired();
-            modelBuilder.Entity<DeliveryRequest>()
-                .HasOne(dr => dr.User)
-                .WithMany()
-                .HasForeignKey(dr => dr.UserId)
-                .IsRequired(false)
-                .OnDelete(DeleteBehavior.Restrict);
+          
 
             modelBuilder.Entity<DeliveryRequest>()
                 .HasOne(dr => dr.Package)

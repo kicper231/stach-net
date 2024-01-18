@@ -12,4 +12,7 @@ public interface IDeliveryRepository
     public  Task SaveChangesAsync();
 
     public List<Delivery> GetDeliveriesWithOffersAndRequests(IEnumerable<int> deliveryRequestIds);
+
+    public Task<List<Delivery>> GetAllDeliveriesAsync();
+    
 }

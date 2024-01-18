@@ -56,8 +56,8 @@ public class PackageDTO
 
 public class InquiryDTO
 {
-    public string InquiryId { get; set; }
-    public Guid InquiryDTOGuid { get; set; }
+    public Guid InquiryId { get; set; }
+   
     public double TotalPrice { get; set; }
     public string Currency { get; set; }
     public DateTime ExpiringAt { get; set; }
@@ -81,10 +81,10 @@ public class PriceBreakdown
 public class OfferDTO
 {
    // public string Auth0Id { get; set; }
-    public string InquiryId { get; set; }
-    public string CompanyName { get; set; }
+    public Guid InquiryId { get; set; }
+    
 
-    public Guid OfferDTOGuid { get; set; }
+   // public Guid OfferDTOGuid { get; set; }
     public string Name { get; set; }
     public string Email { get; set; }
     public AddressDTO Address { get; set; }

@@ -24,8 +24,8 @@ public enum DeliveryStatus
      AcceptedByWorker,
      AcceptedByKurier,
      CancelledByClient,
-     CancelledByKurier,
+     CannotDelivery,
      CancelledByWorker,
-     WaitingToAccept
+     WaitingToAcceptByWorker
      
 }

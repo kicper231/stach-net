@@ -91,9 +91,10 @@ builder.Services.AddScoped<IOfferRepository, DbOfferRepository>();
 builder.Services.AddScoped<IInquiryServiceFactory, InquiryServiceFactory>();
 builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
 builder.Services.Configure<IdentityManagerSettings>(builder.Configuration.GetSection("IdentityManager"));
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 
 
-builder.Services.AddScoped<IDeliveryRequestService, DeliveryRequestService>();
+builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IEmailService,EmailService>();
 
 

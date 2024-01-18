@@ -6,7 +6,8 @@ namespace Infrastructure;
 public interface IOfferRepository
 {
     public void Add(Offer offer);
-    public Offer? GetByInquiryId(string id);
+    public Offer? GetByInquiryId(Guid id);
+    public Task<List<Offer>> GetAllByCompany(string CompanyName);
 }
 
 public class DbOfferRepository : IOfferRepository
@@ -19,7 +20,7 @@ public class DbOfferRepository : IOfferRepository
     }
 
 
-    public Offer? GetByInquiryId(string id)
+    public Offer? GetByInquiryId(Guid id)
     {
         return _context.Offers.Include(o => o.DeliveryRequest)
                           .FirstOrDefault(a => a.InquiryId == id);
@@ -30,5 +31,10 @@ public class DbOfferRepository : IOfferRepository
         _context.Offers.Add(offer);
        
         _context.SaveChanges();
+    }
+
+    public async Task<List<Offer>> GetAllByCompany(string CompanyName)
+    {
+        return await _context.Offers.Where(a => a.CourierCompany.Name == CompanyName).ToListAsync();
     }
 }

@@ -5,9 +5,8 @@ public class DeliveryRequest : BaseEntity
     public int DeliveryRequestId { get; set; }
     public Guid DeliveryRequestGuid { get; set;}
     
-    public string? UserId { get; set; }
-    public User? User { get; set; }
-    public string? UserAuth0 { get; set; }
+   
+   
     public int PackageId { get; set; }
     public Package Package { get; set; }
     public int SourceAddressId { get; set; }

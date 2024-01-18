@@ -30,11 +30,21 @@ public  class DeliveryRepository:IDeliveryRepository
     public async Task<Delivery> FindAsync(Guid id)
     {
         var delivery = await _context.Deliveries
-            .Where(d => d.PublicID == id)
-            .Include(d => d.Offer) 
-                .ThenInclude(o => o.DeliveryRequest) 
-                    .ThenInclude(r => r.User) 
-            .FirstOrDefaultAsync();
+    .Where(d => d.PublicID == id)
+    .Include(d => d.Offer)
+        .ThenInclude(o => o.DeliveryRequest)
+            .ThenInclude(dr => dr.Package)
+    .Include(d => d.Offer)
+        .ThenInclude(o => o.DeliveryRequest)
+            .ThenInclude(dr => dr.SourceAddress)
+    .Include(d => d.Offer)
+        .ThenInclude(o => o.DeliveryRequest)
+            .ThenInclude(dr => dr.DestinationAddress)
+    .Include(d => d.Offer)
+        .ThenInclude(o => o.DeliveryRequest)
+            .ThenInclude(dr => dr.User)
+    .Include(d => d.Courier) 
+    .FirstOrDefaultAsync();
 
         if (delivery == null)
         {
@@ -54,7 +64,10 @@ public  class DeliveryRepository:IDeliveryRepository
         await _context.SaveChangesAsync();
     }
 
-
+    public async Task<List<Delivery>> GetAllDeliveriesAsync()
+    {
+        return await _context.Deliveries.Include(o=>o.Courier).ToListAsync();
+    }
 
     public List<Delivery> GetDeliveriesWithOffersAndRequests(IEnumerable<int> deliveryRequestIds)
     {

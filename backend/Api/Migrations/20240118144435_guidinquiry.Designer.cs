@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(ShopperContext))]
-    partial class ShopperContextModelSnapshot : ModelSnapshot
+    [Migration("20240118144435_guidinquiry")]
+    partial class guidinquiry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.14")
+                .HasAnnotation("ProductVersion", "7.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -51,9 +54,6 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -85,9 +85,6 @@ namespace Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -102,16 +99,14 @@ namespace Api.Migrations
                         {
                             CourierCompanyId = 1,
                             ContactInfo = "https://courierapistachnet.azurewebsites.net/api",
-                            CreatedAt = new DateTime(2024, 1, 18, 3, 55, 37, 375, DateTimeKind.Local).AddTicks(4963),
-                            Id = 0,
+                            CreatedAt = new DateTime(2024, 1, 18, 15, 44, 35, 690, DateTimeKind.Local).AddTicks(5558),
                             Name = "StachnetCompany"
                         },
                         new
                         {
                             CourierCompanyId = 2,
                             ContactInfo = "https://mini.currier.api.snet.com.pl",
-                            CreatedAt = new DateTime(2024, 1, 18, 3, 55, 37, 375, DateTimeKind.Local).AddTicks(5003),
-                            Id = 0,
+                            CreatedAt = new DateTime(2024, 1, 18, 15, 44, 35, 690, DateTimeKind.Local).AddTicks(5644),
                             Name = "SzymonCompany"
                         });
                 });
@@ -124,25 +119,35 @@ namespace Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryId"));
 
+                    b.Property<Guid>("ApiId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("CourierId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DeliveryDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("DeliveryGuid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("DeliveryStatus")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
+                    b.Property<int>("OfferId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("PickupDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("PublicID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("DeliveryId");
+
+                    b.HasIndex("CourierId");
+
+                    b.HasIndex("OfferId");
 
                     b.ToTable("Deliveries");
                 });
@@ -161,14 +166,10 @@ namespace Api.Migrations
                     b.Property<DateTime>("DeliveryDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("DeliveryRequestGuid")
-                        .HasMaxLength(100)
+                    b.Property<Guid>("DeliveryRequestPublicId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("DestinationAddressId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Id")
                         .HasColumnType("int");
 
                     b.Property<int>("PackageId")
@@ -186,6 +187,12 @@ namespace Api.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserAuth0")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("WeekendDelivery")
                         .HasColumnType("bit");
 
@@ -196,6 +203,8 @@ namespace Api.Migrations
                     b.HasIndex("PackageId");
 
                     b.HasIndex("SourceAddressId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("DeliveryRequests");
                 });
@@ -217,14 +226,7 @@ namespace Api.Migrations
                     b.Property<int>("DeliveryRequestId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("InquiryId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("OfferGuid")
+                    b.Property<Guid>("InquiryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("OfferStatus")
@@ -259,9 +261,6 @@ namespace Api.Migrations
                     b.Property<double>("Height")
                         .HasColumnType("float");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<double>("Length")
                         .HasColumnType("float");
 
@@ -278,8 +277,15 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Domain.Model.User", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+
+                    b.Property<string>("Auth0Id")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -294,20 +300,33 @@ namespace Api.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("Gender")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("NumberOfLogins")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Domain.Model.Delivery", b =>
+                {
+                    b.HasOne("Domain.Model.User", "Courier")
+                        .WithMany()
+                        .HasForeignKey("CourierId");
+
+                    b.HasOne("Domain.Model.Offer", "Offer")
+                        .WithMany()
+                        .HasForeignKey("OfferId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Courier");
+
+                    b.Navigation("Offer");
                 });
 
             modelBuilder.Entity("Domain.Model.DeliveryRequest", b =>
@@ -330,11 +349,18 @@ namespace Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("DestinationAddress");
 
                     b.Navigation("Package");
 
                     b.Navigation("SourceAddress");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Model.Offer", b =>
