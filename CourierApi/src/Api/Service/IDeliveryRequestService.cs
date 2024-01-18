@@ -40,6 +40,7 @@ namespace Api.Service
         
 
 
+
         public OfferRespondDTO AcceptOffer(OfferDTO offer)
         {
             return new OfferRespondDTO { OfferRequestId=offer.OfferDTOGuid, ValidTo = DateAndTime.Now };

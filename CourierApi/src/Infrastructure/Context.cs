@@ -119,15 +119,16 @@ namespace Infrastructure
             // Delivery
             modelBuilder.Entity<Delivery>()
                 .HasKey(d => d.DeliveryId);
-            modelBuilder.Entity<Delivery>()
-                .HasOne(d => d.Offer)
-                .WithMany()
-                .HasForeignKey(d => d.OfferId)
-                .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<Delivery>()
-                .HasOne(d => d.Courier)
-                .WithMany()
-                .HasForeignKey(d => d.CourierId);
+            //modelBuilder.Entity<Delivery>()
+            // .HasOne(d => d.Offer)
+            // .WithMany()
+            // .HasForeignKey(d => d.OfferId)
+            // .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<Delivery>()
+            //    .HasOne(d => d.Courier)
+            //    .WithMany()
+            //    .HasForeignKey(d => d.CourierId);
+
 
             // User
             modelBuilder.Entity<User>()
@@ -153,8 +154,8 @@ namespace Infrastructure
                 .HasIndex(o => o.CourierCompanyId);
 
 
-            modelBuilder.Entity<Delivery>()
-                .HasIndex(d => d.CourierId);
+            //modelBuilder.Entity<Delivery>()
+            //    .HasIndex(d => d.CourierId);
 
 
             //data seed 
