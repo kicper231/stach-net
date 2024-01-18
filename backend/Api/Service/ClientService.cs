@@ -73,7 +73,7 @@ public class ClientService : IClientService
             {
                 Currency = "PLN",
                 totalPrice = delivery.Offer.totalPrice,
-                PublicID = delivery.PublicID,
+                DeliveryId = delivery.PublicID,
                 DeliveryStatus = delivery.DeliveryStatus.ToString()
             } : null;
 
@@ -325,7 +325,7 @@ public class ClientService : IClientService
 
     public async Task<string> CancelDelivery(CancelDeliveryDTO cancelDeliveryDTO)
     {
-        var response = await _deliveryRepository.FindAsync(cancelDeliveryDTO.PublicID);
+        var response = await _deliveryRepository.FindAsync(cancelDeliveryDTO.DeliveryId);
 
         if (response == null)  throw new KeyNotFoundException("Cant find that deliveryid in database");
         if(response.Offer.DeliveryRequest.UserAuth0!=cancelDeliveryDTO.UserAuth0)

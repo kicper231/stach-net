@@ -8,7 +8,7 @@ namespace Domain.DTO;
 
    public class CancelDeliveryDTO
 {
-    public Guid PublicID { get; set; }
+    public Guid DeliveryId { get; set; }
     public string UserAuth0 { get; set; }
 }
 

@@ -31,6 +31,6 @@ public class UserDeliveryDTO
 {
     public string Currency { get; set; }
     public double totalPrice { get; set; }
-    public Guid PublicID { get; set; }
+    public Guid DeliveryId { get; set; }
     public string? DeliveryStatus { get; set; }
 }
