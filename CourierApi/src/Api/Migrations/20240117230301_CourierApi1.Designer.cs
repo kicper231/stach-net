@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(ShopperContext))]
-    partial class ShopperContextModelSnapshot : ModelSnapshot
+    [Migration("20240117230301_CourierApi1")]
+    partial class CourierApi1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,7 +105,7 @@ namespace Api.Migrations
                         {
                             CourierCompanyId = 1,
                             ContactInfo = "https://courierapistachnet.azurewebsites.net/api",
-                            CreatedAt = new DateTime(2024, 1, 18, 0, 26, 18, 519, DateTimeKind.Local).AddTicks(5175),
+                            CreatedAt = new DateTime(2024, 1, 18, 0, 3, 1, 198, DateTimeKind.Local).AddTicks(689),
                             Id = 0,
                             Name = "StachnetCompany"
                         },
@@ -110,7 +113,7 @@ namespace Api.Migrations
                         {
                             CourierCompanyId = 2,
                             ContactInfo = "https://mini.currier.api.snet.com.pl",
-                            CreatedAt = new DateTime(2024, 1, 18, 0, 26, 18, 519, DateTimeKind.Local).AddTicks(5220),
+                            CreatedAt = new DateTime(2024, 1, 18, 0, 3, 1, 198, DateTimeKind.Local).AddTicks(747),
                             Id = 0,
                             Name = "SzymonCompany"
                         });
@@ -123,6 +126,9 @@ namespace Api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryId"));
+
+                    b.Property<string>("CourierId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -143,6 +149,8 @@ namespace Api.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("DeliveryId");
+
+                    b.HasIndex("CourierId");
 
                     b.ToTable("Deliveries");
                 });
@@ -316,6 +324,15 @@ namespace Api.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Domain.Model.Delivery", b =>
+                {
+                    b.HasOne("Domain.Model.User", "Courier")
+                        .WithMany()
+                        .HasForeignKey("CourierId");
+
+                    b.Navigation("Courier");
                 });
 
             modelBuilder.Entity("Domain.Model.DeliveryRequest", b =>
