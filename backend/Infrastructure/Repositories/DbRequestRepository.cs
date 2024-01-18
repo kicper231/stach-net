@@ -31,4 +31,13 @@ public class DbRequestRepository : IDeliveryRequestRepository
 
         _context.SaveChanges();
     }
+
+    public async Task<List<DeliveryRequest>> GetAllInquiriesAsync()
+    {
+        return await _context.DeliveryRequests
+            .Include(dr => dr.Package)
+            .Include(dr => dr.SourceAddress)
+            .Include(dr => dr.DestinationAddress)
+            .ToListAsync();
+    }
 }

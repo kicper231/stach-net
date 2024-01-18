@@ -12,13 +12,13 @@ namespace Api.Controllers;
 [ApiController]
 //[Route()]
 //[Authorize] 
-public class InquiriesController : ControllerBase
+public class ClientController : ControllerBase
 {
-    private readonly IDeliveryRequestService _deliveryservice;
+    private readonly IClientService _deliveryservice;
 
-    public InquiriesController(IDeliveryRequestService deliveryRequestService)
+    public ClientController(IClientService ClientService)
     {
-        _deliveryservice = deliveryRequestService;
+        _deliveryservice = ClientService;
     }
      
     [HttpGet("get-my-inquiries/{idAuth0}")]
@@ -131,21 +131,7 @@ public class InquiriesController : ControllerBase
     }
 
 
-    [HttpPost("Cancel")]
-    // [Authorize("client:permission")]
-    public async Task<IActionResult> CancelDelivery(CancelDeliveryDTO cancelDeliveryDTO)
-    {
-
-        try
-        {
-            var respond = await  _deliveryservice.CancelDelivery(cancelDeliveryDTO);
-            return Ok(respond);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
+   
 
 
 }

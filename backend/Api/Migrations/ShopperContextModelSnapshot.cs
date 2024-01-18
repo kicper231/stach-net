@@ -96,14 +96,14 @@ namespace Api.Migrations
                         {
                             CourierCompanyId = 1,
                             ContactInfo = "https://courierapistachnet.azurewebsites.net/api",
-                            CreatedAt = new DateTime(2024, 1, 16, 21, 5, 37, 352, DateTimeKind.Local).AddTicks(1323),
+                            CreatedAt = new DateTime(2024, 1, 18, 15, 44, 35, 690, DateTimeKind.Local).AddTicks(5558),
                             Name = "StachnetCompany"
                         },
                         new
                         {
                             CourierCompanyId = 2,
                             ContactInfo = "https://mini.currier.api.snet.com.pl",
-                            CreatedAt = new DateTime(2024, 1, 16, 21, 5, 37, 352, DateTimeKind.Local).AddTicks(1365),
+                            CreatedAt = new DateTime(2024, 1, 18, 15, 44, 35, 690, DateTimeKind.Local).AddTicks(5644),
                             Name = "SzymonCompany"
                         });
                 });
@@ -163,6 +163,9 @@ namespace Api.Migrations
                     b.Property<DateTime>("DeliveryDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("DeliveryRequestPublicId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("DestinationAddressId")
                         .HasColumnType("int");
 
@@ -220,9 +223,8 @@ namespace Api.Migrations
                     b.Property<int>("DeliveryRequestId")
                         .HasColumnType("int");
 
-                    b.Property<string>("InquiryId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("InquiryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("OfferStatus")
                         .HasColumnType("int");

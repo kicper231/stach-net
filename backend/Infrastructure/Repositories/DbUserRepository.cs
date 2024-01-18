@@ -66,13 +66,24 @@ public class DbUserRepository : IUserRepository
         context.SaveChanges();
     }
 
-    public async Task<User> GetByAuth0IdAsync(string auth0Id)
+    public async Task<User?> GetBy0IdAsync(int? UserId)
     {
-        User? result= await context.Users.FirstOrDefaultAsync(u => u.Auth0Id == auth0Id);
-       
-            return result;
+        if(UserId==null) return null;
+        User? result = await context.Users.FirstOrDefaultAsync(u => u.UserId == UserId);
 
-        
-       
+        return result;
+
+
+
     }
+    public async Task<User?> GetByAuth0IdAsync(string Auth0Id)
+    {
+        User? result = await context.Users.FirstOrDefaultAsync(u => u.Auth0Id == Auth0Id);
+
+        return result;
+
+
+
+    }
+
 }

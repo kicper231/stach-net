@@ -42,10 +42,11 @@ namespace Api.Controllers
             {
                 return BadRequest("Zbyt duże wymiary paczki");
             }
-            // Your existing code
+//######### saveindatadeliveryrequest do zmiany stachu powaznej ################################################################
             var response =  _deliveryRequestService.GetOffers(DRDTO);
             SaveInDatabaseDeliveryRequest(DRDTO, response);
             
+
             //await _context.SaveChangesAsync();
             //// Zapisz zmiany w bazie danych
             //await _context.SaveChangesAsync();
@@ -59,7 +60,7 @@ namespace Api.Controllers
         {
             
             var response = _deliveryRequestService.AcceptOffer(DRDTO);
-            SaveInDatabaseDelivery(DRDTO);
+            SaveInDatabaseDelivery(DRDTO,response);
 
             return Ok(response);  
         }
@@ -152,18 +153,18 @@ namespace Api.Controllers
             _context.Addresses.Add(DestinationAddressDB);
             _context.SaveChanges();
             int DestinationAddressID = DestinationAddressDB.AddressId;
-            
+
             var DeliveryRequestDB = new DeliveryRequest
             {
                 PackageId = PackageID,
-                SourceAddressId=SourceAddressID,
-                DestinationAddressId=DestinationAddressID,                
-                DeliveryDate=DRDTO.DeliveryDate,
-                RequestDate=DateTime.Now,
-                Status=DeliveryRequestStatus.Pending,
+                SourceAddressId = SourceAddressID,
+                DestinationAddressId = DestinationAddressID,
+                DeliveryDate = DRDTO.DeliveryDate,
+                RequestDate = DateTime.Now,
+                DeliveryRequestGuid = response.InquiryId,
                 WeekendDelivery=DRDTO.WeekendDelivery,
                 Priority=(DRDTO.Priority==true)?PackagePriority.High:PackagePriority.Low,
-                DeliveryRequestGuid=response.InquiryDTOGuid
+                
 
             };
             _context.DeliveryRequests.Add(DeliveryRequestDB);
@@ -172,11 +173,11 @@ namespace Api.Controllers
         }
 
 
-        void SaveInDatabaseDelivery(OfferDTO DRDTO)
+        void SaveInDatabaseDelivery(OfferDTO DRDTO,OfferRespondDTO respond)
         {
             var DeliveryDB = new Delivery
             {
-                DeliveryGuid = DRDTO.OfferDTOGuid,              
+                DeliveryGuid = respond.OfferRequestId,              
                 DeliveryStatus=DeliveryStatus.AcceptedByWorker
             };
             _context.Deliveries.Add(DeliveryDB);

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Service;
 
-public interface IDeliveryRequestService
+public interface IClientService
 {
     List<UserInquiryDTO> GetUserDeliveryRequests(string userId);
 

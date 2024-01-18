@@ -15,12 +15,12 @@ namespace Api.Controllers
     [Route("users")]
     [ApiController]
     [Produces("application/json")]
-    public class UsersController : ControllerBase
+    public class UserManagementController : ControllerBase
     {
         private readonly IUserRepository repository;
         private readonly IUserService userService;
 
-        public UsersController(IUserRepository repository, IUserService userService)
+        public UserManagementController(IUserRepository repository, IUserService userService)
         {
             this.repository = repository;
             this.userService = userService;

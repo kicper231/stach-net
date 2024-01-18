@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(ShopperContext))]
-    [Migration("20240116200537_guidtodelivery")]
-    partial class guidtodelivery
+    [Migration("20240118140020_guidadding")]
+    partial class guidadding
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -99,14 +99,14 @@ namespace Api.Migrations
                         {
                             CourierCompanyId = 1,
                             ContactInfo = "https://courierapistachnet.azurewebsites.net/api",
-                            CreatedAt = new DateTime(2024, 1, 16, 21, 5, 37, 352, DateTimeKind.Local).AddTicks(1323),
+                            CreatedAt = new DateTime(2024, 1, 18, 15, 0, 20, 670, DateTimeKind.Local).AddTicks(2605),
                             Name = "StachnetCompany"
                         },
                         new
                         {
                             CourierCompanyId = 2,
                             ContactInfo = "https://mini.currier.api.snet.com.pl",
-                            CreatedAt = new DateTime(2024, 1, 16, 21, 5, 37, 352, DateTimeKind.Local).AddTicks(1365),
+                            CreatedAt = new DateTime(2024, 1, 18, 15, 0, 20, 670, DateTimeKind.Local).AddTicks(2678),
                             Name = "SzymonCompany"
                         });
                 });
@@ -223,9 +223,8 @@ namespace Api.Migrations
                     b.Property<int>("DeliveryRequestId")
                         .HasColumnType("int");
 
-                    b.Property<string>("InquiryId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("InquiryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("OfferStatus")
                         .HasColumnType("int");

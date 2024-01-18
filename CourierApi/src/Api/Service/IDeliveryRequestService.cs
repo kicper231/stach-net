@@ -20,10 +20,10 @@ namespace Api.Service
         {
             return new InquiryDTO
             {
-                InquiryId = "123abc",
-                TotalPrice = 150.99,
-                Currency = "USD",
-                InquiryDTOGuid = Guid.NewGuid(),
+                InquiryId = Guid.NewGuid(),
+                TotalPrice = 95,
+                Currency = "PLN",
+              
                 ExpiringAt = DateTime.Now.AddDays(7),
                 PriceBreakDown = new List<PriceBreakdown>
     {
@@ -43,7 +43,7 @@ namespace Api.Service
 
         public OfferRespondDTO AcceptOffer(OfferDTO offer)
         {
-            return new OfferRespondDTO { OfferRequestId=offer.OfferDTOGuid, ValidTo = DateAndTime.Now };
+            return new OfferRespondDTO { OfferRequestId= Guid.NewGuid(), ValidTo = DateAndTime.Now };
         }
     }
 

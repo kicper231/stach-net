@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Api.Migrations
 {
     /// <inheritdoc />
-    public partial class guiditd : Migration
+    public partial class guidinquiry : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<Guid>(
-                name: "PublicID",
-                table: "Deliveries",
+                name: "DeliveryRequestPublicId",
+                table: "DeliveryRequests",
                 type: "uniqueidentifier",
                 nullable: false,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
@@ -23,36 +23,36 @@ namespace Api.Migrations
                 keyColumn: "CourierCompanyId",
                 keyValue: 1,
                 column: "CreatedAt",
-                value: new DateTime(2024, 1, 16, 19, 55, 55, 364, DateTimeKind.Local).AddTicks(3642));
+                value: new DateTime(2024, 1, 18, 15, 44, 35, 690, DateTimeKind.Local).AddTicks(5558));
 
             migrationBuilder.UpdateData(
                 table: "CourierCompanies",
                 keyColumn: "CourierCompanyId",
                 keyValue: 2,
                 column: "CreatedAt",
-                value: new DateTime(2024, 1, 16, 19, 55, 55, 364, DateTimeKind.Local).AddTicks(3689));
+                value: new DateTime(2024, 1, 18, 15, 44, 35, 690, DateTimeKind.Local).AddTicks(5644));
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "PublicID",
-                table: "Deliveries");
+                name: "DeliveryRequestPublicId",
+                table: "DeliveryRequests");
 
             migrationBuilder.UpdateData(
                 table: "CourierCompanies",
                 keyColumn: "CourierCompanyId",
                 keyValue: 1,
                 column: "CreatedAt",
-                value: new DateTime(2024, 1, 16, 17, 52, 39, 588, DateTimeKind.Local).AddTicks(90));
+                value: new DateTime(2024, 1, 18, 15, 0, 20, 670, DateTimeKind.Local).AddTicks(2605));
 
             migrationBuilder.UpdateData(
                 table: "CourierCompanies",
                 keyColumn: "CourierCompanyId",
                 keyValue: 2,
                 column: "CreatedAt",
-                value: new DateTime(2024, 1, 16, 17, 52, 39, 588, DateTimeKind.Local).AddTicks(182));
+                value: new DateTime(2024, 1, 18, 15, 0, 20, 670, DateTimeKind.Local).AddTicks(2678));
         }
     }
 }

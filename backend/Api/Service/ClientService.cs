@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Api.Service;
 
-public class DeliveryRequestService : IDeliveryRequestService
+public class ClientService : IClientService
 {
     private readonly IAddressRepository _addressRepository;
     private readonly ICourierCompanyRepository _courierCompanyRepository;
@@ -27,7 +27,7 @@ public class DeliveryRequestService : IDeliveryRequestService
     private readonly IInquiryServiceFactory _inquiryServiceFactory;
 
 
-    public DeliveryRequestService(IDeliveryRequestRepository repository, IUserRepository repositoryuser,
+    public ClientService(IDeliveryRequestRepository repository, IUserRepository repositoryuser,
         IPackageRepository repositorypackage, IAddressRepository repositoryaddress,
         ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository, IInquiryServiceFactory inquiryServiceFactory, IEmailService Iemail, IDeliveryRepository delivery)
     {
@@ -143,7 +143,7 @@ public class DeliveryRequestService : IDeliveryRequestService
     // akcpetowanie oferty przekierowanie do offer
     public async Task<OfferRespondDTO?> acceptoffer(OfferDTO offerDTO)
     {
-        Offer? offer = _offerRepository.GetByInquiryId(offerDTO.InquiryId);
+        Offer? offer = _offerRepository.GetByInquiryId(new Guid(offerDTO.InquiryId));
         if (offer == null)
         {
             throw new InvalidOperationException("Offer not found for the given inquiry ID.");
@@ -151,7 +151,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         //przypisanie uzytkownika jesli zalogowal sie w czasie lub po porostu podeslal 
         if (offerDTO.Auth0Id != null && _userRepository.GetByAuth0Id(offerDTO.Auth0Id) != null)
         {
-            _offerRepository.GetByInquiryId(offerDTO.InquiryId).DeliveryRequest.User = _userRepository.GetByAuth0Id(offerDTO.Auth0Id);
+            _offerRepository.GetByInquiryId(new Guid(offerDTO.InquiryId)).DeliveryRequest.User = _userRepository.GetByAuth0Id(offerDTO.Auth0Id);
         }
 
 
@@ -182,7 +182,7 @@ public class DeliveryRequestService : IDeliveryRequestService
         {
             Offer = offer,
             DeliveryDate = offer.DeliveryRequest.DeliveryDate,
-            DeliveryStatus = DeliveryStatus.WaitingToAccept,
+            DeliveryStatus = DeliveryStatus.WaitingToAcceptByWorker,
             ApiId = respond.OfferRequestId
         };
 
@@ -258,7 +258,7 @@ public class DeliveryRequestService : IDeliveryRequestService
             WeekendDelivery = deliveryRequestDTO.WeekendDelivery
         };
         deliveryRequest.CreatedAt = DateTime.Now;
-
+        deliveryRequest.DeliveryRequestPublicId=Guid.NewGuid();
         _inquiryRepository.Add(deliveryRequest);
 
         return deliveryRequest;
@@ -274,7 +274,7 @@ public class DeliveryRequestService : IDeliveryRequestService
             var offer = new Offer
             {
                 OfferStatus = OfferStatus.Available,
-                InquiryId = respond.InquiryId,
+                InquiryId = new Guid(respond.InquiryId),
                 CourierCompany = _courierCompanyRepository.GetByName($"{respond.CompanyName}"),
                 totalPrice = respond.totalPrice,
                 OfferValidity = respond.expiringAt,
