@@ -20,13 +20,13 @@ builder.Services.AddSingleton<IUserRepository, FakeUserRepository>();
 
 //builder.Services.AddScoped<IUserRepository, DbUserRepository>();
 builder.Services.AddScoped<IDeliveryRequest, Inquiries>();
-//builder.Services.AddDbContextFactory<ShopperContext>(options =>
-//    options.UseSqlServer(
-//        builder.Configuration.GetConnectionString("HostowanaBaza"),
-//        x => x.MigrationsAssembly("Api")
-//    )
-//);
-//builder.Services.AddHostedService<DbCreationalService>();
+builder.Services.AddDbContextFactory<ShopperContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("HostowanaBaza"),
+        x => x.MigrationsAssembly("Api")
+    )
+);
+builder.Services.AddHostedService<DbCreationalService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
