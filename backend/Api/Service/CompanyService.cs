@@ -115,6 +115,69 @@ public class CompanyService : ICompanyService
 
         return result.OrderByDescending(r => r.Inquiry.InquiryDate).ToList();
     }
+
+    
+    public async Task<List<DTOIOD>> GetIavailableIODCourierAsync()
+    {
+        var deliveries = await _deliveryRepository.FindAcceptedDelivery();
+        var resultlist= new List<DTOIOD>();
+
+        foreach(var delivery in deliveries) { 
+        var offer = delivery.Offer;
+        var user = delivery.Offer.DeliveryRequest.User;
+        var inquiry = delivery.Offer.DeliveryRequest;
+        UserData? userData = null;
+        if (user != null)
+        {
+            userData = new UserData()
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email
+            };
+        }
+        OfferData offerDto = new OfferData
+        {
+            totalPrice = offer.totalPrice,
+            Currency = "PLN"
+        };
+
+
+        DeliveryData deliveryDto = new DeliveryData
+        {
+            DeliveryID = delivery.PublicID,
+            PickupDate = delivery.PickupDate,
+            DeliveryDate = delivery.DeliveryDate,
+            DeliveryStatus = delivery.DeliveryStatus,
+            Courier = delivery.Courier
+        };
+
+        ApiAdapter adapter = new ApiAdapter();
+
+        DTOIOD result = new DTOIOD()
+        {
+            User = userData,
+            Inquiry = new InquiryData
+            {
+                InquiryID = inquiry.DeliveryRequestPublicId,
+                Package = adapter.ConvertToPackageDTO(inquiry.Package),
+                SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
+                DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
+                InquiryDate = inquiry.CreatedAt,
+                DeliveryDate = inquiry.DeliveryDate,
+                WeekendDelivery = inquiry.WeekendDelivery,
+                Priority = inquiry.Priority
+            },
+            Offer = offerDto,
+            Delivery = deliveryDto
+
+        };
+            resultlist.Add(result);
+        }
+
+        return resultlist;
+    }
+
     public async Task<DTOIOD> GetIODAsync(Guid DeliveryId)
     {
        
@@ -220,6 +283,69 @@ public class CompanyService : ICompanyService
         await _deliveryRepository.SaveChangesAsync();
 
         return "Udało sie!";
+    }
+
+
+    public async Task<List<DTOIOD>> GetIODCourierMyDeliveryAsync(string Auth0id)
+    {
+        var deliveries = await _deliveryRepository.FindDeliveriesByCourierId(Auth0id);
+        var resultlist = new List<DTOIOD>();
+
+        foreach (var delivery in deliveries)
+        {
+            var offer = delivery.Offer;
+            var user = delivery.Offer.DeliveryRequest.User;
+            var inquiry = delivery.Offer.DeliveryRequest;
+            UserData? userData = null;
+            if (user != null)
+            {
+                userData = new UserData()
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email
+                };
+            }
+            OfferData offerDto = new OfferData
+            {
+                totalPrice = offer.totalPrice,
+                Currency = "PLN"
+            };
+
+
+            DeliveryData deliveryDto = new DeliveryData
+            {
+                DeliveryID = delivery.PublicID,
+                PickupDate = delivery.PickupDate,
+                DeliveryDate = delivery.DeliveryDate,
+                DeliveryStatus = delivery.DeliveryStatus,
+                Courier = delivery.Courier
+            };
+
+            ApiAdapter adapter = new ApiAdapter();
+
+            DTOIOD result = new DTOIOD()
+            {
+                User = userData,
+                Inquiry = new InquiryData
+                {
+                    InquiryID = inquiry.DeliveryRequestPublicId,
+                    Package = adapter.ConvertToPackageDTO(inquiry.Package),
+                    SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
+                    DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
+                    InquiryDate = inquiry.CreatedAt,
+                    DeliveryDate = inquiry.DeliveryDate,
+                    WeekendDelivery = inquiry.WeekendDelivery,
+                    Priority = inquiry.Priority
+                },
+                Offer = offerDto,
+                Delivery = deliveryDto
+
+            };
+            resultlist.Add(result);
+        }
+
+        return resultlist;
     }
     //public enum DeliveryStatus
     //{
