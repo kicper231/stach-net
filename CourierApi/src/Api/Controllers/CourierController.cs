@@ -67,7 +67,7 @@ namespace Api.Controllers
         [HttpGet("status/{OfferGuid}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
-        public async Task<IActionResult> GetStatus([FromBody] Guid OfferGuid)
+        public async Task<IActionResult> GetStatus(Guid OfferGuid)
         {
             try
             {

@@ -15,7 +15,7 @@ namespace Api.Controllers
         {
             this.repository = repository;
         }
-
+        
         // GET api/users
         [HttpGet]
         public ActionResult<List<User>> Get()
