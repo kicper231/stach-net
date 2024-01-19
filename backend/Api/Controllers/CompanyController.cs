@@ -21,14 +21,14 @@ public class CompanyController : ControllerBase
         _companyService = CompanyService;
     }
 
-    [HttpGet("officeworker/get-all-deliveries")]
+    [HttpGet("officeworker/get-all-inquiries")]
     // [Authorize("officeworker:permissions")]
-    public async Task<ActionResult<List<DTOIOD>>> GetCompanyDelivery()
+    public async Task<ActionResult<List<InquiryCompanyDTO>>> GetCompanyInquiries()
     {
 
         try {
 
-            var deliveryRequests = await _companyService.GetIODAsync();
+            var deliveryRequests = await _companyService.GetCompanyInquries();
             return Ok(deliveryRequests);
         }
 
@@ -43,6 +43,29 @@ public class CompanyController : ControllerBase
      
     }
 
+    [HttpGet("officeworker/get-all-deliveries")]
+    public async Task<ActionResult<List<DeliveryCompanyDTO>>> GetCompanyDeliveries()
+    {
+
+        try
+        {
+
+            var deliveryRequests = await _companyService.GetCompanyDeliveries();
+            return Ok(deliveryRequests);
+        }
+
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+
+
+
+
+    }
+
+
 
     [HttpPost("officeworker/change-delivery-status")]
 
@@ -50,7 +73,7 @@ public class CompanyController : ControllerBase
     // [Authorize("officeworker:permissions")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(InquiryRespondDTO))]
 
-    public async Task<IActionResult> ChangeStatusByWorker(ChangeDeliveryStatusDTO Data)
+    public async Task<IActionResult> ChangeStatusByWorker(ChangeDeliveryStatusWorkerDTO Data)
     {
 
         try

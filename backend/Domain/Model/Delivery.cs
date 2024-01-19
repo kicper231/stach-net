@@ -16,16 +16,32 @@ public class Delivery : BaseEntity
     
 }
 
+//public enum DeliveryStatus
+//{
+//    PickedUp,
+//    Delivered,
+//    Failed,
+//     accepted,
+//     AcceptedByKurier,
+//     cancelled,
+//     CannotDelivery,
+//     CancelledByWorker,
+//     WaitingToAcceptByWorker
+     
+//}
+
 public enum DeliveryStatus
 {
-    PickedUp,
-    Delivered,
-    Failed,
-     AcceptedByWorker,
-     AcceptedByKurier,
-     CancelledByClient,
-     CannotDelivery,
-     CancelledByWorker,
-     WaitingToAcceptByWorker
-     
+    nostatus,
+    accepted,
+    rejected,
+    acceptedbycourier,
+    pickedup,
+    delivered,
+    cannotdelivery,
+    cancelled,
+    
+
+
+
 }

@@ -66,7 +66,20 @@ public  class DeliveryRepository:IDeliveryRepository
 
     public async Task<List<Delivery>> GetAllDeliveriesAsync()
     {
-        return await _context.Deliveries.Include(o=>o.Courier).ToListAsync();
+        return await _context.Deliveries.Include(o=>o.Courier)
+    .Include(d => d.Offer)
+        .ThenInclude(o => o.DeliveryRequest)
+            .ThenInclude(dr => dr.Package)
+    .Include(d => d.Offer)
+        .ThenInclude(o => o.DeliveryRequest)
+            .ThenInclude(dr => dr.SourceAddress)
+    .Include(d => d.Offer)
+        .ThenInclude(o => o.DeliveryRequest)
+            .ThenInclude(dr => dr.DestinationAddress)
+    .Include(d => d.Offer)
+        .ThenInclude(o => o.DeliveryRequest)
+            .ThenInclude(dr => dr.User)
+    .Include(d => d.Courier).ToListAsync();
     }
 
     public List<Delivery> GetDeliveriesWithOffersAndRequests(IEnumerable<int> deliveryRequestIds)
@@ -83,7 +96,7 @@ public  class DeliveryRepository:IDeliveryRepository
     public async Task<List<Delivery>> FindAcceptedDelivery()
     {
         var deliveries = await _context.Deliveries
-            .Where(d => d.Courier == null && d.DeliveryStatus == DeliveryStatus.AcceptedByWorker).Include(d => d.Offer)
+            .Where(d => d.Courier == null && d.DeliveryStatus == DeliveryStatus.accepted).Include(d => d.Offer)
         .ThenInclude(o => o.DeliveryRequest)
             .ThenInclude(dr => dr.Package)
     .Include(d => d.Offer)

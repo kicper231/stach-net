@@ -44,7 +44,7 @@ public class CompanyService : ICompanyService
     public async Task<DTOIOD> GetIODAsync(Guid DeliveryId)
     {
 
-
+        ApiAdapter adapter = new ApiAdapter();
         var delivery = await _deliveryRepository.FindAsync(DeliveryId);
 
         var offer = delivery.Offer;
@@ -72,11 +72,11 @@ public class CompanyService : ICompanyService
             DeliveryID = delivery.PublicID,
             PickupDate = delivery.PickupDate,
             DeliveryDate = delivery.DeliveryDate,
-            DeliveryStatus = delivery.DeliveryStatus,
-            Courier = delivery.Courier
+            DeliveryStatus = delivery.DeliveryStatus.ToString(),
+            Courier=adapter.ConvertToUserData(delivery.Courier)
         };
 
-        ApiAdapter adapter = new ApiAdapter();
+       
 
         DTOIOD result = new DTOIOD()
         {
@@ -102,22 +102,22 @@ public class CompanyService : ICompanyService
         return result;
     }
     // company worker wszystkie IOD
-    public async Task<List<DTOIOD>> GetIODAsync()
+    public async Task<List<InquiryCompanyDTO>> GetCompanyInquries()
     {
         var inquiries = await _inquiryRepository.GetAllInquiriesAsync();
-        var offers = await _offerRepository.GetAllByCompany("StachnetCompany");
-        var deliveries = await _deliveryRepository.GetAllDeliveriesAsync();
+        //var offers = await _offerRepository.GetAllByCompany("StachnetCompany");
+        //var deliveries = await _deliveryRepository.GetAllDeliveriesAsync();
 
-        var offersByInquiryId = offers.ToDictionary(o => o.DeliveryRequestId, o => o);
-        var deliveriesByOfferId = deliveries.ToDictionary(d => d.OfferId, d => d);
-
-        var result = new List<DTOIOD>();
+        //var offersByInquiryId = offers.ToDictionary(o => o.DeliveryRequestId, o => o);
+        //var deliveriesByOfferId = deliveries.ToDictionary(d => d.OfferId, d => d);
+        ApiAdapter adapter = new ApiAdapter();
+        var result = new List<InquiryCompanyDTO>();
 
         foreach (var inquiry in inquiries)
         {
             var user = await _userRepository.GetBy0IdAsync(inquiry.UserId); 
             UserData UserDTO= null;
-            if(user!=null)
+            if (user != null)
             {
                 UserDTO = new UserData()
                 {
@@ -125,69 +125,105 @@ public class CompanyService : ICompanyService
                     LastName = user.LastName,
                     Email = user.Email
                 };
+
             }
+            InquiryCompanyDTO Inquiry = new InquiryCompanyDTO()
+            {
+                InquiryID = inquiry.DeliveryRequestPublicId,
+                Package = adapter.ConvertToPackageDTO(inquiry.Package),
+                SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
+                DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
+                InquiryDate = inquiry.CreatedAt,
+                DeliveryDate = inquiry.DeliveryDate,
+                WeekendDelivery = inquiry.WeekendDelivery,
+                Priority = inquiry.Priority,
+                User = UserDTO
+            };
                   
                 
-            
-            OfferData? offerDto = null;
-            DeliveryData? deliveryDto = null;
-
-            if (offersByInquiryId.TryGetValue(inquiry.DeliveryRequestId, out var offer)) // bezpieczne zwracanie gdy nie ma zwroci false
-            {
-                offerDto = new OfferData
-                {
-                    totalPrice = offer.totalPrice,
-                    Currency = "PLN" 
-                };
-
-                if (deliveriesByOfferId.TryGetValue(offer.OfferId, out var delivery))
-                {
-                    deliveryDto = new DeliveryData
-                    {
-                        DeliveryID = delivery.PublicID,
-                        PickupDate = delivery.PickupDate,
-                        DeliveryDate = delivery.DeliveryDate,
-                        DeliveryStatus = delivery.DeliveryStatus,
-                        Courier = delivery.Courier
-                    };
-                }
-            }
-            ApiAdapter adapter= new ApiAdapter();
-            result.Add(new DTOIOD
-            {
-                
-                User = UserDTO,
-                Inquiry = new InquiryData
-                {
-                    InquiryID = inquiry.DeliveryRequestPublicId,
-                    Package = adapter.ConvertToPackageDTO(inquiry.Package),
-                    SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
-                    DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
-                    InquiryDate = inquiry.CreatedAt,
-                    DeliveryDate = inquiry.DeliveryDate,
-                    WeekendDelivery = inquiry.WeekendDelivery,
-                    Priority = inquiry.Priority
-                },
-                Offer = offerDto,
-                Delivery = deliveryDto
-            }); 
+            result.Add(Inquiry);
+         
         }
 
        
 
-        return result.OrderByDescending(r => r.Inquiry.InquiryDate).ToList();
+        return result.OrderByDescending(r => r.InquiryDate).ToList();
     }
 
-   
-    //zmiana statusu by worker
-    public async  Task<string> ChangeStatusByWorker(ChangeDeliveryStatusDTO changeDeliveryStatusDTO)
+    public async Task<List<DeliveryCompanyDTO>> GetCompanyDeliveries()
     {
+        List<DeliveryCompanyDTO> result = new List<DeliveryCompanyDTO>();
 
+        var Delivery = await _deliveryRepository.GetAllDeliveriesAsync();
+        ApiAdapter adapter = new ApiAdapter();
+
+        foreach (var delivery in Delivery)
+        { 
+        var offer = delivery.Offer;
+        var user = delivery.Offer.DeliveryRequest.User;
+        var inquiry = delivery.Offer.DeliveryRequest;
+        UserData? userData = null;
+        if (user != null)
+        {
+            userData = new UserData()
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email
+            };
+        }
+        OfferData offerDto = new OfferData
+        {
+            totalPrice = offer.totalPrice,
+            Currency = "PLN"
+        };
+
+
+            DeliveryData deliveryDto = new DeliveryData
+            {
+                DeliveryID = delivery.PublicID,
+                PickupDate = delivery.PickupDate,
+                DeliveryDate = delivery.DeliveryDate,
+                DeliveryStatus = delivery.DeliveryStatus.ToString(),
+                Courier = adapter.ConvertToUserData(delivery.Courier)
+            };
+        
+
+        
+
+        DeliveryCompanyDTO item = new DeliveryCompanyDTO()
+        {
+            User = userData,
+            Inquiry = new InquiryData
+            {
+                InquiryID = inquiry.DeliveryRequestPublicId,
+                Package = adapter.ConvertToPackageDTO(inquiry.Package),
+                SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
+                DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
+                InquiryDate = inquiry.CreatedAt,
+                DeliveryDate = inquiry.DeliveryDate,
+                WeekendDelivery = inquiry.WeekendDelivery,
+                Priority = inquiry.Priority
+            },
+            Offer = offerDto,
+            Delivery = deliveryDto
+
+        };
+            result.Add(item);
+        }
+
+
+        return result.OrderByDescending(r => r.Inquiry.InquiryDate).ToList();
+    }
+    //zmiana statusu by worker
+    public async  Task<string> ChangeStatusByWorker(ChangeDeliveryStatusWorkerDTO changeDeliveryStatusDTO)
+    {
+        ApiAdapter api = new ApiAdapter();
        var delivery=await  _deliveryRepository.FindAsync(changeDeliveryStatusDTO.DeliveryId);
 
         if(delivery == null) { throw new Exception("Dont find that delivery"); }
       
-        delivery.DeliveryStatus = changeDeliveryStatusDTO.DeliveryStatus;
+        delivery.DeliveryStatus = api.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
         _deliveryRepository.Update(delivery);
        await _deliveryRepository.SaveChangesAsync();
 
@@ -197,19 +233,19 @@ public class CompanyService : ICompanyService
     // zmiana statusu by worker
     public async Task<string> ChangeStatusByCourier(ChangeDeliveryStatusDTO changeDeliveryStatusDTO)
     {
-
+        ApiAdapter adapter = new ApiAdapter();
         var delivery = await _deliveryRepository.FindAsync(changeDeliveryStatusDTO.DeliveryId);
 
         if (delivery == null) { throw new Exception("Nie znaleziono takiej delivery"); }
-        DeliveryStatus status = changeDeliveryStatusDTO.DeliveryStatus;
+        DeliveryStatus status = adapter.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
 
-        if (status != DeliveryStatus.AcceptedByKurier||status!=DeliveryStatus.CannotDelivery||status!=DeliveryStatus.PickedUp||status!=DeliveryStatus.Delivered)
+        if (status != DeliveryStatus.acceptedbycourier||status!=DeliveryStatus.cannotdelivery||status!=DeliveryStatus.pickedup||status!=DeliveryStatus.delivered)
             if (delivery == null) { throw new Exception("Nozesz tylko: delivered pickedup accept and Cannotdelivery"); }
-        if(status==DeliveryStatus.CannotDelivery&&changeDeliveryStatusDTO.Message==null)
+        if(status==DeliveryStatus.cannotdelivery&&changeDeliveryStatusDTO.Message==null)
         {
             throw new Exception("Podaj wiadomosc jesli nie udalo sie dostarczyc paczki ( wymagania )");
         }
-        if(status==DeliveryStatus.AcceptedByKurier)
+        if(status==DeliveryStatus.accepted)
         {
            if(changeDeliveryStatusDTO.Auth0Id==null) { throw new Exception("null jako auth0id gdy acceptedbycourier"); }
 
@@ -220,7 +256,7 @@ public class CompanyService : ICompanyService
 
         }
 
-        delivery.DeliveryStatus = changeDeliveryStatusDTO.DeliveryStatus;
+        delivery.DeliveryStatus = adapter.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
         _deliveryRepository.Update(delivery);
         await _deliveryRepository.SaveChangesAsync();
 
@@ -232,7 +268,7 @@ public class CompanyService : ICompanyService
     {
         var deliveries = await _deliveryRepository.FindDeliveriesByCourierId(Auth0id);
         var resultlist = new List<DTOIOD>();
-
+        ApiAdapter adapter = new ApiAdapter();
         foreach (var delivery in deliveries)
         {
             var offer = delivery.Offer;
@@ -260,11 +296,11 @@ public class CompanyService : ICompanyService
                 DeliveryID = delivery.PublicID,
                 PickupDate = delivery.PickupDate,
                 DeliveryDate = delivery.DeliveryDate,
-                DeliveryStatus = delivery.DeliveryStatus,
-                Courier = delivery.Courier
+                DeliveryStatus = delivery.DeliveryStatus.ToString(),
+                Courier = adapter.ConvertToUserData(delivery.Courier)
             };
 
-            ApiAdapter adapter = new ApiAdapter();
+           
 
             DTOIOD result = new DTOIOD()
             {
@@ -294,6 +330,7 @@ public class CompanyService : ICompanyService
     {
         var deliveries = await _deliveryRepository.FindAcceptedDelivery();
         var resultlist = new List<DTOIOD>();
+        ApiAdapter adapter = new ApiAdapter();
 
         foreach (var delivery in deliveries)
         {
@@ -322,12 +359,11 @@ public class CompanyService : ICompanyService
                 DeliveryID = delivery.PublicID,
                 PickupDate = delivery.PickupDate,
                 DeliveryDate = delivery.DeliveryDate,
-                DeliveryStatus = delivery.DeliveryStatus,
-                Courier = delivery.Courier
+                DeliveryStatus = delivery.DeliveryStatus.ToString(),
+                Courier = adapter.ConvertToUserData(delivery.Courier)
             };
 
-            ApiAdapter adapter = new ApiAdapter();
-
+           
             DTOIOD result = new DTOIOD()
             {
                 User = userData,
