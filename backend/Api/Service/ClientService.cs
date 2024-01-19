@@ -183,7 +183,7 @@ public class ClientService : IClientService
         {
             Offer = offer,
             DeliveryDate = offer.DeliveryRequest.DeliveryDate,
-            DeliveryStatus = DeliveryStatus.WaitingToAcceptByWorker,
+            DeliveryStatus = DeliveryStatus.nostatus,
             ApiId = respond.OfferRequestId
         };
 
@@ -333,7 +333,7 @@ public class ClientService : IClientService
           throw new  KeyNotFoundException("You arent user assigned to that delivery");
         }
 
-        response.DeliveryStatus = DeliveryStatus.CancelledByClient;
+        response.DeliveryStatus = DeliveryStatus.cancelled;
          _deliveryRepository.Update(response);
        await  _deliveryRepository.SaveChangesAsync();
 

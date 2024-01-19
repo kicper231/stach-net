@@ -62,4 +62,29 @@ public class ApiAdapter
             Weight = package.Weight
         };
     }
+
+    public UserData? ConvertToUserData(User? user)
+    {
+        if (user == null) return null;
+        else return new UserData()
+        { Email= user.Email,
+         FirstName = user.FirstName,
+        LastName =user.LastName};
+
+    }
+
+
+    public  DeliveryStatus ConvertStringToDeliveryStatus(string statusString)
+    {
+        if (Enum.TryParse(statusString, true, out DeliveryStatus status))
+        {
+            return status;
+        }
+        else
+        {
+            return DeliveryStatus.nostatus;
+        }
+    }
+
+
 }

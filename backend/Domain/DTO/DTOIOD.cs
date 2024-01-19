@@ -11,8 +11,8 @@ namespace Domain.DTO
     {
         public UserData? User { get; set; }
         public required InquiryData  Inquiry { get; set; }
-        public OfferData? Offer { get; set; }
-        public DeliveryData? Delivery { get; set; }
+        public OfferData Offer { get; set; }
+        public DeliveryData Delivery { get; set; }
     }
 
 
@@ -61,8 +61,8 @@ namespace Domain.DTO
         public Guid DeliveryID { get; set; }
         public DateTime PickupDate { get; set; }
         public DateTime DeliveryDate { get; set; }
-        public DeliveryStatus DeliveryStatus { get; set; }
-        public User? Courier { get; set; }
+        public string DeliveryStatus { get; set; }
+        public UserData? Courier { get; set; }
 
         // Dodaj inne właściwości związane z dostawą
     }
