@@ -5,6 +5,63 @@ import { config } from "../config-development";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 
+// TODO Remove
+const DATA = {
+  user: {
+    firstName: "string",
+    lastName: "string",
+    email: "string",
+  },
+  inquiry: {
+    inquiryID: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    package: {
+      width: 0,
+      height: 0,
+      length: 0,
+      weight: 0,
+    },
+    sourceAddress: {
+      houseNumber: "string",
+      apartmentNumber: "string",
+      street: "string",
+      city: "string",
+      zipCode: "string",
+      country: "string",
+    },
+    destinationAddress: {
+      houseNumber: "string",
+      apartmentNumber: "string",
+      street: "string",
+      city: "string",
+      zipCode: "string",
+      country: "string",
+    },
+    inquiryDate: "2024-01-19T09:40:57.248Z",
+    deliveryDate: "2024-01-19T09:40:57.248Z",
+    weekendDelivery: true,
+    priority: 0,
+  },
+  offer: {
+    totalPrice: 0,
+    currency: "string",
+  },
+  delivery: {
+    deliveryId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    pickupDate: "2024-01-19T09:40:57.248Z",
+    deliveryDate: "2024-01-19T09:40:57.248Z",
+    deliveryStatus: "no status",
+    courier: {
+      createdAt: "2024-01-19T09:40:57.248Z",
+      userId: 0,
+      auth0Id: "string",
+      firstName: "string",
+      lastName: "string",
+      email: "string",
+      numberOfLogins: 0,
+    },
+  },
+};
+
 export function WorkerOffers() {
   const navigate = useNavigate();
   const { user, getAccessTokenSilently } = useAuth0();
@@ -23,78 +80,147 @@ export function WorkerOffers() {
           }
         );
 
-        console.log(response.data); // TO DO /////////////////
-
         setOffers(response.data);
       } catch (error) {
         console.error(error);
+        setOffers([DATA, DATA, DATA]); // TODO Remove
       }
     };
 
     getOffers();
-  }, [user.sub, getAccessTokenSilently]);
+  }, [getAccessTokenSilently]);
 
-  function InquiriesTable() {
-    const [addedInquiryId, setAddedInquiryId] = useState("");
-    const [isError, setIsError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("Error");
-
-    const handleAdd = async () => {
-      try {
-        await axios.post(`${config.serverUri}/add-delivery`, {
-          deliveryID: addedInquiryId,
-          userAuth0: user.sub,
-        });
-
-        window.location.reload();
-      } catch (error) {
-        setIsError(true);
-        typeof error.response.data === "string" &&
-          setErrorMessage(error.response.data);
-        console.error(error);
-      }
-    };
-
+  function OffersTable() {
     return (
       <div className="overflow">
-        <h1>Inquiries</h1>
+        <h1>Offers</h1>
 
         <ul>
-          {offers.map((inquiry, index) => (
+          {offers.map((offer, index) => (
             <li
               key={index}
-              className="inquiry"
+              className="offer"
               onClick={() => navigate(`${index}`)}
             >
-              {inquiry.user.firstName}
+              <strong>id:</strong> {offer.delivery.deliveryId}
+              <br />
+              <strong>date:</strong> {offer.delivery.deliveryDate}
+              <br />
+              <strong>status:</strong> {offer.delivery.deliveryStatus}
             </li>
           ))}
         </ul>
-
-        <button onClick={handleAdd}>Add inquiry</button>
-        <br />
-        <input
-          type="text"
-          value={addedInquiryId}
-          placeholder="added inquiry id"
-          onChange={(e) => setAddedInquiryId(e.target.value)}
-        />
-        <br />
-        {isError && <h1 className="red">{errorMessage}</h1>}
       </div>
+    );
+  }
+
+  const handleChangeStatus = async (id, status) => {
+    try {
+      const token = await getAccessTokenSilently();
+      await axios.post(
+        `${config.serverUri}/office-worker/change-offert-status`,
+        {
+          deliveryId: id,
+          deliveryStatus: status,
+          auth0Id: user.sub,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      navigate("/offers"); // TODO Check if works
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  function Offer({ offer }) {
+    return (
+      <>
+        <div className="contexHolder">
+          <h1>Offer</h1>
+          <ul>
+            <li>
+              <strong>id:</strong> {offer.delivery.deliveryId}
+            </li>
+            <li>
+              <strong>cost:</strong> {offer.offer.totalPrice}{" "}
+              {offer.offer.currency}
+            </li>
+            <li>
+              <strong>user:</strong> {offer.user.firstName}{" "}
+              {offer.user.lastName}, {offer.user.email}
+            </li>
+            <li>
+              <strong>package dimensions:</strong> {offer.inquiry.package.width}
+              m x {offer.inquiry.package.height}m x{" "}
+              {offer.inquiry.package.length}m
+            </li>
+            <li>
+              <strong>package weight:</strong> {offer.inquiry.package.weight}kg
+            </li>
+            <li>
+              <strong>source address:</strong>
+              <br />
+              {displayAddress(offer.inquiry.sourceAddress)}
+            </li>
+            <li>
+              <strong>destination address:</strong>
+              <br />
+              {displayAddress(offer.inquiry.destinationAddress)}
+            </li>
+            <li>
+              <strong>delivery date:</strong> {offer.inquiry.deliveryDate}
+            </li>
+            <li>
+              <strong>priority:</strong> {offer.inquiry.priority ? "yes" : "no"}
+            </li>
+            <li>
+              <strong>weekend delivery:</strong>{" "}
+              {offer.inquiry.weekendDelivery ? "yes" : "no"}
+            </li>
+            <li>
+              <strong>status:</strong> {offer.delivery.deliveryStatus}
+            </li>
+          </ul>
+        </div>
+
+        {offer.delivery.deliveryStatus === "no status" && (
+          <>
+            <button
+              onClick={() =>
+                handleChangeStatus(offer.delivery.deliveryId, "Accept")
+              }
+            >
+              Accept
+            </button>
+            <button
+              onClick={() =>
+                handleChangeStatus(offer.delivery.deliveryId, "Reject")
+              }
+            >
+              Reject
+            </button>
+          </>
+        )}
+      </>
     );
   }
 
   return (
     <>
       <Routes>
-        <Route path="/" element={<InquiriesTable />} />
+        <Route path="/" element={<OffersTable />} />
 
-        {offers.map((inquiry, index) => (
+        {offers.map((offer, index) => (
           <Route
             key={index}
             path={`${index}`}
-            element={<Inquiry inquiry={inquiry} />}
+            element={<Offer offer={offer} />}
           />
         ))}
       </Routes>
@@ -102,56 +228,13 @@ export function WorkerOffers() {
   );
 }
 
-function Inquiry({ inquiry }) {
+function displayAddress(address) {
   return (
     <>
-      <div className="contexHolder">
-        <h1>Inquiry</h1>
-        <ul>
-          <li>
-            <strong>package dimensions:</strong> {inquiry.package.width}m x{" "}
-            {inquiry.package.height}m x {inquiry.package.length}m
-          </li>
-          <li>
-            <strong>package weight:</strong> {inquiry.package.weight}kg
-          </li>
-
-          <li>
-            <strong>source address:</strong>
-            <br />
-            {inquiry.sourceAddress.street} {inquiry.sourceAddress.houseNumber}
-            {inquiry.sourceAddress.apartmentNumber &&
-              " / " + inquiry.sourceAddress.apartmentNumber}
-            <br />
-            {inquiry.sourceAddress.city} {inquiry.sourceAddress.zipCode},{" "}
-            {inquiry.sourceAddress.country}
-          </li>
-
-          <li>
-            <strong>source address:</strong>
-            <br />
-            {inquiry.destinationAddress.street}{" "}
-            {inquiry.destinationAddress.houseNumber}
-            {inquiry.destinationAddress.apartmentNumber &&
-              " / " + inquiry.destinationAddress.apartmentNumber}
-            <br />
-            {inquiry.destinationAddress.city}{" "}
-            {inquiry.destinationAddress.zipCode},{" "}
-            {inquiry.destinationAddress.country}
-          </li>
-
-          <li>
-            <strong>delivery date:</strong> {inquiry.deliveryDate}
-          </li>
-          <li>
-            <strong>priority:</strong> {inquiry.priority ? "yes" : "no"}
-          </li>
-          <li>
-            <strong>weekend delivery:</strong>{" "}
-            {inquiry.weekendDelivery ? "yes" : "no"}
-          </li>
-        </ul>
-      </div>
+      {address.street} {address.houseNumber}{" "}
+      {address.apartmentNumber && " / " + address.apartmentNumber},
+      <br />
+      {address.city} {address.zipCode}, {address.country}
     </>
   );
 }
