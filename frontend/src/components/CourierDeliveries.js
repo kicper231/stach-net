@@ -33,31 +33,138 @@ export function CourierDeliveries() {
   }, [getAccessTokenSilently]);
 
   function DeliveriesTable() {
+    const [showAccepted, setShowAccepted] = useState(true);
+    const [showReceived, setShowReceived] = useState(true);
+    const [showDelivered, setShowDelivered] = useState(true);
+    const [showCannotDeliver, setShowCannotDeliver] = useState(true);
+
+    const handleChangeAccepted = () => {
+      setShowAccepted(!showAccepted);
+    };
+
+    const handleChangeReceived = () => {
+      setShowReceived(!showReceived);
+    };
+
+    const handleChangeDelivered = () => {
+      setShowDelivered(!showDelivered);
+    };
+
+    const handleChangeCannotDeliver = () => {
+      setShowCannotDeliver(!showCannotDeliver);
+    };
+
+    const list = [];
+
+    if (!deliveries) {
+      return <p>Loading...</p>;
+    }
+
+    deliveries.forEach((delivery, index) => {
+      if (delivery.delivery.deliveryStatus === "accepted" && !showAccepted) {
+        return;
+      } else if (
+        delivery.delivery.deliveryStatus === "received" &&
+        !showReceived
+      ) {
+        return;
+      } else if (
+        delivery.delivery.deliveryStatus === "delivered" &&
+        !showDelivered
+      ) {
+        return;
+      } else if (
+        delivery.delivery.deliveryStatus === "cannot deliver" &&
+        !showCannotDeliver
+      ) {
+        return;
+      }
+
+      list.push(
+        <li
+          key={index}
+          className="delivery"
+          onClick={() => navigate(`${index}`)}
+        >
+          <strong>date:</strong> {delivery.delivery.deliveryDate} /{" "}
+          <strong>source address:</strong>{" "}
+          {delivery.inquiry.sourceAddress.street},{" "}
+          {delivery.inquiry.sourceAddress.city} /{" "}
+          <strong>destination address:</strong>{" "}
+          {delivery.inquiry.destinationAddress.street},{" "}
+          {delivery.inquiry.destinationAddress.city}, <strong>status:</strong>{" "}
+          {delivery.delivery.deliveryStatus}
+        </li>
+      );
+    });
+
     return (
       <div className="overflow">
-        <h1>Inquiries</h1>
+        <h1>Deliveries</h1>
 
-        <ul>
-          {deliveries.map((delivery, index) => (
-            <li
-              key={index}
-              className="delivery"
-              onClick={() => navigate(`${index}`)}
-            >
-              <strong>date:</strong> {delivery.delivery.deliveryDate} /{" "}
-              <strong>source address:</strong>{" "}
-              {delivery.inquiry.sourceAddress.street},{" "}
-              {delivery.inquiry.sourceAddress.city} /{" "}
-              <strong>destination address:</strong>{" "}
-              {delivery.inquiry.destinationAddress.street},{" "}
-              {delivery.inquiry.destinationAddress.city},{" "}
-              <strong>status:</strong> {delivery.delivery.deliveryStatus}
-            </li>
-          ))}
-        </ul>
+        <p>status filtering:</p>
+        <label>
+          <input
+            type="checkbox"
+            checked={showAccepted}
+            onChange={handleChangeAccepted}
+          />
+          accepted
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={showReceived}
+            onChange={handleChangeReceived}
+          />
+          received
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={showDelivered}
+            onChange={handleChangeDelivered}
+          />
+          delivered
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={showCannotDeliver}
+            onChange={handleChangeCannotDeliver}
+          />
+          cannot deliver
+        </label>
+
+        <ul>{list}</ul>
       </div>
     );
   }
+
+  const handleChangeStatus = async (id, status, message) => {
+    try {
+      const token = await getAccessTokenSilently();
+      await axios.post(
+        `${config.serverUri}/courier/change-delivery-status`,
+        {
+          deliveryId: id,
+          deliveryStatus: status,
+          message: message,
+          auth0Id: user.sub,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      navigate("/deliveries");
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   function Delivery({ delivery }) {
     return (
@@ -114,6 +221,55 @@ export function CourierDeliveries() {
             </li>
           </ul>
         </div>
+
+        {delivery.delivery.deliveryStatus !== "no status" && (
+          <>
+            <button
+              onClick={() =>
+                handleChangeStatus(
+                  delivery.delivery.deliveryId,
+                  "received",
+                  "message"
+                )
+              }
+            >
+              Received
+            </button>
+            <button
+              onClick={() =>
+                handleChangeStatus(
+                  delivery.delivery.deliveryId,
+                  "accepted",
+                  "message"
+                )
+              }
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() =>
+                handleChangeStatus(
+                  delivery.delivery.deliveryId,
+                  "delivered",
+                  "message"
+                )
+              }
+            >
+              Delivered
+            </button>
+            <button
+              onClick={() =>
+                handleChangeStatus(
+                  delivery.delivery.deliveryId,
+                  "cannot deliver",
+                  "message"
+                )
+              }
+            >
+              Cannot deliver
+            </button>
+          </>
+        )}
       </>
     );
   }
