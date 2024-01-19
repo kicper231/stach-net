@@ -69,10 +69,10 @@ public class CompanyService : ICompanyService
 
         DeliveryData deliveryDto = new DeliveryData
         {
-            DeliveryID = delivery.PublicID,
+            DeliveryId = delivery.PublicID,
             PickupDate = delivery.PickupDate,
             DeliveryDate = delivery.DeliveryDate,
-            DeliveryStatus = delivery.DeliveryStatus.ToString(),
+            DeliveryStatus = adapter.ConvertStatusToString(delivery.DeliveryStatus),
             Courier=adapter.ConvertToUserData(delivery.Courier)
         };
 
@@ -181,10 +181,10 @@ public class CompanyService : ICompanyService
 
             DeliveryData deliveryDto = new DeliveryData
             {
-                DeliveryID = delivery.PublicID,
+                DeliveryId = delivery.PublicID,
                 PickupDate = delivery.PickupDate,
                 DeliveryDate = delivery.DeliveryDate,
-                DeliveryStatus = delivery.DeliveryStatus.ToString(),
+                DeliveryStatus = adapter.ConvertStatusToString(delivery.DeliveryStatus),
                 Courier = adapter.ConvertToUserData(delivery.Courier)
             };
         
@@ -293,10 +293,10 @@ public class CompanyService : ICompanyService
 
             DeliveryData deliveryDto = new DeliveryData
             {
-                DeliveryID = delivery.PublicID,
+                DeliveryId = delivery.PublicID,
                 PickupDate = delivery.PickupDate,
                 DeliveryDate = delivery.DeliveryDate,
-                DeliveryStatus = delivery.DeliveryStatus.ToString(),
+                DeliveryStatus = adapter.ConvertStatusToString(delivery.DeliveryStatus),
                 Courier = adapter.ConvertToUserData(delivery.Courier)
             };
 
@@ -356,10 +356,10 @@ public class CompanyService : ICompanyService
 
             DeliveryData deliveryDto = new DeliveryData
             {
-                DeliveryID = delivery.PublicID,
+                DeliveryId = delivery.PublicID,
                 PickupDate = delivery.PickupDate,
                 DeliveryDate = delivery.DeliveryDate,
-                DeliveryStatus = delivery.DeliveryStatus.ToString(),
+                DeliveryStatus = adapter.ConvertStatusToString(delivery.DeliveryStatus),
                 Courier = adapter.ConvertToUserData(delivery.Courier)
             };
 
