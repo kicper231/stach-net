@@ -61,6 +61,61 @@ const DATA = {
     },
   },
 };
+const DATA2 = {
+  user: {
+    firstName: "string",
+    lastName: "string",
+    email: "string",
+  },
+  inquiry: {
+    inquiryID: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    package: {
+      width: 0,
+      height: 0,
+      length: 0,
+      weight: 0,
+    },
+    sourceAddress: {
+      houseNumber: "string",
+      apartmentNumber: "string",
+      street: "string",
+      city: "string",
+      zipCode: "string",
+      country: "string",
+    },
+    destinationAddress: {
+      houseNumber: "string",
+      apartmentNumber: "string",
+      street: "string",
+      city: "string",
+      zipCode: "string",
+      country: "string",
+    },
+    inquiryDate: "2024-01-19T09:40:57.248Z",
+    deliveryDate: "2024-01-19T09:40:57.248Z",
+    weekendDelivery: true,
+    priority: 0,
+  },
+  offer: {
+    totalPrice: 0,
+    currency: "string",
+  },
+  delivery: {
+    deliveryId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    pickupDate: "2024-01-19T09:40:57.248Z",
+    deliveryDate: "2024-01-19T09:40:57.248Z",
+    deliveryStatus: "Accepted",
+    courier: {
+      createdAt: "2024-01-19T09:40:57.248Z",
+      userId: 0,
+      auth0Id: "string",
+      firstName: "string",
+      lastName: "string",
+      email: "string",
+      numberOfLogins: 0,
+    },
+  },
+};
 
 export function WorkerOffers() {
   const navigate = useNavigate();
@@ -83,7 +138,7 @@ export function WorkerOffers() {
         setOffers(response.data);
       } catch (error) {
         console.error(error);
-        setOffers([DATA, DATA, DATA]); // TODO Remove
+        setOffers([DATA, DATA2, DATA, DATA, DATA2]); // TODO Remove
       }
     };
 
@@ -91,24 +146,85 @@ export function WorkerOffers() {
   }, [getAccessTokenSilently]);
 
   function OffersTable() {
+    const [showAccepted, setShowAccepted] = useState(true);
+    const [showRejected, setShowRejected] = useState(true);
+    const [showNoStatus, setShowNoStatus] = useState(true);
+
+    const handleChangeNoStatus = () => {
+      setShowNoStatus(!showNoStatus);
+    };
+
+    const handleChangeAccepted = () => {
+      setShowAccepted(!showAccepted);
+    };
+
+    const handleChangeRejected = () => {
+      setShowRejected(!showRejected);
+    };
+
     return (
       <div className="overflow">
         <h1>Offers</h1>
 
+        <p>status filtering:</p>
+        <label>
+          <input
+            type="checkbox"
+            checked={showNoStatus}
+            onChange={handleChangeNoStatus}
+          />
+          no status
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={showAccepted}
+            onChange={handleChangeAccepted}
+          />
+          accepted
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={showRejected}
+            onChange={handleChangeRejected}
+          />
+          rejected
+        </label>
+
         <ul>
-          {offers.map((offer, index) => (
-            <li
-              key={index}
-              className="offer"
-              onClick={() => navigate(`${index}`)}
-            >
-              <strong>id:</strong> {offer.delivery.deliveryId}
-              <br />
-              <strong>date:</strong> {offer.delivery.deliveryDate}
-              <br />
-              <strong>status:</strong> {offer.delivery.deliveryStatus}
-            </li>
-          ))}
+          {offers.map((offer, index) => {
+            if (
+              offer.delivery.deliveryStatus === "no status" &&
+              !showNoStatus
+            ) {
+              return null;
+            } else if (
+              offer.delivery.deliveryStatus === "Accepted" &&
+              !showAccepted
+            ) {
+              return null;
+            } else if (
+              offer.delivery.deliveryStatus === "Rejected" &&
+              !showRejected
+            ) {
+              return null;
+            } else {
+              return (
+                <li
+                  key={index}
+                  className="offer"
+                  onClick={() => navigate(`${index}`)}
+                >
+                  <strong>id:</strong> {offer.delivery.deliveryId}
+                  <br />
+                  <strong>date:</strong> {offer.delivery.deliveryDate}
+                  <br />
+                  <strong>status:</strong> {offer.delivery.deliveryStatus}
+                </li>
+              );
+            }
+          })}
         </ul>
       </div>
     );
