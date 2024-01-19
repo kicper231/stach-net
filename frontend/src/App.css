@@ -42,6 +42,7 @@ input {
 }
 
 li.offer:hover,
+li.offer:hover *,
 li.inquiry:hover,
 li.inquiry:hover * {
   background-color: black;

@@ -13,10 +13,6 @@ const DATA = {
     lastName: "string",
     email: "string",
   },
-  offer: {
-    totalPrice: 0,
-    currency: "string",
-  },
   package: {
     width: 0,
     height: 0,
@@ -46,7 +42,7 @@ const DATA = {
 
 export function WorkerInquiries() {
   const navigate = useNavigate();
-  const { user, getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
   const [inquiries, setInquiries] = useState([]);
 
   useEffect(() => {
