@@ -58,7 +58,7 @@ namespace Domain.DTO
     {
         // Właściwości związane z dostawą
       
-        public Guid DeliveryID { get; set; }
+        public Guid DeliveryId { get; set; }
         public DateTime PickupDate { get; set; }
         public DateTime DeliveryDate { get; set; }
         public string DeliveryStatus { get; set; }

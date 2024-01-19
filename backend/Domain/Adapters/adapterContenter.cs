@@ -1,5 +1,6 @@
 ﻿using Domain.DTO;
 using Domain.Model;
+using System.Text.RegularExpressions;
 
 namespace Domain.Adapters;
 
@@ -85,6 +86,16 @@ public class ApiAdapter
             return DeliveryStatus.nostatus;
         }
     }
+
+
+    public  string ConvertStatusToString(DeliveryStatus status)
+    {
+        string statusString = status.ToString();
+        string withSpaces = Regex.Replace(statusString, "(\\B[A-Z])", " $1");
+        return withSpaces.ToLower();
+    }
+
+
 
 
 }
