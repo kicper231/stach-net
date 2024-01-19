@@ -13,9 +13,10 @@ import { RequestId } from "./components/RequestId";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Routes, Route } from "react-router-dom";
 import { AuthService } from "./components/AuthService";
-import { CourierDeliveries } from "./components/CourierDeliveries";
 import { WorkerOffers } from "./components/WorkerOffers";
 import { WorkerInquiries } from "./components/WorkerInquiries";
+import { CourierDeliveries } from "./components/CourierDeliveries";
+import { CourierMyDeliveries } from "./components/CourierMyDeliveries";
 
 export default function App() {
   const { isLoading, isAuthenticated, user } = useAuth0();
@@ -48,6 +49,16 @@ export default function App() {
               element={
                 isAuthenticated && AuthService.isCourier(user) ? (
                   <CourierDeliveries />
+                ) : (
+                  AccessDenied()
+                )
+              }
+            />
+            <Route
+              path="/my-deliveries/*"
+              element={
+                isAuthenticated && AuthService.isCourier(user) ? (
+                  <CourierMyDeliveries />
                 ) : (
                   AccessDenied()
                 )
