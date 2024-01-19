@@ -44,7 +44,9 @@ input {
 li.offer:hover,
 li.offer:hover *,
 li.inquiry:hover,
-li.inquiry:hover * {
+li.inquiry:hover *,
+li.delivery:hover,
+li.delivery:hover * {
   background-color: black;
   color: orange;
   cursor: pointer;
