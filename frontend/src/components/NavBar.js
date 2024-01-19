@@ -29,6 +29,11 @@ export default function NavBar() {
         {isAuthenticated && AuthService.isCourier(user) && (
           <button onClick={() => navigate("/deliveries")}>Deliveries</button>
         )}
+        {isAuthenticated && AuthService.isCourier(user) && (
+          <button onClick={() => navigate("/my-deliveries")}>
+            My deliveries
+          </button>
+        )}
 
         {isAuthenticated && AuthService.isOfficeWorker(user) && (
           <button onClick={() => navigate("/inquiries")}>Inquiries</button>
