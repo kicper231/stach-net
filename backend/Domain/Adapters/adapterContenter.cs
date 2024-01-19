@@ -77,14 +77,18 @@ public class ApiAdapter
 
     public  DeliveryStatus ConvertStringToDeliveryStatus(string statusString)
     {
-        if (Enum.TryParse(statusString, true, out DeliveryStatus status))
-        {
-            return status;
-        }
-        else
-        {
-            return DeliveryStatus.nostatus;
-        }
+       return statusString switch
+    {
+        "no status" => DeliveryStatus.nostatus,
+        "accepted" => DeliveryStatus.accepted,
+        "rejected" => DeliveryStatus.rejected,
+        "accepted by courier" => DeliveryStatus.acceptedbycourier,
+        "picked up" => DeliveryStatus.pickedup,
+        "delivered" => DeliveryStatus.delivered,
+        "cannot delivery" => DeliveryStatus.cannotdelivery,
+        "cancelled" => DeliveryStatus.cancelled,
+        _ => DeliveryStatus.nostatus
+    };
     }
 
 
