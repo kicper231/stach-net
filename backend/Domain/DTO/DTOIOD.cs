@@ -24,7 +24,7 @@ namespace Domain.DTO
 
         //  public UserDTO? User { get; set; }
 
-        public Guid InquiryID { get; set; }
+        public Guid InquiryId { get; set; }
         public required PackageDTO Package { get; set; }
 
         public required AddressDTO SourceAddress { get; set; }

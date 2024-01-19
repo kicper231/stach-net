@@ -83,7 +83,7 @@ public class CompanyService : ICompanyService
             User = userData,
             Inquiry = new InquiryData
             {
-                InquiryID = inquiry.DeliveryRequestPublicId,
+                InquiryId = inquiry.DeliveryRequestPublicId,
                 Package = adapter.ConvertToPackageDTO(inquiry.Package),
                 SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
                 DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
@@ -129,7 +129,7 @@ public class CompanyService : ICompanyService
             }
             InquiryCompanyDTO Inquiry = new InquiryCompanyDTO()
             {
-                InquiryID = inquiry.DeliveryRequestPublicId,
+                InquiryId = inquiry.DeliveryRequestPublicId,
                 Package = adapter.ConvertToPackageDTO(inquiry.Package),
                 SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
                 DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
@@ -196,7 +196,7 @@ public class CompanyService : ICompanyService
             User = userData,
             Inquiry = new InquiryData
             {
-                InquiryID = inquiry.DeliveryRequestPublicId,
+                InquiryId = inquiry.DeliveryRequestPublicId,
                 Package = adapter.ConvertToPackageDTO(inquiry.Package),
                 SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
                 DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
@@ -307,7 +307,7 @@ public class CompanyService : ICompanyService
                 User = userData,
                 Inquiry = new InquiryData
                 {
-                    InquiryID = inquiry.DeliveryRequestPublicId,
+                    InquiryId = inquiry.DeliveryRequestPublicId,
                     Package = adapter.ConvertToPackageDTO(inquiry.Package),
                     SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
                     DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
@@ -369,7 +369,7 @@ public class CompanyService : ICompanyService
                 User = userData,
                 Inquiry = new InquiryData
                 {
-                    InquiryID = inquiry.DeliveryRequestPublicId,
+                    InquiryId = inquiry.DeliveryRequestPublicId,
                     Package = adapter.ConvertToPackageDTO(inquiry.Package),
                     SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
                     DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
