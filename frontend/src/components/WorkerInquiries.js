@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import { config } from "../config-development";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
+import { SearchBar } from "./SearchBar";
 
 // TODO Remove
 const DATA = {
@@ -69,23 +70,38 @@ export function WorkerInquiries() {
   }, [getAccessTokenSilently]);
 
   function InquiriesTable() {
+    const [filterText, setFilterText] = useState("");
+    const list = [];
+
+    if (!inquiries) {
+      return <p>Loading...</p>;
+    }
+
+    inquiries.forEach((inquiry, index) => {
+      if (
+        inquiry.inquiryId.toLowerCase().indexOf(filterText.toLowerCase()) === -1
+      ) {
+        return;
+      }
+
+      list.push(
+        <li
+          key={index}
+          className="inquiry"
+          onClick={() => navigate(`${index}`)}
+        >
+          <strong>id:</strong> {inquiry.inquiryId}
+          <br />
+          <strong>date:</strong> {inquiry.inquiryDate}
+        </li>
+      );
+    });
+
     return (
       <div className="overflow">
         <h1>All inquiries</h1>
-
-        <ul>
-          {inquiries.map((inquiry, index) => (
-            <li
-              key={index}
-              className="inquiry"
-              onClick={() => navigate(`${index}`)}
-            >
-              <strong>id:</strong> {inquiry.inquiryId}
-              <br />
-              <strong>date:</strong> {inquiry.inquiryDate}
-            </li>
-          ))}
-        </ul>
+        <SearchBar filterText={filterText} onFilterTextChange={setFilterText} />
+        <ul>{list}</ul>
       </div>
     );
   }
