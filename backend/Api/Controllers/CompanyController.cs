@@ -21,7 +21,7 @@ public class CompanyController : ControllerBase
         _companyService = CompanyService;
     }
 
-    [HttpGet("officeworker/get-all-inquiries")]
+    [HttpGet("office-worker/get-all-inquiries")]
     // [Authorize("officeworker:permissions")]
     public async Task<ActionResult<List<InquiryCompanyDTO>>> GetCompanyInquiries()
     {
@@ -43,7 +43,7 @@ public class CompanyController : ControllerBase
      
     }
 
-    [HttpGet("officeworker/get-all-deliveries")]
+    [HttpGet("office-worker/get-all-deliveries")]
     public async Task<ActionResult<List<DeliveryCompanyDTO>>> GetCompanyDeliveries()
     {
 
@@ -67,7 +67,7 @@ public class CompanyController : ControllerBase
 
 
 
-    [HttpPost("officeworker/change-delivery-status")]
+    [HttpPost("office-worker/change-delivery-status")]
 
 
     // [Authorize("officeworker:permissions")]
