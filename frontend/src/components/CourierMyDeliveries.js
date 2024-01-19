@@ -22,8 +22,7 @@ export function CourierMyDeliveries() {
             },
           }
         );
-        console.log(user.sub);
-        console.log(response.data); // TODO Remove
+
         setMyDeliveries(response.data);
       } catch (error) {
         console.error(error);
@@ -35,7 +34,7 @@ export function CourierMyDeliveries() {
 
   function DeliveriesTable() {
     const [showAccepted, setShowAccepted] = useState(true);
-    const [showReceived, setShowReceived] = useState(true);
+    const [showPickedUp, setShowPickedUp] = useState(true);
     const [showDelivered, setShowDelivered] = useState(true);
     const [showCannotDeliver, setShowCannotDeliver] = useState(true);
 
@@ -43,8 +42,8 @@ export function CourierMyDeliveries() {
       setShowAccepted(!showAccepted);
     };
 
-    const handleChangeReceived = () => {
-      setShowReceived(!showReceived);
+    const handleChangePickedUp = () => {
+      setShowPickedUp(!showPickedUp);
     };
 
     const handleChangeDelivered = () => {
@@ -62,11 +61,14 @@ export function CourierMyDeliveries() {
     }
 
     myDeliveries.forEach((delivery, index) => {
-      if (delivery.delivery.deliveryStatus === "accepted" && !showAccepted) {
+      if (
+        delivery.delivery.deliveryStatus === "accepted by courier" &&
+        !showAccepted
+      ) {
         return;
       } else if (
-        delivery.delivery.deliveryStatus === "received" &&
-        !showReceived
+        delivery.delivery.deliveryStatus === "picked up" &&
+        !showPickedUp
       ) {
         return;
       } else if (
@@ -115,10 +117,10 @@ export function CourierMyDeliveries() {
         <label>
           <input
             type="checkbox"
-            checked={showReceived}
-            onChange={handleChangeReceived}
+            checked={showPickedUp}
+            onChange={handleChangePickedUp}
           />
-          received
+          picked up
         </label>
         <label>
           <input
@@ -160,7 +162,7 @@ export function CourierMyDeliveries() {
         }
       );
 
-      navigate("/myDeliveries");
+      navigate("/my-deliveries");
       window.location.reload();
     } catch (error) {
       console.error(error);
@@ -223,30 +225,22 @@ export function CourierMyDeliveries() {
           </ul>
         </div>
 
-        {delivery.delivery.deliveryStatus !== "no status" && (
+        {delivery.delivery.deliveryStatus === "accepted by courier" && (
+          <button
+            onClick={() =>
+              handleChangeStatus(
+                delivery.delivery.deliveryId,
+                "picked up",
+                "message"
+              )
+            }
+          >
+            Picked up
+          </button>
+        )}
+
+        {delivery.delivery.deliveryStatus === "picked up" && (
           <>
-            <button
-              onClick={() =>
-                handleChangeStatus(
-                  delivery.delivery.deliveryId,
-                  "received",
-                  "message"
-                )
-              }
-            >
-              Received
-            </button>
-            <button
-              onClick={() =>
-                handleChangeStatus(
-                  delivery.delivery.deliveryId,
-                  "accepted",
-                  "message"
-                )
-              }
-            >
-              Cancel
-            </button>
             <button
               onClick={() =>
                 handleChangeStatus(
