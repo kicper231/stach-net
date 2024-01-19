@@ -85,7 +85,7 @@ public class ApiAdapter
         "accepted by courier" => DeliveryStatus.acceptedbycourier,
         "picked up" => DeliveryStatus.pickedup,
         "delivered" => DeliveryStatus.delivered,
-        "cannot delivery" => DeliveryStatus.cannotdelivery,
+        "cannot deliver" => DeliveryStatus.cannotdelivery,
         "cancelled" => DeliveryStatus.cancelled,
         _ => DeliveryStatus.nostatus
     };
@@ -102,7 +102,7 @@ public class ApiAdapter
             DeliveryStatus.acceptedbycourier => "accepted by courier",
             DeliveryStatus.pickedup => "picked up",
             DeliveryStatus.delivered => "delivered",
-            DeliveryStatus.cannotdelivery => "cannot delivery",
+            DeliveryStatus.cannotdelivery => "cannot deliver",
             DeliveryStatus.cancelled => "cancelled",
             _ => "unknown status"
         };
