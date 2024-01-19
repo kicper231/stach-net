@@ -74,7 +74,7 @@ public class ClientService : IClientService
                 Currency = "PLN",
                 totalPrice = delivery.Offer.totalPrice,
                 DeliveryId = delivery.PublicID,
-                DeliveryStatus = delivery.DeliveryStatus.ToString()
+                DeliveryStatus = _adapter.ConvertStatusToString(delivery.DeliveryStatus)
             } : null;
 
             return new UserInquiryDTO
