@@ -5,17 +5,17 @@ import { config } from "../config-development";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 
-export function Inquiries() {
+export function WorkerOffers() {
   const navigate = useNavigate();
   const { user, getAccessTokenSilently } = useAuth0();
-  const [inquiries, setInquiries] = useState([]);
+  const [offers, setOffers] = useState([]);
 
   useEffect(() => {
-    const getInquirues = async () => {
+    const getOffers = async () => {
       try {
         const token = await getAccessTokenSilently();
         const response = await axios.get(
-          `${config.serverUri}/get-my-inquiries/${user.sub}`,
+          `${config.serverUri}/office-worker/offers`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -23,13 +23,15 @@ export function Inquiries() {
           }
         );
 
-        setInquiries(response.data);
+        console.log(response.data); // TO DO /////////////////
+
+        setOffers(response.data);
       } catch (error) {
         console.error(error);
       }
     };
 
-    getInquirues();
+    getOffers();
   }, [user.sub, getAccessTokenSilently]);
 
   function InquiriesTable() {
@@ -58,20 +60,13 @@ export function Inquiries() {
         <h1>Inquiries</h1>
 
         <ul>
-          {inquiries.map((inquiry, index) => (
+          {offers.map((inquiry, index) => (
             <li
               key={index}
               className="inquiry"
               onClick={() => navigate(`${index}`)}
             >
-              <strong>date:</strong> {inquiry.deliveryDate} /{" "}
-              <strong>source address:</strong> {inquiry.sourceAddress.street},{" "}
-              {inquiry.sourceAddress.city} /{" "}
-              <strong>destination address:</strong>{" "}
-              {inquiry.destinationAddress.street},{" "}
-              {inquiry.deliveryInfo && " / "}
-              {inquiry.deliveryInfo && <strong>status: </strong>}
-              {inquiry.deliveryInfo && inquiry.deliveryInfo.deliveryStatus}
+              {inquiry.user.firstName}
             </li>
           ))}
         </ul>
@@ -95,7 +90,7 @@ export function Inquiries() {
       <Routes>
         <Route path="/" element={<InquiriesTable />} />
 
-        {inquiries.map((inquiry, index) => (
+        {offers.map((inquiry, index) => (
           <Route
             key={index}
             path={`${index}`}
@@ -133,7 +128,7 @@ function Inquiry({ inquiry }) {
           </li>
 
           <li>
-            <strong>destination address:</strong>
+            <strong>source address:</strong>
             <br />
             {inquiry.destinationAddress.street}{" "}
             {inquiry.destinationAddress.houseNumber}

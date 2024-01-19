@@ -5,17 +5,17 @@ import { config } from "../config-development";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 
-export function Inquiries() {
+export function CourierDeliveries() {
   const navigate = useNavigate();
   const { user, getAccessTokenSilently } = useAuth0();
-  const [inquiries, setInquiries] = useState([]);
+  const [deliveries, setDeliveries] = useState([]);
 
   useEffect(() => {
-    const getInquirues = async () => {
+    const getDeliveries = async () => {
       try {
         const token = await getAccessTokenSilently();
         const response = await axios.get(
-          `${config.serverUri}/get-my-inquiries/${user.sub}`,
+          `${config.serverUri}/courier/get-all-available-delivery`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -23,13 +23,13 @@ export function Inquiries() {
           }
         );
 
-        setInquiries(response.data);
+        setDeliveries(response.data);
       } catch (error) {
         console.error(error);
       }
     };
 
-    getInquirues();
+    getDeliveries();
   }, [user.sub, getAccessTokenSilently]);
 
   function InquiriesTable() {
@@ -58,7 +58,7 @@ export function Inquiries() {
         <h1>Inquiries</h1>
 
         <ul>
-          {inquiries.map((inquiry, index) => (
+          {deliveries.map((inquiry, index) => (
             <li
               key={index}
               className="inquiry"
@@ -95,7 +95,7 @@ export function Inquiries() {
       <Routes>
         <Route path="/" element={<InquiriesTable />} />
 
-        {inquiries.map((inquiry, index) => (
+        {deliveries.map((inquiry, index) => (
           <Route
             key={index}
             path={`${index}`}
@@ -133,7 +133,7 @@ function Inquiry({ inquiry }) {
           </li>
 
           <li>
-            <strong>destination address:</strong>
+            <strong>source address:</strong>
             <br />
             {inquiry.destinationAddress.street}{" "}
             {inquiry.destinationAddress.houseNumber}
