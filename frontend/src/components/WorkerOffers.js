@@ -5,118 +5,6 @@ import { config } from "../config-development";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 
-// TODO Remove
-const DATA = {
-  user: {
-    firstName: "string",
-    lastName: "string",
-    email: "string",
-  },
-  inquiry: {
-    inquiryID: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    package: {
-      width: 0,
-      height: 0,
-      length: 0,
-      weight: 0,
-    },
-    sourceAddress: {
-      houseNumber: "string",
-      apartmentNumber: "string",
-      street: "string",
-      city: "string",
-      zipCode: "string",
-      country: "string",
-    },
-    destinationAddress: {
-      houseNumber: "string",
-      apartmentNumber: "string",
-      street: "string",
-      city: "string",
-      zipCode: "string",
-      country: "string",
-    },
-    inquiryDate: "2024-01-19T09:40:57.248Z",
-    deliveryDate: "2024-01-19T09:40:57.248Z",
-    weekendDelivery: true,
-    priority: 0,
-  },
-  offer: {
-    totalPrice: 0,
-    currency: "string",
-  },
-  delivery: {
-    deliveryId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    pickupDate: "2024-01-19T09:40:57.248Z",
-    deliveryDate: "2024-01-19T09:40:57.248Z",
-    deliveryStatus: "no status",
-    courier: {
-      createdAt: "2024-01-19T09:40:57.248Z",
-      userId: 0,
-      auth0Id: "string",
-      firstName: "string",
-      lastName: "string",
-      email: "string",
-      numberOfLogins: 0,
-    },
-  },
-};
-const DATA2 = {
-  user: {
-    firstName: "string",
-    lastName: "string",
-    email: "string",
-  },
-  inquiry: {
-    inquiryID: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    package: {
-      width: 0,
-      height: 0,
-      length: 0,
-      weight: 0,
-    },
-    sourceAddress: {
-      houseNumber: "string",
-      apartmentNumber: "string",
-      street: "string",
-      city: "string",
-      zipCode: "string",
-      country: "string",
-    },
-    destinationAddress: {
-      houseNumber: "string",
-      apartmentNumber: "string",
-      street: "string",
-      city: "string",
-      zipCode: "string",
-      country: "string",
-    },
-    inquiryDate: "2024-01-19T09:40:57.248Z",
-    deliveryDate: "2024-01-19T09:40:57.248Z",
-    weekendDelivery: true,
-    priority: 0,
-  },
-  offer: {
-    totalPrice: 0,
-    currency: "string",
-  },
-  delivery: {
-    deliveryId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    pickupDate: "2024-01-19T09:40:57.248Z",
-    deliveryDate: "2024-01-20T09:40:57.248Z",
-    deliveryStatus: "accepted",
-    courier: {
-      createdAt: "2024-01-19T09:40:57.248Z",
-      userId: 0,
-      auth0Id: "string",
-      firstName: "string",
-      lastName: "string",
-      email: "string",
-      numberOfLogins: 0,
-    },
-  },
-};
-
 export function WorkerOffers() {
   const navigate = useNavigate();
   const { user, getAccessTokenSilently } = useAuth0();
@@ -127,7 +15,7 @@ export function WorkerOffers() {
       try {
         const token = await getAccessTokenSilently();
         const response = await axios.get(
-          `${config.serverUri}/office-worker/offers`,
+          `${config.serverUri}/office-worker/get-all-deliveries`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -138,7 +26,6 @@ export function WorkerOffers() {
         setOffers(response.data);
       } catch (error) {
         console.error(error);
-        setOffers([DATA, DATA2, DATA, DATA, DATA2]); // TODO Remove
       }
     };
 
@@ -153,7 +40,6 @@ export function WorkerOffers() {
     const [sortByDate, setSortByDate] = useState(false);
 
     useEffect(() => {
-      console.log("EFFECT");
       if (!sortByDate) {
         setSortedOffers(offers);
       } else {
@@ -163,19 +49,6 @@ export function WorkerOffers() {
           )
         );
       }
-
-      //   const myList = [
-      //     "2024-01-19T09:40:57.248Z",
-      //     "2024-03-19T09:40:57.248Z",
-      //     "2024-02-19T09:40:57.248Z",
-      //     "adaddada",
-      //     "abbfs",
-      //   ];
-      //   console.log([...myList].sort((a, b) => a.localeCompare(b)));
-
-      //   if (sortByDate) {
-      //     setSortedOffers((x) => [...x, DATA, DATA, DATA]);
-      //   }
     }, [sortByDate]);
 
     const handleChangeNoStatus = () => {
@@ -204,13 +77,14 @@ export function WorkerOffers() {
       if (offer.delivery.deliveryStatus === "no status" && !showNoStatus) {
         return;
       } else if (
-        offer.delivery.deliveryStatus === "accepted" &&
-        !showAccepted
+        offer.delivery.deliveryStatus === "rejected" &&
+        !showRejected
       ) {
         return;
       } else if (
-        offer.delivery.deliveryStatus === "rejected" &&
-        !showRejected
+        offer.delivery.deliveryStatus !== "no status" &&
+        offer.delivery.deliveryStatus !== "rejected" &&
+        !showAccepted
       ) {
         return;
       }
@@ -275,7 +149,7 @@ export function WorkerOffers() {
     try {
       const token = await getAccessTokenSilently();
       await axios.post(
-        `${config.serverUri}/office-worker/change-offert-status`,
+        `${config.serverUri}/office-worker/change-delivery-status`,
         {
           deliveryId: id,
           deliveryStatus: status,
@@ -288,7 +162,7 @@ export function WorkerOffers() {
         }
       );
 
-      navigate("/offers"); // TODO Check if works
+      navigate("/offers");
       window.location.reload();
     } catch (error) {
       console.error(error);
@@ -308,10 +182,12 @@ export function WorkerOffers() {
               <strong>cost:</strong> {offer.offer.totalPrice}{" "}
               {offer.offer.currency}
             </li>
-            <li>
-              <strong>user:</strong> {offer.user.firstName}{" "}
-              {offer.user.lastName}, {offer.user.email}
-            </li>
+            {offer.user && (
+              <li>
+                <strong>user:</strong> {offer.user.firstName}{" "}
+                {offer.user.lastName}, {offer.user.email}
+              </li>
+            )}
             <li>
               <strong>package dimensions:</strong> {offer.inquiry.package.width}
               m x {offer.inquiry.package.height}m x{" "}
@@ -350,14 +226,14 @@ export function WorkerOffers() {
           <>
             <button
               onClick={() =>
-                handleChangeStatus(offer.delivery.deliveryId, "Accept")
+                handleChangeStatus(offer.delivery.deliveryId, "accepted")
               }
             >
               Accept
             </button>
             <button
               onClick={() =>
-                handleChangeStatus(offer.delivery.deliveryId, "Reject")
+                handleChangeStatus(offer.delivery.deliveryId, "rejected")
               }
             >
               Reject

@@ -6,41 +6,6 @@ import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { SearchBar } from "./SearchBar";
 
-// TODO Remove
-const DATA = {
-  inquiryId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  user: {
-    firstName: "string",
-    lastName: "string",
-    email: "string",
-  },
-  package: {
-    width: 0,
-    height: 0,
-    length: 0,
-    weight: 0,
-  },
-  sourceAddress: {
-    houseNumber: "string",
-    apartmentNumber: "string",
-    street: "string",
-    city: "string",
-    zipCode: "string",
-    country: "string",
-  },
-  destinationAddress: {
-    houseNumber: "string",
-    apartmentNumber: "string",
-    street: "string",
-    city: "string",
-    zipCode: "string",
-    country: "string",
-  },
-  inquiryDate: "2024-01-19T08:43:03.235Z",
-  weekendDelivery: true,
-  priority: 0,
-};
-
 export function WorkerInquiries() {
   const navigate = useNavigate();
   const { getAccessTokenSilently } = useAuth0();
@@ -51,7 +16,7 @@ export function WorkerInquiries() {
       try {
         const token = await getAccessTokenSilently();
         const response = await axios.get(
-          `${config.serverUri}/office-worker/inquiries`,
+          `${config.serverUri}/office-worker/get-all-inquiries`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -62,7 +27,6 @@ export function WorkerInquiries() {
         setInquiries(response.data);
       } catch (error) {
         console.error(error);
-        setInquiries([DATA, DATA, DATA]); // TODO Remove
       }
     };
 
@@ -143,10 +107,12 @@ function Inquiry({ inquiry }) {
           <li>
             <strong>id:</strong> {inquiry.inquiryId}
           </li>
-          <li>
-            <strong>user:</strong> {inquiry.user.firstName}{" "}
-            {inquiry.user.lastName}, {inquiry.user.email}
-          </li>
+          {inquiry.user && (
+            <li>
+              <strong>user:</strong> {inquiry.user.firstName}{" "}
+              {inquiry.user.lastName}, {inquiry.user.email}
+            </li>
+          )}
           <li>
             <strong>package dimensions:</strong> {inquiry.package.width}m x{" "}
             {inquiry.package.height}m x {inquiry.package.length}m
