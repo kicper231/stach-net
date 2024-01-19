@@ -103,8 +103,8 @@ const DATA2 = {
   delivery: {
     deliveryId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     pickupDate: "2024-01-19T09:40:57.248Z",
-    deliveryDate: "2024-01-19T09:40:57.248Z",
-    deliveryStatus: "Accepted",
+    deliveryDate: "2024-01-20T09:40:57.248Z",
+    deliveryStatus: "accepted",
     courier: {
       createdAt: "2024-01-19T09:40:57.248Z",
       userId: 0,
@@ -146,9 +146,37 @@ export function WorkerOffers() {
   }, [getAccessTokenSilently]);
 
   function OffersTable() {
+    const [sortedOffers, setSortedOffers] = useState(offers);
     const [showAccepted, setShowAccepted] = useState(true);
     const [showRejected, setShowRejected] = useState(true);
     const [showNoStatus, setShowNoStatus] = useState(true);
+    const [sortByDate, setSortByDate] = useState(false);
+
+    useEffect(() => {
+      console.log("EFFECT");
+      if (!sortByDate) {
+        setSortedOffers(offers);
+      } else {
+        setSortedOffers(
+          [...offers].sort((a, b) =>
+            a.delivery.deliveryDate.localeCompare(b.delivery.deliveryDate)
+          )
+        );
+      }
+
+      //   const myList = [
+      //     "2024-01-19T09:40:57.248Z",
+      //     "2024-03-19T09:40:57.248Z",
+      //     "2024-02-19T09:40:57.248Z",
+      //     "adaddada",
+      //     "abbfs",
+      //   ];
+      //   console.log([...myList].sort((a, b) => a.localeCompare(b)));
+
+      //   if (sortByDate) {
+      //     setSortedOffers((x) => [...x, DATA, DATA, DATA]);
+      //   }
+    }, [sortByDate]);
 
     const handleChangeNoStatus = () => {
       setShowNoStatus(!showNoStatus);
@@ -162,9 +190,55 @@ export function WorkerOffers() {
       setShowRejected(!showRejected);
     };
 
+    const handleChangeSort = () => {
+      setSortByDate(!sortByDate);
+    };
+
+    const list = [];
+
+    if (!offers) {
+      return <p>Loading...</p>;
+    }
+
+    sortedOffers.forEach((offer, index) => {
+      if (offer.delivery.deliveryStatus === "no status" && !showNoStatus) {
+        return;
+      } else if (
+        offer.delivery.deliveryStatus === "accepted" &&
+        !showAccepted
+      ) {
+        return;
+      } else if (
+        offer.delivery.deliveryStatus === "rejected" &&
+        !showRejected
+      ) {
+        return;
+      }
+
+      list.push(
+        <li key={index} className="offer" onClick={() => navigate(`${index}`)}>
+          <strong>id:</strong> {offer.delivery.deliveryId}
+          <br />
+          <strong>date:</strong> {offer.delivery.deliveryDate}
+          <br />
+          <strong>status:</strong> {offer.delivery.deliveryStatus}
+        </li>
+      );
+    });
+
     return (
       <div className="overflow">
         <h1>Offers</h1>
+
+        <p>sorting:</p>
+        <label>
+          <input
+            type="checkbox"
+            checked={sortByDate}
+            onChange={handleChangeSort}
+          />
+          sort by date
+        </label>
 
         <p>status filtering:</p>
         <label>
@@ -192,40 +266,7 @@ export function WorkerOffers() {
           rejected
         </label>
 
-        <ul>
-          {offers.map((offer, index) => {
-            if (
-              offer.delivery.deliveryStatus === "no status" &&
-              !showNoStatus
-            ) {
-              return null;
-            } else if (
-              offer.delivery.deliveryStatus === "Accepted" &&
-              !showAccepted
-            ) {
-              return null;
-            } else if (
-              offer.delivery.deliveryStatus === "Rejected" &&
-              !showRejected
-            ) {
-              return null;
-            } else {
-              return (
-                <li
-                  key={index}
-                  className="offer"
-                  onClick={() => navigate(`${index}`)}
-                >
-                  <strong>id:</strong> {offer.delivery.deliveryId}
-                  <br />
-                  <strong>date:</strong> {offer.delivery.deliveryDate}
-                  <br />
-                  <strong>status:</strong> {offer.delivery.deliveryStatus}
-                </li>
-              );
-            }
-          })}
-        </ul>
+        <ul>{list}</ul>
       </div>
     );
   }
