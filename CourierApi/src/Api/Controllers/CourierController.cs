@@ -19,38 +19,30 @@ namespace Api.Controllers
     public class CourierController : ControllerBase
     {
         private readonly IDeliveryRequest _deliveryRequestService;
-        private readonly ShopperContext _context;
-        public CourierController(IDeliveryRequest deliveryRequestService,ShopperContext context)
+        public CourierController(IDeliveryRequest deliveryRequestService)
         {
             _deliveryRequestService = deliveryRequestService;
-            _context = context;
         }
         // GET: api/<ValuesController>
         [HttpPost("inquiries")]
         public async Task<ActionResult<InquiryDTO>> SendDeliveryRequest([FromBody] DeliveryRequestDTO DRDTO)
         {
-            if (!ModelState.IsValid || DRDTO == null)
-            {
-                return BadRequest("Nieprawidłowe dane wejściowe"); // Bad Request, ponieważ model nie spełnia warunków
-            }
 
-
-            if (DRDTO.Package.Weight >= 1000)
+            string Error = _deliveryRequestService.Validate(DRDTO);
+            if(!ModelState.IsValid)
             {
-                return BadRequest("Zbyt duża waga paczki");
+                Error = "Nieprawidłowe dane wejściowe";
             }
-            if (DRDTO.Package.Height > 1000 || DRDTO.Package.Length > 1000 || DRDTO.Package.Width > 1000)
+     
+            //}
+            if (Error != "")
             {
-                return BadRequest("Zbyt duże wymiary paczki");
+                return BadRequest(Error);
             }
 //######### saveindatadeliveryrequest do zmiany stachu powaznej ################################################################
             var response =  _deliveryRequestService.GetOffers(DRDTO);
-            SaveInDatabaseDeliveryRequest(DRDTO, response);
-            
-
-            //await _context.SaveChangesAsync();
-            //// Zapisz zmiany w bazie danych
-            //await _context.SaveChangesAsync();
+            _deliveryRequestService.SaveInDatabaseDeliveryRequest(DRDTO, response);
+          
 
             return Ok(response);  // This is now valid
         }
@@ -61,8 +53,8 @@ namespace Api.Controllers
         {
             
             var response = _deliveryRequestService.AcceptOffer(DRDTO);
-            SaveInDatabaseDelivery(DRDTO,response);
-
+            _deliveryRequestService.SaveInDatabaseDelivery(DRDTO,response);
+            //SaveInDatabaseDelivery(DRDTO, response);
             return Ok(response);  
         }
 
@@ -74,7 +66,8 @@ namespace Api.Controllers
             try
             {
                 
-                var deliveryRequest = await _context.Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == OfferGuid));
+                var deliveryRequest = await _deliveryRequestService.GetDeliveryContext().Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == OfferGuid));
+                
                 if (deliveryRequest == null)
                 {
                     return NotFound($"Nie znaleziono DeliveryRequest o GUID: {OfferGuid}");
@@ -92,9 +85,11 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
         public async Task<IActionResult> SetStatus([FromBody] GuidInt OfferGuid)
         {
+            
             try
             {
-                var delivery = await _context.Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == OfferGuid.g));
+               //_context.Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == OfferGuid.g));
+                var delivery = await _deliveryRequestService.GetDeliveryContext().Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == OfferGuid.g));
                 if (delivery == null)
                 {
                     return NotFound($"Nie znaleziono DeliveryRequest o GUID: {OfferGuid.g}");
@@ -102,7 +97,7 @@ namespace Api.Controllers
                 else
                 {
                     delivery.DeliveryStatus  = (DeliveryStatus)Enum.ToObject(typeof(DeliveryStatus), OfferGuid.i);
-                    _context.SaveChanges();
+                    _deliveryRequestService.GetDeliveryContext().SaveChanges();
                     return Ok("Status updated successfully");
                 }
             }
@@ -114,75 +109,6 @@ namespace Api.Controllers
         }
 
 
-        void SaveInDatabaseDeliveryRequest(DeliveryRequestDTO DRDTO,InquiryDTO response)
-        {
-            var PackageDB = new Package
-            {
-                Width = DRDTO.Package.Width,
-                Height = DRDTO.Package.Height,
-                Weight = DRDTO.Package.Weight,
-                Length = DRDTO.Package.Length
-            };
-            
-            _context.Packages.Add(PackageDB);
-            _context.SaveChanges();
-            int PackageID = PackageDB.PackageId;
-
-            var SourceAddressDB = new Address
-            { 
-                HouseNumber=DRDTO.SourceAddress.HouseNumber,
-                City=DRDTO.SourceAddress.City,
-                Country=DRDTO.SourceAddress.Country,
-                zipCode=DRDTO.SourceAddress.zipCode,
-                Street=DRDTO.SourceAddress.Street,
-                ApartmentNumber=DRDTO.SourceAddress.ApartmentNumber           
-            };
-            _context.Addresses.Add(SourceAddressDB);
-            _context.SaveChanges();
-        
-            int SourceAddressID = SourceAddressDB.AddressId;
-
-            var DestinationAddressDB = new Address
-            {
-                HouseNumber = DRDTO.DestinationAddress.HouseNumber,
-                City = DRDTO.DestinationAddress.City,
-                Country = DRDTO.DestinationAddress.Country,
-                zipCode = DRDTO.DestinationAddress.zipCode,
-                Street = DRDTO.DestinationAddress.Street,
-                ApartmentNumber = DRDTO.DestinationAddress.ApartmentNumber
-            };
-            _context.Addresses.Add(DestinationAddressDB);
-            _context.SaveChanges();
-            int DestinationAddressID = DestinationAddressDB.AddressId;
-
-            var DeliveryRequestDB = new DeliveryRequest
-            {
-                PackageId = PackageID,
-                SourceAddressId = SourceAddressID,
-                DestinationAddressId = DestinationAddressID,
-                DeliveryDate = DRDTO.DeliveryDate,
-                RequestDate = DateTime.Now,
-                DeliveryRequestGuid = response.InquiryId,
-                WeekendDelivery=DRDTO.WeekendDelivery,
-                Priority=(DRDTO.Priority==true)?PackagePriority.High:PackagePriority.Low,
-                
-
-            };
-            _context.DeliveryRequests.Add(DeliveryRequestDB);
-            _context.SaveChanges();
-
-        }
-
-
-        void SaveInDatabaseDelivery(OfferDTO DRDTO,OfferRespondDTO respond)
-        {
-            var DeliveryDB = new Delivery
-            {
-                DeliveryGuid = respond.OfferRequestId,              
-                DeliveryStatus=DeliveryStatus.AcceptedByWorker
-            };
-            _context.Deliveries.Add(DeliveryDB);
-            _context.SaveChanges();
-        }
+      
     }
 }

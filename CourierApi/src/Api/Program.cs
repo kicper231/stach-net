@@ -11,6 +11,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Api.Authorization;
 using Microsoft.OpenApi.Models;
+using Infrastructure.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -81,6 +82,16 @@ builder.Services
 builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 //builder.Services.AddScoped<IUserRepository, DbUserRepository>();
 builder.Services.AddScoped<IDeliveryRequest, Inquiries>();
+
+
+builder.Services.AddScoped<IUserRepository, DbUserRepository>();
+builder.Services.AddScoped<IPackageRepository, DbPackageRepository>();
+builder.Services.AddScoped<IAddressRepository, DbAddressRepository>();
+builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
+builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
+
+
+
 builder.Services.AddDbContextFactory<ShopperContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("HostowanaBaza"),
