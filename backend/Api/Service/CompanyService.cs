@@ -245,7 +245,7 @@ public class CompanyService : ICompanyService
         {
             throw new Exception("Podaj wiadomosc jesli nie udalo sie dostarczyc paczki ( wymagania )");
         }
-        if(status==DeliveryStatus.accepted)
+        if(delivery.DeliveryStatus==DeliveryStatus.accepted)
         {
            if(changeDeliveryStatusDTO.Auth0Id==null) { throw new Exception("null jako auth0id gdy acceptedbycourier"); }
 
@@ -255,7 +255,7 @@ public class CompanyService : ICompanyService
             delivery.Courier = user;
 
         }
-
+        
         delivery.DeliveryStatus = adapter.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
         _deliveryRepository.Update(delivery);
         await _deliveryRepository.SaveChangesAsync();
