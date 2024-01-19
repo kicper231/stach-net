@@ -5,7 +5,46 @@ import { config } from "../config-development";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 
-export function Inquiries() {
+// TODO Remove
+const DATA = {
+  inquiryId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  user: {
+    firstName: "string",
+    lastName: "string",
+    email: "string",
+  },
+  offer: {
+    totalPrice: 0,
+    currency: "string",
+  },
+  package: {
+    width: 0,
+    height: 0,
+    length: 0,
+    weight: 0,
+  },
+  sourceAddress: {
+    houseNumber: "string",
+    apartmentNumber: "string",
+    street: "string",
+    city: "string",
+    zipCode: "string",
+    country: "string",
+  },
+  destinationAddress: {
+    houseNumber: "string",
+    apartmentNumber: "string",
+    street: "string",
+    city: "string",
+    zipCode: "string",
+    country: "string",
+  },
+  inquiryDate: "2024-01-19T08:43:03.235Z",
+  weekendDelivery: true,
+  priority: 0,
+};
+
+export function WorkerInquiries() {
   const navigate = useNavigate();
   const { user, getAccessTokenSilently } = useAuth0();
   const [inquiries, setInquiries] = useState([]);
@@ -15,7 +54,7 @@ export function Inquiries() {
       try {
         const token = await getAccessTokenSilently();
         const response = await axios.get(
-          `${config.serverUri}/get-my-inquiries/${user.sub}`,
+          `${config.serverUri}/office-worker/inquiries`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -26,36 +65,17 @@ export function Inquiries() {
         setInquiries(response.data);
       } catch (error) {
         console.error(error);
+        setInquiries([DATA, DATA, DATA]); // TODO Remove
       }
     };
 
     getInquirues();
-  }, [user.sub, getAccessTokenSilently]);
+  }, [getAccessTokenSilently]);
 
   function InquiriesTable() {
-    const [addedInquiryId, setAddedInquiryId] = useState("");
-    const [isError, setIsError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("Error");
-
-    const handleAdd = async () => {
-      try {
-        await axios.post(`${config.serverUri}/add-delivery`, {
-          deliveryID: addedInquiryId,
-          userAuth0: user.sub,
-        });
-
-        window.location.reload();
-      } catch (error) {
-        setIsError(true);
-        typeof error.response.data === "string" &&
-          setErrorMessage(error.response.data);
-        console.error(error);
-      }
-    };
-
     return (
       <div className="overflow">
-        <h1>Inquiries</h1>
+        <h1>All inquiries</h1>
 
         <ul>
           {inquiries.map((inquiry, index) => (
@@ -64,28 +84,12 @@ export function Inquiries() {
               className="inquiry"
               onClick={() => navigate(`${index}`)}
             >
-              <strong>date:</strong> {inquiry.deliveryDate} /{" "}
-              <strong>source address:</strong> {inquiry.sourceAddress.street},{" "}
-              {inquiry.sourceAddress.city} /{" "}
-              <strong>destination address:</strong>{" "}
-              {inquiry.destinationAddress.street},{" "}
-              {inquiry.deliveryInfo && " / "}
-              {inquiry.deliveryInfo && <strong>status: </strong>}
-              {inquiry.deliveryInfo && inquiry.deliveryInfo.deliveryStatus}
+              <strong>id:</strong> {inquiry.inquiryId}
+              <br />
+              <strong>date:</strong> {inquiry.inquiryDate}
             </li>
           ))}
         </ul>
-
-        <button onClick={handleAdd}>Add inquiry</button>
-        <br />
-        <input
-          type="text"
-          value={addedInquiryId}
-          placeholder="added inquiry id"
-          onChange={(e) => setAddedInquiryId(e.target.value)}
-        />
-        <br />
-        {isError && <h1 className="red">{errorMessage}</h1>}
       </div>
     );
   }
@@ -107,12 +111,30 @@ export function Inquiries() {
   );
 }
 
+function displayAddress(address) {
+  return (
+    <>
+      {address.street} {address.houseNumber}{" "}
+      {address.apartmentNumber && " / " + address.apartmentNumber},
+      <br />
+      {address.city} {address.zipCode}, {address.country}
+    </>
+  );
+}
+
 function Inquiry({ inquiry }) {
   return (
     <>
       <div className="contexHolder">
         <h1>Inquiry</h1>
         <ul>
+          <li>
+            <strong>id:</strong> {inquiry.inquiryId}
+          </li>
+          <li>
+            <strong>user:</strong> {inquiry.user.firstName}{" "}
+            {inquiry.user.lastName}, {inquiry.user.email}
+          </li>
           <li>
             <strong>package dimensions:</strong> {inquiry.package.width}m x{" "}
             {inquiry.package.height}m x {inquiry.package.length}m
@@ -124,25 +146,13 @@ function Inquiry({ inquiry }) {
           <li>
             <strong>source address:</strong>
             <br />
-            {inquiry.sourceAddress.street} {inquiry.sourceAddress.houseNumber}
-            {inquiry.sourceAddress.apartmentNumber &&
-              " / " + inquiry.sourceAddress.apartmentNumber}
-            <br />
-            {inquiry.sourceAddress.city} {inquiry.sourceAddress.zipCode},{" "}
-            {inquiry.sourceAddress.country}
+            {displayAddress(inquiry.sourceAddress)}
           </li>
 
           <li>
             <strong>destination address:</strong>
             <br />
-            {inquiry.destinationAddress.street}{" "}
-            {inquiry.destinationAddress.houseNumber}
-            {inquiry.destinationAddress.apartmentNumber &&
-              " / " + inquiry.destinationAddress.apartmentNumber}
-            <br />
-            {inquiry.destinationAddress.city}{" "}
-            {inquiry.destinationAddress.zipCode},{" "}
-            {inquiry.destinationAddress.country}
+            {displayAddress(inquiry.destinationAddress)}
           </li>
 
           <li>
