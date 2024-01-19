@@ -1,7 +1,7 @@
 ﻿using Domain.DTO;
 using Domain.Model;
 using System.Text.RegularExpressions;
-
+using Domain;
 namespace Domain.Adapters;
 
 //raczej konwenter nie adapter ale cicho  jak starczy czasu to zmienie strukture kodu na adapter // jak bede wiedzial jak 
@@ -88,13 +88,22 @@ public class ApiAdapter
     }
 
 
-    public  string ConvertStatusToString(DeliveryStatus status)
+    public string ConvertStatusToString(DeliveryStatus status)
     {
-        string statusString = status.ToString();
-        string withSpaces = Regex.Replace(statusString, "(\\B[A-Z])", " $1");
-        return withSpaces.ToLower();
+        return status switch
+        {
+            DeliveryStatus.nostatus => "no status",
+            DeliveryStatus.accepted => "accepted",
+            DeliveryStatus.rejected => "rejected",
+            DeliveryStatus.acceptedbycourier => "accepted by courier",
+            DeliveryStatus.pickedup => "picked up",
+            DeliveryStatus.delivered => "delivered",
+            DeliveryStatus.cannotdelivery => "cannot delivery",
+            DeliveryStatus.cancelled => "cancelled",
+            _ => "unknown status"
+        };
     }
-
+    
 
 
 
