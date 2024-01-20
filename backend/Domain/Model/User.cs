@@ -1,10 +1,5 @@
 ﻿namespace Domain.Model;
 
-
-
-
-
-
 public class User : BaseEntity
 {
     public int UserId { get; set; }
@@ -13,6 +8,5 @@ public class User : BaseEntity
     public string LastName { get; set; }
     public string Email { get; set; }
 
-    public  User() { }
-
+    public int NumberOfLogins { get; set; }
 }

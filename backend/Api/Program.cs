@@ -1,19 +1,69 @@
 using Api;
+using Api.Authorization;
+using Api.Service;
+using Api.Service.OfferServices;
+using Domain;
 using Domain.Abstractions;
 using Infrastructure;
-using Microsoft.EntityFrameworkCore;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Api.Service;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using System.ComponentModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
 
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddControllers(); 
-builder.Services.AddEndpointsApiExplorer(); 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+    // Definicja schematu bezpieczeństwa dla tokena Bearer
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header
+            },
+            new List<string>()
+        }
+    });
+});
+
+var OurUrl = $"{builder.Configuration["CourierApi:UrlLocal"]}"; //Url lub Urllocal
+var SzymonUrl = $"{builder.Configuration["IdentityManager:Url"]}";
+var TokenSzymonUrl = $"{builder.Configuration["IdentityManager:TokenEndpointSzymon"]}";
+
+builder.Services.AddHttpClient("OurClient", client => { client.BaseAddress = new Uri($"{OurUrl}"); });
+
+builder.Services.AddHttpClient("SzymonClient", client => { client.BaseAddress = new Uri($"{SzymonUrl}"); });
+
+builder.Services.AddHttpClient("SzymonToken", client => { client.BaseAddress = new Uri($"{TokenSzymonUrl}"); });
+
+builder.Services.AddHostedService<MyBackgroundWorker>();
+//System.Console.WriteLine(builder.Configuration["CourierApi:Url"]);
 
 //cors polityka 
 builder.Services.AddCors(options =>
@@ -22,93 +72,90 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder.WithOrigins("http://localhost:3000")
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
 });
+
 //dodanie scopow injections
 builder.Services.AddScoped<IUserRepository, DbUserRepository>();
 builder.Services.AddScoped<IPackageRepository, DbPackageRepository>();
 builder.Services.AddScoped<IAddressRepository, DbAddressRepository>();
 builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
-// popraw 
-builder.Services.AddHttpClient<IOfferService, OfferService>();
+builder.Services.AddScoped<ICourierCompanyRepository, DbCourierCompanyRepository>();
+builder.Services.AddScoped<IOfferService,OfferService>();
+builder.Services.AddScoped<IOfferRepository, DbOfferRepository>();
+builder.Services.AddScoped<IInquiryServiceFactory, InquiryServiceFactory>();
+builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
+builder.Services.Configure<IdentityManagerSettings>(builder.Configuration.GetSection("IdentityManager"));
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 
 
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IEmailService,EmailService>();
 
-builder.Services.AddScoped<IDeliveryRequestService, DeliveryRequestService>();
 
 
 // Konfiguracja factory do tworzenia DbContext, konkretnie ShopperContext, u�ywaj�c SQLite jako bazy danych
-////builder.Services.AddDbContextFactory<ShopperContext>(options =>
-////  options.UseSqlite("Data Source=shopper.db"));
-
 builder.Services.AddDbContextFactory<ShopperContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("LokalnaBaza"),
+        builder.Configuration.GetConnectionString("HostowanaBaza"),
         x => x.MigrationsAssembly("Api")
     )
 );
 
 
-//builder.Services.AddDbContextFactory<ShopperContext>(options =>
-//    options.UseSqlServer("data source=DESKTOP-IIG9H2J;initial catalog=stachnetest;user id=sa;password=monia231; TrustServerCertificate=True "));
-
-
-//builder.Services.AddDbContextFactory<ShopperContext>(options =>
-//    options.UseSqlServer("data source=DESKTOP-IIG9H2J;initial catalog=stachnetest;user id=sa;password=monia231; TrustServerCertificate=True "));
-
-// Odkomentuj, aby doda� us�ug� hostowan�, kt�ra uruchomi DbCreationalService przy starcie
+// servis bazy danych
 builder.Services.AddHostedService<DbCreationalService>();
 
-
+// autetykacja
 var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
-{
-    options.Authority = domain;
-    options.Audience = builder.Configuration["Auth0:Audience"];
-    options.Events = new JwtBearerEvents
+    .AddJwtBearer(options =>
     {
-        OnTokenValidated = context =>
-        {
-           
-            //var claims = context.Principal.Claims;
-            //var name = claims.FirstOrDefault(c => c.Type == "name")?.Value;
-            //var surname = claims.FirstOrDefault(c => c.Type == "family_name")?.Value;
-            //var email = claims.FirstOrDefault(c => c.Type == "email")?.Value;
+        options.Authority = domain;
+        options.Audience = builder.Configuration["Auth0:Audience"];
+    });
 
-          
-
-            return Task.CompletedTask;
-        },
-    };
+//autoryzacja pozniej
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("client:permission",
+        policy => policy.Requirements.Add(new HasScopeRequirement("client:permission", domain)));
+    options.AddPolicy("courier:permission",
+        policy => policy.Requirements.Add(new HasScopeRequirement("courier:permission", domain)));
+    options.AddPolicy("serviceworker:permission",
+        policy => policy.Requirements.Add(new HasScopeRequirement("serviceworker:permission", domain)));
 });
+
+
+
+
+builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
+
 
 var app = builder.Build(); // Buduje aplikacj� webow�
 
 
-
-
-
-
-
-
-
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection(); // Dodaje middleware do przekierowywania ��da� HTTP na HTTPS
+app.UseSwagger();
+app.UseSwaggerUI(); // ui nawet gdy nie developmnet
+
+
+app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors("MyAllowSpecificOrigins");
 
-app.UseAuthorization(); // Dodaje middleware do autoryzacji
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers(); // Mapuje trasy do akcji kontroler�w
-
 
 
 app.Run(); // Uruchamia aplikacj�

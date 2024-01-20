@@ -6,38 +6,27 @@ import reportWebVitals from "./reportWebVitals";
 
 import { Auth0Provider } from "@auth0/auth0-react";
 import { BrowserRouter } from "react-router-dom";
-
-const domain = process.env.REACT_APP_AUTH0_DOMAIN;
-const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
-const audience = process.env.REACT_APP_AUDIENCE;
+import { config } from "./config-development";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const providerConfig = {
-  domain: domain,
-  clientId: clientId,
-  redirectUri: window.location.origin,
-  ...(audience ? { audience: audience } : null),
-
+  domain: config.auth0domain,
+  clientId: config.auth0clientId,
+  authorizationParams: {
+    redirect_uri: window.location.origin,
+    ...(config.audience ? { audience: config.audience } : null),
+  },
 };
 
-
-console.log(audience);
-
-
 root.render(
-  <React.StrictMode>
-    <Auth0Provider
-      {...providerConfig}
-
-
-      
-    >
-      <BrowserRouter>
-        <App />
-     </BrowserRouter>
-    </Auth0Provider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <Auth0Provider {...providerConfig}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Auth0Provider>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

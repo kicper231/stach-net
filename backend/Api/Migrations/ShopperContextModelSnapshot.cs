@@ -30,6 +30,10 @@ namespace Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AddressId"));
 
+                    b.Property<string>("ApartmentNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("City")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -43,18 +47,19 @@ namespace Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PostalCode")
+                    b.Property<string>("HouseNumber")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("zipCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("AddressId");
 
@@ -77,9 +82,6 @@ namespace Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -88,6 +90,22 @@ namespace Api.Migrations
                     b.HasKey("CourierCompanyId");
 
                     b.ToTable("CourierCompanies");
+
+                    b.HasData(
+                        new
+                        {
+                            CourierCompanyId = 1,
+                            ContactInfo = "https://courierapistachnet.azurewebsites.net/api",
+                            CreatedAt = new DateTime(2024, 1, 18, 15, 44, 35, 690, DateTimeKind.Local).AddTicks(5558),
+                            Name = "StachnetCompany"
+                        },
+                        new
+                        {
+                            CourierCompanyId = 2,
+                            ContactInfo = "https://mini.currier.api.snet.com.pl",
+                            CreatedAt = new DateTime(2024, 1, 18, 15, 44, 35, 690, DateTimeKind.Local).AddTicks(5644),
+                            Name = "SzymonCompany"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Model.Delivery", b =>
@@ -98,7 +116,10 @@ namespace Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryId"));
 
-                    b.Property<int>("CourierId")
+                    b.Property<Guid>("ApiId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("CourierId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -110,14 +131,14 @@ namespace Api.Migrations
                     b.Property<int>("DeliveryStatus")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<int>("OfferId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("PickupDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PublicID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("DeliveryId");
 
@@ -130,11 +151,11 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Domain.Model.DeliveryRequest", b =>
                 {
-                    b.Property<int>("RequestId")
+                    b.Property<int>("DeliveryRequestId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryRequestId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -142,38 +163,43 @@ namespace Api.Migrations
                     b.Property<DateTime>("DeliveryDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DestinationAddressAddressId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("DeliveryRequestPublicId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Id")
+                    b.Property<int>("DestinationAddressId")
                         .HasColumnType("int");
 
                     b.Property<int>("PackageId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("SourceAddressAddressId")
+                    b.Property<int>("SourceAddressId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("UserAuth0")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("RequestId");
+                    b.Property<bool>("WeekendDelivery")
+                        .HasColumnType("bit");
 
-                    b.HasIndex("DestinationAddressAddressId");
+                    b.HasKey("DeliveryRequestId");
+
+                    b.HasIndex("DestinationAddressId");
 
                     b.HasIndex("PackageId");
 
-                    b.HasIndex("SourceAddressAddressId");
+                    b.HasIndex("SourceAddressId");
 
                     b.HasIndex("UserId");
 
@@ -197,8 +223,8 @@ namespace Api.Migrations
                     b.Property<int>("DeliveryRequestId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+                    b.Property<Guid>("InquiryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("OfferStatus")
                         .HasColumnType("int");
@@ -206,7 +232,7 @@ namespace Api.Migrations
                     b.Property<DateTime>("OfferValidity")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Price")
+                    b.Property<decimal>("totalPrice")
                         .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("OfferId");
@@ -229,21 +255,16 @@ namespace Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Dimensions")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<double>("Height")
+                        .HasColumnType("float");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("WeekendDelivery")
-                        .HasColumnType("bit");
+                    b.Property<double>("Length")
+                        .HasColumnType("float");
 
                     b.Property<double>("Weight")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Width")
                         .HasColumnType("float");
 
                     b.HasKey("PackageId");
@@ -276,54 +297,29 @@ namespace Api.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("NumberOfLogins")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            Auth0Id = "auth0-id-1",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "jan.kowalski@example.com",
-                            FirstName = "Jan",
-                            Id = 0,
-                            LastName = "Kowalski"
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            Auth0Id = "auth0-id-2",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "anna.nowak@example.com",
-                            FirstName = "Anna",
-                            Id = 0,
-                            LastName = "Nowak"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Model.Delivery", b =>
                 {
                     b.HasOne("Domain.Model.User", "Courier")
                         .WithMany()
-                        .HasForeignKey("CourierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CourierId");
 
                     b.HasOne("Domain.Model.Offer", "Offer")
                         .WithMany()
                         .HasForeignKey("OfferId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Courier");
 
@@ -334,7 +330,7 @@ namespace Api.Migrations
                 {
                     b.HasOne("Domain.Model.Address", "DestinationAddress")
                         .WithMany()
-                        .HasForeignKey("DestinationAddressAddressId")
+                        .HasForeignKey("DestinationAddressId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -346,15 +342,14 @@ namespace Api.Migrations
 
                     b.HasOne("Domain.Model.Address", "SourceAddress")
                         .WithMany()
-                        .HasForeignKey("SourceAddressAddressId")
+                        .HasForeignKey("SourceAddressId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("DestinationAddress");
 

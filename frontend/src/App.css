@@ -18,8 +18,12 @@ div.contextHolder {
 }
 
 .overflow {
-  overflow-y: scroll;
-  height: calc(80vh - 200px);
+  overflow-y: auto;
+  height: calc(90vh - 200px);
+}
+
+.red {
+  color: red;
 }
 
 * {
@@ -38,7 +42,11 @@ input {
 }
 
 li.offer:hover,
-li.request:hover {
+li.offer:hover *,
+li.inquiry:hover,
+li.inquiry:hover *,
+li.delivery:hover,
+li.delivery:hover * {
   background-color: black;
   color: orange;
   cursor: pointer;
