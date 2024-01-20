@@ -1,13 +1,16 @@
 using Api;
 using Api.Authorization;
 using Api.Service;
+using Api.Service.OfferServices;
 using Domain;
 using Domain.Abstractions;
 using Infrastructure;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System.ComponentModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +61,8 @@ builder.Services.AddHttpClient("OurClient", client => { client.BaseAddress = new
 builder.Services.AddHttpClient("SzymonClient", client => { client.BaseAddress = new Uri($"{SzymonUrl}"); });
 
 builder.Services.AddHttpClient("SzymonToken", client => { client.BaseAddress = new Uri($"{TokenSzymonUrl}"); });
+
+builder.Services.AddHostedService<MyBackgroundWorker>();
 //System.Console.WriteLine(builder.Configuration["CourierApi:Url"]);
 
 //cors polityka 
@@ -79,16 +84,18 @@ builder.Services.AddScoped<IPackageRepository, DbPackageRepository>();
 builder.Services.AddScoped<IAddressRepository, DbAddressRepository>();
 builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IInquiryService, InquiryService>();
+
 builder.Services.AddScoped<ICourierCompanyRepository, DbCourierCompanyRepository>();
 builder.Services.AddScoped<IOfferService,OfferService>();
 builder.Services.AddScoped<IOfferRepository, DbOfferRepository>();
-
+builder.Services.AddScoped<IInquiryServiceFactory, InquiryServiceFactory>();
+builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
 builder.Services.Configure<IdentityManagerSettings>(builder.Configuration.GetSection("IdentityManager"));
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 
 
-builder.Services.AddScoped<IDeliveryRequestService, DeliveryRequestService>();
-
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IEmailService,EmailService>();
 
 
 
@@ -116,9 +123,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 //autoryzacja pozniej
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("read:messages",
-        policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
+    options.AddPolicy("client:permission",
+        policy => policy.Requirements.Add(new HasScopeRequirement("client:permission", domain)));
+    options.AddPolicy("courier:permission",
+        policy => policy.Requirements.Add(new HasScopeRequirement("courier:permission", domain)));
+    options.AddPolicy("serviceworker:permission",
+        policy => policy.Requirements.Add(new HasScopeRequirement("serviceworker:permission", domain)));
 });
+
+
 
 
 builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
