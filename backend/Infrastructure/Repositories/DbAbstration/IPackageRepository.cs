@@ -1,4 +1,5 @@
 ﻿using Domain.Model;
+namespace Domain.Abstractions;
 
 public interface IPackageRepository
 {

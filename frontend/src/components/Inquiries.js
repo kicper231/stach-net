@@ -8,6 +8,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 export function Inquiries() {
   const navigate = useNavigate();
   const { user, getAccessTokenSilently } = useAuth0();
+
   const [inquiries, setInquiries] = useState([]);
 
   useEffect(() => {

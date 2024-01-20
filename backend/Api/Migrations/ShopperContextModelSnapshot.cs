@@ -96,14 +96,14 @@ namespace Api.Migrations
                         {
                             CourierCompanyId = 1,
                             ContactInfo = "https://courierapistachnet.azurewebsites.net/api",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2024, 1, 18, 15, 44, 35, 690, DateTimeKind.Local).AddTicks(5558),
                             Name = "StachnetCompany"
                         },
                         new
                         {
                             CourierCompanyId = 2,
                             ContactInfo = "https://mini.currier.api.snet.com.pl",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2024, 1, 18, 15, 44, 35, 690, DateTimeKind.Local).AddTicks(5644),
                             Name = "SzymonCompany"
                         });
                 });
@@ -116,7 +116,10 @@ namespace Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeliveryId"));
 
-                    b.Property<int>("CourierId")
+                    b.Property<Guid>("ApiId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("CourierId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -133,6 +136,9 @@ namespace Api.Migrations
 
                     b.Property<DateTime>("PickupDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PublicID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("DeliveryId");
 
@@ -156,6 +162,9 @@ namespace Api.Migrations
 
                     b.Property<DateTime>("DeliveryDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DeliveryRequestPublicId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("DestinationAddressId")
                         .HasColumnType("int");
@@ -214,9 +223,8 @@ namespace Api.Migrations
                     b.Property<int>("DeliveryRequestId")
                         .HasColumnType("int");
 
-                    b.Property<string>("InquiryId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("InquiryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("OfferStatus")
                         .HasColumnType("int");
@@ -306,15 +314,12 @@ namespace Api.Migrations
                 {
                     b.HasOne("Domain.Model.User", "Courier")
                         .WithMany()
-                        .HasForeignKey("CourierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CourierId");
 
                     b.HasOne("Domain.Model.Offer", "Offer")
                         .WithMany()
                         .HasForeignKey("OfferId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Courier");
 

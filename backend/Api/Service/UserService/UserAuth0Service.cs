@@ -2,14 +2,9 @@
 using Domain.DTO;
 using Domain.Model;
 
-namespace Api.Service;
 
-public interface IUserService
-{
-    ServiceResult AddUser(DTO_UserFromAuth0 user);
-    Task<ServiceResult> AddUserAsync(DTO_UserFromAuth0 user);
-    OperationResult<int> NumberOfLogins();
-}
+
+namespace Api.Service;
 
 public class UserService : IUserService
 {
@@ -69,12 +64,12 @@ public class UserService : IUserService
     {
         try
         {
-            // Asynchronicznie pobierz użytkownika.
+            
             var existingUser = await repository.GetByAuth0IdAsync(user.Auth0Id);
             if (existingUser != null)
             {
                 existingUser.NumberOfLogins++;
-                await repository.SaveChangesAsync(); // Asynchroniczne zapisywanie zmian.
+                await repository.SaveChangesAsync(); 
                 return new ServiceResult(false, "Użytkownik już istnieje.", 409);
             }
 
@@ -88,7 +83,7 @@ public class UserService : IUserService
                 NumberOfLogins = 1
             };
 
-            await repository.AddAsync(AddUser); // Załóżmy, że AddAsync to asynchroniczna wersja metody Add.
+            await repository.AddAsync(AddUser); 
 
             return new ServiceResult(true, "Użytkownik został dodany.", 201, AddUser);
         }

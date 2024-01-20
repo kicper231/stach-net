@@ -10,6 +10,7 @@ namespace Api.Service
         //List<DeliveryRequestDTO> GetUserDeliveryRequests(string userId);
         OfferRespondDTO AcceptOffer(OfferDTO offer);
         InquiryDTO GetOffers(DeliveryRequestDTO deliveryRequest);
+        
 
     }
     public class Inquiries : IDeliveryRequest
@@ -19,9 +20,10 @@ namespace Api.Service
         {
             return new InquiryDTO
             {
-                InquiryId = "123abc",
-                TotalPrice = 150.99,
-                Currency = "USD",
+                InquiryId = Guid.NewGuid(),
+                TotalPrice = 95,
+                Currency = "PLN",
+              
                 ExpiringAt = DateTime.Now.AddDays(7),
                 PriceBreakDown = new List<PriceBreakdown>
     {
@@ -35,12 +37,13 @@ namespace Api.Service
 
         }
 
+        
 
 
 
         public OfferRespondDTO AcceptOffer(OfferDTO offer)
         {
-            return new OfferRespondDTO { OfferRequestId = new Guid("26967244-cdcf-4df6-92c0-bbb4e5687074"), ValidTo = DateAndTime.Now };
+            return new OfferRespondDTO { OfferRequestId= Guid.NewGuid(), ValidTo = DateAndTime.Now };
         }
     }
 

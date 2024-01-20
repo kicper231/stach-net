@@ -15,12 +15,12 @@ namespace Api.Controllers
     [Route("users")]
     [ApiController]
     [Produces("application/json")]
-    public class UsersController : ControllerBase
+    public class UserManagementController : ControllerBase
     {
         private readonly IUserRepository repository;
         private readonly IUserService userService;
 
-        public UsersController(IUserRepository repository, IUserService userService)
+        public UserManagementController(IUserRepository repository, IUserService userService)
         {
             this.repository = repository;
             this.userService = userService;
@@ -56,7 +56,10 @@ namespace Api.Controllers
             var result = await userService.AddUserAsync(user);
 
             if (result.Success)
-                return CreatedAtRoute("GetUserById", new { id = result.user.UserId }, result.user);
+            {
+                return Ok(result);
+            }
+               
             return BadRequest(result.Message);
         }
 

@@ -13,4 +13,5 @@ public interface IUserRepository
     public Task<User> GetByAuth0IdAsync(string auth0Id);
     public Task AddAsync(User user);
     public Task<int> SaveChangesAsync();
+    public Task<User?> GetBy0IdAsync(int? UserId);
 }

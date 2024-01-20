@@ -1,5 +1,5 @@
 ﻿using Domain.Model;
-
+using Domain.Abstractions;
 namespace Infrastructure;
 
 public class DbPackageRepository : IPackageRepository

@@ -6,4 +6,6 @@ public interface IDeliveryRequestRepository
 {
     List<DeliveryRequest> GetDeliveryRequestsByUserId(string userId);
     public void Add(DeliveryRequest delivery);
+
+    public Task<List<DeliveryRequest>> GetAllInquiriesAsync();
 }
