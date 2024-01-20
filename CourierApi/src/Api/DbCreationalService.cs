@@ -16,7 +16,6 @@ public class DbCreationalService : IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         var context = await _contextFactory.CreateDbContextAsync();
-      //  await context.Database.MigrateAsync(); 
        await context.Database.EnsureCreatedAsync();
 
     }

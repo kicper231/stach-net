@@ -34,4 +34,15 @@ public  class DeliveryRepository:IDeliveryRepository
     {
         return _context;
     }
+    public async Task<Delivery> Find(Guid g)
+    {
+      
+        var delivery = await _context.Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == g));
+        
+        return delivery;
+    }
+    public void DatabaseSave()
+    {
+        _context.SaveChanges();
+    }
 }

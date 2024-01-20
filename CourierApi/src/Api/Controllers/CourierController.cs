@@ -15,7 +15,6 @@ namespace Api.Controllers
 
     
     [ApiController]
-    //[Authorize]
     public class CourierController : ControllerBase
     {
         private readonly IDeliveryRequest _deliveryRequestService;
@@ -23,7 +22,6 @@ namespace Api.Controllers
         {
             _deliveryRequestService = deliveryRequestService;
         }
-        // GET: api/<ValuesController>
         [HttpPost("inquiries")]
         public async Task<ActionResult<InquiryDTO>> SendDeliveryRequest([FromBody] DeliveryRequestDTO DRDTO)
         {
@@ -34,12 +32,11 @@ namespace Api.Controllers
                 Error = "Nieprawidłowe dane wejściowe";
             }
      
-            //}
+
             if (Error != "")
             {
                 return BadRequest(Error);
             }
-//######### saveindatadeliveryrequest do zmiany stachu powaznej ################################################################
             var response =  _deliveryRequestService.GetOffers(DRDTO);
             _deliveryRequestService.SaveInDatabaseDeliveryRequest(DRDTO, response);
           
@@ -54,7 +51,6 @@ namespace Api.Controllers
             
             var response = _deliveryRequestService.AcceptOffer(DRDTO);
             _deliveryRequestService.SaveInDatabaseDelivery(DRDTO,response);
-            //SaveInDatabaseDelivery(DRDTO, response);
             return Ok(response);  
         }
 
@@ -66,8 +62,8 @@ namespace Api.Controllers
             try
             {
                 
-                var deliveryRequest = await _deliveryRequestService.GetDeliveryContext().Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == OfferGuid));
-                
+                var deliveryRequest =  await _deliveryRequestService.Find(OfferGuid);
+
                 if (deliveryRequest == null)
                 {
                     return NotFound($"Nie znaleziono DeliveryRequest o GUID: {OfferGuid}");
@@ -88,8 +84,8 @@ namespace Api.Controllers
             
             try
             {
-               //_context.Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == OfferGuid.g));
-                var delivery = await _deliveryRequestService.GetDeliveryContext().Deliveries.FirstOrDefaultAsync(d => (d.DeliveryGuid == OfferGuid.g));
+                
+                var delivery = await _deliveryRequestService.Find(OfferGuid.g);
                 if (delivery == null)
                 {
                     return NotFound($"Nie znaleziono DeliveryRequest o GUID: {OfferGuid.g}");
@@ -97,7 +93,7 @@ namespace Api.Controllers
                 else
                 {
                     delivery.DeliveryStatus  = (DeliveryStatus)Enum.ToObject(typeof(DeliveryStatus), OfferGuid.i);
-                    _deliveryRequestService.GetDeliveryContext().SaveChanges();
+                    _deliveryRequestService.DatabaseSave();
                     return Ok("Status updated successfully");
                 }
             }

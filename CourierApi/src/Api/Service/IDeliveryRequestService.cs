@@ -9,13 +9,14 @@ namespace Api.Service
 {
     public interface IDeliveryRequest
     {
-        //List<DeliveryRequestDTO> GetUserDeliveryRequests(string userId);
         OfferRespondDTO AcceptOffer(OfferDTO offer);
         InquiryDTO GetOffers(DeliveryRequestDTO deliveryRequest);
         public string Validate(DeliveryRequestDTO DRDTO);
         public void SaveInDatabaseDelivery(OfferDTO DRDTO, OfferRespondDTO respond);
         public void SaveInDatabaseDeliveryRequest(DeliveryRequestDTO DRDTO, InquiryDTO response);
         public ShopperContext GetDeliveryContext();
+        public Task<Delivery> Find(Guid g);
+        public void DatabaseSave();
 
     }
     public class Inquiries : IDeliveryRequest
@@ -103,7 +104,17 @@ namespace Api.Service
             int PackageID = _packageRepository.SaveInDatabasePackage(DRDTO, response);
             _inquiryRepository.SaveInDatabaseDeliveryRequest(DRDTO, response, SourceAddressID, DestinationAddressID, PackageID);
         }
-       
+
+        public async Task<Delivery> Find(Guid g)
+        {
+            var delivery = await _deliveryRepository.Find(g);
+            return delivery;
+        }
+        public void DatabaseSave()
+        {
+            _deliveryRepository.DatabaseSave();
+        }
+
 
     }
 
