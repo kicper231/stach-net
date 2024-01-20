@@ -9,7 +9,6 @@ export function Inquiries() {
   const navigate = useNavigate();
   const { user, getAccessTokenSilently } = useAuth0();
 
-
   const [inquiries, setInquiries] = useState([]);
 
   useEffect(() => {
@@ -17,16 +16,17 @@ export function Inquiries() {
       try {
         const token = await getAccessTokenSilently();
         const response = await axios.get(
-          `${config.serverUri}/get-my-inquiries/${user.sub}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
+          `${config.serverUri}/get-my-inquiries/${user.sub}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        },
         );
 
         setInquiries(response.data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
 
@@ -34,8 +34,28 @@ export function Inquiries() {
   }, [user.sub, getAccessTokenSilently]);
 
   function InquiriesTable() {
+    const [addedInquiryId, setAddedInquiryId] = useState("");
+    const [isError, setIsError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("Error");
+
+    const handleAdd = async () => {
+      try {
+        await axios.post(`${config.serverUri}/add-delivery`, {
+          deliveryID: addedInquiryId,
+          userAuth0: user.sub,
+        });
+
+        window.location.reload();
+      } catch (error) {
+        setIsError(true);
+        typeof error.response.data === "string" &&
+          setErrorMessage(error.response.data);
+        console.error(error);
+      }
+    };
+
     return (
-      <>
+      <div className="overflow">
         <h1>Inquiries</h1>
 
         <ul>
@@ -50,11 +70,24 @@ export function Inquiries() {
               {inquiry.sourceAddress.city} /{" "}
               <strong>destination address:</strong>{" "}
               {inquiry.destinationAddress.street},{" "}
-              {inquiry.destinationAddress.city}
+              {inquiry.deliveryInfo && " / "}
+              {inquiry.deliveryInfo && <strong>status: </strong>}
+              {inquiry.deliveryInfo && inquiry.deliveryInfo.deliveryStatus}
             </li>
           ))}
         </ul>
-      </>
+
+        <button onClick={handleAdd}>Add inquiry</button>
+        <br />
+        <input
+          type="text"
+          value={addedInquiryId}
+          placeholder="added inquiry id"
+          onChange={(e) => setAddedInquiryId(e.target.value)}
+        />
+        <br />
+        {isError && <h1 className="red">{errorMessage}</h1>}
+      </div>
     );
   }
 
@@ -101,7 +134,7 @@ function Inquiry({ inquiry }) {
           </li>
 
           <li>
-            <strong>source address:</strong>
+            <strong>destination address:</strong>
             <br />
             {inquiry.destinationAddress.street}{" "}
             {inquiry.destinationAddress.houseNumber}

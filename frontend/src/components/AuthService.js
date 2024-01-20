@@ -12,4 +12,12 @@ export const AuthService = {
       user && Array.isArray(user[rolesUri]) && user[rolesUri].includes("Client")
     );
   },
+
+  isOfficeWorker: (user) => {
+    return (
+      user &&
+      Array.isArray(user[rolesUri]) &&
+      user[rolesUri].includes("OfficeWorker")
+    );
+  },
 };
