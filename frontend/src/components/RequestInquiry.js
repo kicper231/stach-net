@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { config } from "../config-development";
 import { useAuth0 } from "@auth0/auth0-react";
 
-
 export function RequestInquiry() {
   const { isAuthenticated, user } = useAuth0();
   const navigate = useNavigate();
@@ -39,8 +38,6 @@ export function RequestInquiry() {
     priority: false,
     weekendDelivery: false,
   });
-
-
 
   const handleChange = (e, key = null) => {
     var value = e.target.value;
