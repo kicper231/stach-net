@@ -19,6 +19,7 @@ export default function NavBar() {
         {isAuthenticated && (
           <button onClick={() => navigate("/requests")}>Requests</button>
         )}
+
         {!isAuthenticated && <LoginButton />}
         {isAuthenticated && (
           <button onClick={() => navigate("/profile")}>Profile</button>
@@ -26,23 +27,19 @@ export default function NavBar() {
         {isAuthenticated && <LogoutButton />}
 
         {isAuthenticated && AuthService.isCourier(user) && (
-          <button
-            onClick={() => {
-              /* TODO Courier logic */
-            }}
-          >
-            Courier
+          <button onClick={() => navigate("/deliveries")}>Deliveries</button>
+        )}
+        {isAuthenticated && AuthService.isCourier(user) && (
+          <button onClick={() => navigate("/my-deliveries")}>
+            My deliveries
           </button>
         )}
 
-        {isAuthenticated && AuthService.isClient(user) && (
-          <button
-            onClick={() => {
-              /* TODO Client logic */
-            }}
-          >
-            Client
-          </button>
+        {isAuthenticated && AuthService.isOfficeWorker(user) && (
+          <button onClick={() => navigate("/inquiries")}>Inquiries</button>
+        )}
+        {isAuthenticated && AuthService.isOfficeWorker(user) && (
+          <button onClick={() => navigate("/offers")}>Offers</button>
         )}
       </div>
     </div>
