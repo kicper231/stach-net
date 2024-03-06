@@ -4,12 +4,16 @@
 
 ### `MKS` Courier
 
-Our company is an average, unremarkable company for transporting your packages. \
-Please note that we do not guarantee that your package will arrive in one piece. \
-\
-Name of company comes from first letters of it's authors:
+The "Courier Hub" project is part of a .NET programming course and simulates a courier company. Here's a quick overview:
 
-### Authors: `M`ateusz, `K`acper, `S`tasiek
+- It imitate a courier company, talking to external APIs.
+- It uses Microsoft services like email, deploy, testing, .
+- Clean Architecture ensures code clarity and maintainability.
+- The frontend is built with React.
+- SQL database is accessed via Entity Framework using Fluent API.
+- Microsoft diagnostic tools help monitor and debug.
+- Deployed on Azure with CI/CD pipelines.
+- Developed using Agile (Scrum) for iterative progress
 
 ## Start application
 
