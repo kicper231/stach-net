@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿namespace Api.Controllers;
+
+using System.Linq.Expressions;
 using System.Net;
 using System.Security.Claims;
 using Api.Service;
@@ -7,11 +9,8 @@ using Domain.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers;
-
 [ApiController]
-//[Route()]
-//[Authorize] 
+
 public class ClientController : ControllerBase
 {
     private readonly IClientService _deliveryservice;
@@ -30,8 +29,7 @@ public class ClientController : ControllerBase
             return BadRequest("Auth0 id użytkownika jest wymagane.");
         }
 
-       
-        if (!_deliveryservice.UserExists(idAuth0))
+        if (!this._deliveryservice.UserExists(idAuth0))
         {
             return NotFound("Nie ma takiego uzytkownika.");
         }
@@ -73,9 +71,10 @@ public class ClientController : ControllerBase
         if (response != null)
             return Ok(response); // Sukces
         return NotFound("Nie znaleziono ofert.");
-        //}
-        //catch (HttpRequestException ex)
-        //{
+
+        // }
+        // catch (HttpRequestException ex)
+        // {
         //    if (ex.StatusCode == HttpStatusCode.BadRequest)
         //    {
         //        return BadRequest("Błąd żądania: " + ex.Message);

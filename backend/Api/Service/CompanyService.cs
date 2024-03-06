@@ -19,11 +19,11 @@ public class CompanyService : ICompanyService
     private readonly IOfferRepository _offerRepository;
     private readonly IDeliveryRepository _deliveryRepository;
     private readonly IInquiryServiceFactory _inquiryServiceFactory;
-
+    private readonly IApiAdapter _apiAdapter;
 
     public CompanyService(IDeliveryRequestRepository repository, IUserRepository repositoryuser,
         IPackageRepository repositorypackage, IAddressRepository repositoryaddress,
-        ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository, IInquiryServiceFactory inquiryServiceFactory, IEmailService Iemail, IDeliveryRepository delivery)
+        ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository, IInquiryServiceFactory inquiryServiceFactory, IEmailService Iemail, IDeliveryRepository delivery,IApiAdapter adapter)
     {
         _inquiryRepository = repository;
         _userRepository = repositoryuser;
@@ -36,6 +36,7 @@ public class CompanyService : ICompanyService
         _inquiryServiceFactory = inquiryServiceFactory;
         _emailService = Iemail;
         _deliveryRepository = delivery;
+         _apiAdapter = adapter;
     }
 
 
@@ -44,7 +45,7 @@ public class CompanyService : ICompanyService
     public async Task<DTOIOD> GetIODAsync(Guid DeliveryId)
     {
 
-        ApiAdapter adapter = new ApiAdapter();
+        
         var delivery = await _deliveryRepository.FindAsync(DeliveryId);
 
         var offer = delivery.Offer;
@@ -72,8 +73,8 @@ public class CompanyService : ICompanyService
             DeliveryId = delivery.PublicID,
             PickupDate = delivery.PickupDate,
             DeliveryDate = delivery.DeliveryDate,
-            DeliveryStatus = adapter.ConvertStatusToString(delivery.DeliveryStatus),
-            Courier=adapter.ConvertToUserData(delivery.Courier)
+            DeliveryStatus = _apiAdapter.ConvertStatusToString(delivery.DeliveryStatus),
+            Courier= _apiAdapter.ConvertToUserData(delivery.Courier)
         };
 
        
@@ -84,9 +85,9 @@ public class CompanyService : ICompanyService
             Inquiry = new InquiryData
             {
                 InquiryId = inquiry.DeliveryRequestPublicId,
-                Package = adapter.ConvertToPackageDTO(inquiry.Package),
-                SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
-                DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
+                Package = _apiAdapter.ConvertToPackageDTO(inquiry.Package),
+                SourceAddress = _apiAdapter.ConvertToAddressDTO(inquiry.SourceAddress),
+                DestinationAddress = _apiAdapter.ConvertToAddressDTO(inquiry.DestinationAddress),
                 InquiryDate = inquiry.CreatedAt,
                 DeliveryDate = inquiry.DeliveryDate,
                 WeekendDelivery = inquiry.WeekendDelivery,
@@ -110,7 +111,7 @@ public class CompanyService : ICompanyService
 
         //var offersByInquiryId = offers.ToDictionary(o => o.DeliveryRequestId, o => o);
         //var deliveriesByOfferId = deliveries.ToDictionary(d => d.OfferId, d => d);
-        ApiAdapter adapter = new ApiAdapter();
+       
         var result = new List<InquiryCompanyDTO>();
 
         foreach (var inquiry in inquiries)
@@ -130,9 +131,9 @@ public class CompanyService : ICompanyService
             InquiryCompanyDTO Inquiry = new InquiryCompanyDTO()
             {
                 InquiryId = inquiry.DeliveryRequestPublicId,
-                Package = adapter.ConvertToPackageDTO(inquiry.Package),
-                SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
-                DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
+                Package = _apiAdapter.ConvertToPackageDTO(inquiry.Package),
+                SourceAddress = _apiAdapter.ConvertToAddressDTO(inquiry.SourceAddress),
+                DestinationAddress = _apiAdapter.ConvertToAddressDTO(inquiry.DestinationAddress),
                 InquiryDate = inquiry.CreatedAt,
                 DeliveryDate = inquiry.DeliveryDate,
                 WeekendDelivery = inquiry.WeekendDelivery,
@@ -155,7 +156,7 @@ public class CompanyService : ICompanyService
         List<DeliveryCompanyDTO> result = new List<DeliveryCompanyDTO>();
 
         var Delivery = await _deliveryRepository.GetAllDeliveriesAsync();
-        ApiAdapter adapter = new ApiAdapter();
+      
 
         foreach (var delivery in Delivery)
         { 
@@ -184,8 +185,8 @@ public class CompanyService : ICompanyService
                 DeliveryId = delivery.PublicID,
                 PickupDate = delivery.PickupDate,
                 DeliveryDate = delivery.DeliveryDate,
-                DeliveryStatus = adapter.ConvertStatusToString(delivery.DeliveryStatus),
-                Courier = adapter.ConvertToUserData(delivery.Courier)
+                DeliveryStatus = _apiAdapter.ConvertStatusToString(delivery.DeliveryStatus),
+                Courier = _apiAdapter.ConvertToUserData(delivery.Courier)
             };
         
 
@@ -197,9 +198,9 @@ public class CompanyService : ICompanyService
             Inquiry = new InquiryData
             {
                 InquiryId = inquiry.DeliveryRequestPublicId,
-                Package = adapter.ConvertToPackageDTO(inquiry.Package),
-                SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
-                DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
+                Package = _apiAdapter.ConvertToPackageDTO(inquiry.Package),
+                SourceAddress = _apiAdapter.ConvertToAddressDTO(inquiry.SourceAddress),
+                DestinationAddress = _apiAdapter.ConvertToAddressDTO(inquiry.DestinationAddress),
                 InquiryDate = inquiry.CreatedAt,
                 DeliveryDate = inquiry.DeliveryDate,
                 WeekendDelivery = inquiry.WeekendDelivery,
@@ -218,12 +219,12 @@ public class CompanyService : ICompanyService
     //zmiana statusu by worker
     public async  Task<string> ChangeStatusByWorker(ChangeDeliveryStatusWorkerDTO changeDeliveryStatusDTO)
     {
-        ApiAdapter api = new ApiAdapter();
+       
        var delivery=await  _deliveryRepository.FindAsync(changeDeliveryStatusDTO.DeliveryId);
 
         if(delivery == null) { throw new Exception("Dont find that delivery"); }
       
-        delivery.DeliveryStatus = api.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
+        delivery.DeliveryStatus = _apiAdapter.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
         _deliveryRepository.Update(delivery);
        await _deliveryRepository.SaveChangesAsync();
 
@@ -233,11 +234,11 @@ public class CompanyService : ICompanyService
     // zmiana statusu by worker
     public async Task<string> ChangeStatusByCourier(ChangeDeliveryStatusDTO changeDeliveryStatusDTO)
     {
-        ApiAdapter adapter = new ApiAdapter();
+        
         var delivery = await _deliveryRepository.FindAsync(changeDeliveryStatusDTO.DeliveryId);
 
         if (delivery == null) { throw new Exception("Nie znaleziono takiej delivery"); }
-        DeliveryStatus status = adapter.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
+        DeliveryStatus status = _apiAdapter.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
 
         if (status != DeliveryStatus.acceptedbycourier||status!=DeliveryStatus.cannotdelivery||status!=DeliveryStatus.pickedup||status!=DeliveryStatus.delivered)
             if (delivery == null) { throw new Exception("Nozesz tylko: delivered pickedup accept and Cannotdelivery"); }
@@ -256,7 +257,7 @@ public class CompanyService : ICompanyService
 
         }
         
-        delivery.DeliveryStatus = adapter.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
+        delivery.DeliveryStatus = _apiAdapter.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
         _deliveryRepository.Update(delivery);
         await _deliveryRepository.SaveChangesAsync();
 
@@ -268,7 +269,7 @@ public class CompanyService : ICompanyService
     {
         var deliveries = await _deliveryRepository.FindDeliveriesByCourierId(Auth0id);
         var resultlist = new List<DTOIOD>();
-        ApiAdapter adapter = new ApiAdapter();
+       
         foreach (var delivery in deliveries)
         {
             var offer = delivery.Offer;
@@ -296,8 +297,8 @@ public class CompanyService : ICompanyService
                 DeliveryId = delivery.PublicID,
                 PickupDate = delivery.PickupDate,
                 DeliveryDate = delivery.DeliveryDate,
-                DeliveryStatus = adapter.ConvertStatusToString(delivery.DeliveryStatus),
-                Courier = adapter.ConvertToUserData(delivery.Courier)
+                DeliveryStatus = _apiAdapter.ConvertStatusToString(delivery.DeliveryStatus),
+                Courier = _apiAdapter.ConvertToUserData(delivery.Courier)
             };
 
            
@@ -308,9 +309,9 @@ public class CompanyService : ICompanyService
                 Inquiry = new InquiryData
                 {
                     InquiryId = inquiry.DeliveryRequestPublicId,
-                    Package = adapter.ConvertToPackageDTO(inquiry.Package),
-                    SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
-                    DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
+                    Package = _apiAdapter.ConvertToPackageDTO(inquiry.Package),
+                    SourceAddress = _apiAdapter.ConvertToAddressDTO(inquiry.SourceAddress),
+                    DestinationAddress = _apiAdapter.ConvertToAddressDTO(inquiry.DestinationAddress),
                     InquiryDate = inquiry.CreatedAt,
                     DeliveryDate = inquiry.DeliveryDate,
                     WeekendDelivery = inquiry.WeekendDelivery,
@@ -330,7 +331,7 @@ public class CompanyService : ICompanyService
     {
         var deliveries = await _deliveryRepository.FindAcceptedDelivery();
         var resultlist = new List<DTOIOD>();
-        ApiAdapter adapter = new ApiAdapter();
+       
 
         foreach (var delivery in deliveries)
         {
@@ -359,8 +360,8 @@ public class CompanyService : ICompanyService
                 DeliveryId = delivery.PublicID,
                 PickupDate = delivery.PickupDate,
                 DeliveryDate = delivery.DeliveryDate,
-                DeliveryStatus = adapter.ConvertStatusToString(delivery.DeliveryStatus),
-                Courier = adapter.ConvertToUserData(delivery.Courier)
+                DeliveryStatus = _apiAdapter.ConvertStatusToString(delivery.DeliveryStatus),
+                Courier = _apiAdapter.ConvertToUserData(delivery.Courier)
             };
 
            
@@ -370,9 +371,9 @@ public class CompanyService : ICompanyService
                 Inquiry = new InquiryData
                 {
                     InquiryId = inquiry.DeliveryRequestPublicId,
-                    Package = adapter.ConvertToPackageDTO(inquiry.Package),
-                    SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
-                    DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
+                    Package = _apiAdapter.ConvertToPackageDTO(inquiry.Package),
+                    SourceAddress = _apiAdapter.ConvertToAddressDTO(inquiry.SourceAddress),
+                    DestinationAddress = _apiAdapter.ConvertToAddressDTO(inquiry.DestinationAddress),
                     InquiryDate = inquiry.CreatedAt,
                     DeliveryDate = inquiry.DeliveryDate,
                     WeekendDelivery = inquiry.WeekendDelivery,

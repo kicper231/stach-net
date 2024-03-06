@@ -4,6 +4,7 @@ using Api.Service;
 using Api.Service.OfferServices;
 using Domain;
 using Domain.Abstractions;
+using Domain.Adapters;
 using Infrastructure;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -55,10 +56,13 @@ builder.Services.AddSwaggerGen(c =>
 var OurUrl = $"{builder.Configuration["CourierApi:UrlLocal"]}"; //Url lub Urllocal
 var SzymonUrl = $"{builder.Configuration["IdentityManager:Url"]}";
 var TokenSzymonUrl = $"{builder.Configuration["IdentityManager:TokenEndpointSzymon"]}";
+var KamilUrl = $"{builder.Configuration["IdentityManager:UrlKamil"]}";
 
 builder.Services.AddHttpClient("OurClient", client => { client.BaseAddress = new Uri($"{OurUrl}"); });
 
 builder.Services.AddHttpClient("SzymonClient", client => { client.BaseAddress = new Uri($"{SzymonUrl}"); });
+
+builder.Services.AddHttpClient("KamilClient", client => { client.BaseAddress = new Uri($"{KamilUrl}"); });
 
 builder.Services.AddHttpClient("SzymonToken", client => { client.BaseAddress = new Uri($"{TokenSzymonUrl}"); });
 
@@ -92,6 +96,7 @@ builder.Services.AddScoped<IInquiryServiceFactory, InquiryServiceFactory>();
 builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
 builder.Services.Configure<IdentityManagerSettings>(builder.Configuration.GetSection("IdentityManager"));
 builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<IApiAdapter, ApiAdapter>();
 
 
 builder.Services.AddScoped<IClientService, ClientService>();
@@ -99,7 +104,7 @@ builder.Services.AddScoped<IEmailService,EmailService>();
 
 
 
-// Konfiguracja factory do tworzenia DbContext, konkretnie ShopperContext, u�ywaj�c SQLite jako bazy danych
+// Konfiguracja factory do tworzenia DbContext, konkretnie ShopperContext,
 builder.Services.AddDbContextFactory<ShopperContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("HostowanaBaza"),
@@ -109,7 +114,7 @@ builder.Services.AddDbContextFactory<ShopperContext>(options =>
 
 
 // servis bazy danych
-builder.Services.AddHostedService<DbCreationalService>();
+//builder.Services.AddHostedService<DbCreationalService>();
 
 // autetykacja
 var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";

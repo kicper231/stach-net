@@ -5,7 +5,7 @@ using Domain;
 namespace Domain.Adapters;
 
 //raczej konwenter nie adapter ale cicho  jak starczy czasu to zmienie strukture kodu na adapter // jak bede wiedzial jak 
-public class ApiAdapter
+public class ApiAdapter: IApiAdapter
 {
     // interfejs
     public InquiryToSzymonDTO ConvertToInquiryToSzymonDTO(InquiryDTO inquiryDTO)

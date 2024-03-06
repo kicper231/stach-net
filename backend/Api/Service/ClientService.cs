@@ -25,11 +25,11 @@ public class ClientService : IClientService
     private readonly IOfferRepository _offerRepository;
     private readonly IDeliveryRepository _deliveryRepository;
     private readonly IInquiryServiceFactory _inquiryServiceFactory;
-
+    private readonly IApiAdapter _apiAdapter;
 
     public ClientService(IDeliveryRequestRepository repository, IUserRepository repositoryuser,
         IPackageRepository repositorypackage, IAddressRepository repositoryaddress,
-        ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository, IInquiryServiceFactory inquiryServiceFactory, IEmailService Iemail, IDeliveryRepository delivery)
+        ICourierCompanyRepository courierCompanyRepository, IOfferService offerService, IOfferRepository offerRepository, IInquiryServiceFactory inquiryServiceFactory, IEmailService Iemail, IDeliveryRepository delivery,IApiAdapter adapter)
     {
         _inquiryRepository = repository;
         _userRepository = repositoryuser;
@@ -42,6 +42,7 @@ public class ClientService : IClientService
         _inquiryServiceFactory = inquiryServiceFactory;
         _emailService = Iemail;
         _deliveryRepository = delivery;
+        _apiAdapter = adapter;
     }
 
     public List<UserInquiryDTO> GetUserDeliveryRequests(string userId)
@@ -50,7 +51,7 @@ public class ClientService : IClientService
         var user = _userRepository.GetByAuth0Id(userId);
 
         var deliveryRequests = _inquiryRepository.GetDeliveryRequestsByUserId(userId);
-        ApiAdapter _adapter = new ApiAdapter();
+        
 
         var deliveryRequestIds = deliveryRequests.Select(dr => dr.DeliveryRequestId);
         var deliveries = _deliveryRepository.GetDeliveriesWithOffersAndRequests(deliveryRequestIds);
@@ -74,14 +75,14 @@ public class ClientService : IClientService
                 Currency = "PLN",
                 totalPrice = delivery.Offer.totalPrice,
                 DeliveryId = delivery.PublicID,
-                DeliveryStatus = _adapter.ConvertStatusToString(delivery.DeliveryStatus)
+                DeliveryStatus = _apiAdapter.ConvertStatusToString(delivery.DeliveryStatus)
             } : null;
 
             return new UserInquiryDTO
             {
-                Package = _adapter.ConvertToPackageDTO(dr.Package),
-                SourceAddress = _adapter.ConvertToAddressDTO(dr.SourceAddress),
-                DestinationAddress = _adapter.ConvertToAddressDTO(dr.DestinationAddress),
+                Package = _apiAdapter.ConvertToPackageDTO(dr.Package),
+                SourceAddress = _apiAdapter.ConvertToAddressDTO(dr.SourceAddress),
+                DestinationAddress = _apiAdapter.ConvertToAddressDTO(dr.DestinationAddress),
                 DeliveryDate = dr.DeliveryDate,
                 CreatedTime = dr.CreatedAt,
                 WeekendDelivery = dr.WeekendDelivery,
@@ -113,6 +114,7 @@ public class ClientService : IClientService
         var tasks = new List<Task<InquiryRespondDTO?>>();
         tasks.Add(SafeGetOffer(_inquiryServiceFactory.CreateService("SzymonCompany").GetOffers(deliveryRequestDTO)));//zabezpieczenie przed 404 
         tasks.Add(SafeGetOffer(_inquiryServiceFactory.CreateService("StachnetCompany").GetOffers(deliveryRequestDTO)));//zabezpieczenie przed 404 
+        tasks.Add(SafeGetOffer(_inquiryServiceFactory.CreateService("KamilCompany").GetOffers(deliveryRequestDTO)));//zabezpieczenie przed 404 
         var responseparrarel = await Task.WhenAll(tasks);
 
         offersToSend.AddRange(responseparrarel);
@@ -188,7 +190,7 @@ public class ClientService : IClientService
         };
 
         Guid PublicId = _deliveryRepository.Add(delivery);
-
+        _emailService.DeliveryCreate(PublicId, offerDTO.firstName,offerDTO.Email);
         respond.OfferRequestId = PublicId;
         return respond;
     }

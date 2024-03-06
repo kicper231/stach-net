@@ -13,11 +13,13 @@ public class SzymonInquiryService : IInquiryService
     private readonly HttpClient _httpClient;
     private readonly IdentityManagerSettings _settings;
     private readonly HttpClient _httpClientToken;
-    public SzymonInquiryService(IHttpClientFactory clientFactory, IOptions<IdentityManagerSettings> settings)
+    private readonly IApiAdapter _apiAdapter;
+    public SzymonInquiryService(IHttpClientFactory clientFactory, IOptions<IdentityManagerSettings> settings,IApiAdapter apiAdapter)
     {
         _httpClient = clientFactory.CreateClient("SzymonClient");
         _settings = settings.Value;
         _httpClientToken = clientFactory.CreateClient("SzymonToken");
+        _apiAdapter = apiAdapter;
     }
 
     public async Task<string?> GetTokenAsync()
@@ -54,8 +56,8 @@ public class SzymonInquiryService : IInquiryService
 
     public async Task<InquiryRespondDTO> GetOffers(InquiryDTO requestDTO)
     {
-        var ApiAdapter = new ApiAdapter();
-        var inquiryToSzymonDTO = ApiAdapter.ConvertToInquiryToSzymonDTO(requestDTO);
+        
+        var inquiryToSzymonDTO = _apiAdapter.ConvertToInquiryToSzymonDTO(requestDTO);
 
         var inquirymessage = new HttpRequestMessage(HttpMethod.Post, $"{_httpClient.BaseAddress}Inquires")
         {
