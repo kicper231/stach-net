@@ -1,14 +1,13 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Api.Migrations
 {
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public partial class guidinquiry : Migration
     {
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<Guid>(
@@ -33,7 +32,7 @@ namespace Api.Migrations
                 value: new DateTime(2024, 1, 18, 15, 44, 35, 690, DateTimeKind.Local).AddTicks(5644));
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(

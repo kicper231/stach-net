@@ -1,15 +1,8 @@
 ﻿using Domain.Abstractions;
+using Domain.Adapters;
 using Domain.DTO;
 using Domain.Model;
 using Infrastructure;
-using SendGrid.Helpers.Mail;
-using SendGrid;
-using Microsoft.VisualBasic;
-using System.Reflection.Metadata.Ecma335;
-using Domain.Adapters;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http.HttpResults;
-
 
 namespace Api.Service;
 
@@ -25,7 +18,6 @@ public class ClientService : IClientService
     private readonly IOfferRepository _offerRepository;
     private readonly IDeliveryRepository _deliveryRepository;
     private readonly IInquiryServiceFactory _inquiryServiceFactory;
-
 
     public ClientService(IDeliveryRequestRepository repository, IUserRepository repositoryuser,
         IPackageRepository repositorypackage, IAddressRepository repositoryaddress,
@@ -46,7 +38,6 @@ public class ClientService : IClientService
 
     public List<UserInquiryDTO> GetUserDeliveryRequests(string userId)
     {
-
         var user = _userRepository.GetByAuth0Id(userId);
 
         var deliveryRequests = _inquiryRepository.GetDeliveryRequestsByUserId(userId);
@@ -90,15 +81,10 @@ public class ClientService : IClientService
             };
         }).ToList();
 
-
-
-
         return inquiries;
     }
 
 
-
-    //  
     public async Task<List<InquiryRespondDTO?>> GetOffers(InquiryDTO deliveryRequestDTO)
     {
         // dodanie do bazy danych requestu
@@ -111,8 +97,8 @@ public class ClientService : IClientService
         //obsluga rownoległosci i zapytań wykorzystujac serwis offersservice
         var offersToSend = new List<InquiryRespondDTO?>();
         var tasks = new List<Task<InquiryRespondDTO?>>();
-        tasks.Add(SafeGetOffer(_inquiryServiceFactory.CreateService("SzymonCompany").GetOffers(deliveryRequestDTO)));//zabezpieczenie przed 404 
-        tasks.Add(SafeGetOffer(_inquiryServiceFactory.CreateService("StachnetCompany").GetOffers(deliveryRequestDTO)));//zabezpieczenie przed 404 
+        tasks.Add(SafeGetOffer(_inquiryServiceFactory.CreateService("SzymonCompany").GetOffers(deliveryRequestDTO)));//zabezpieczenie przed 404
+        tasks.Add(SafeGetOffer(_inquiryServiceFactory.CreateService("StachnetCompany").GetOffers(deliveryRequestDTO)));//zabezpieczenie przed 404
         var responseparrarel = await Task.WhenAll(tasks);
 
         offersToSend.AddRange(responseparrarel);
@@ -136,7 +122,6 @@ public class ClientService : IClientService
             }
         });
 
-
         return offersToSend;
     }
 
@@ -148,17 +133,15 @@ public class ClientService : IClientService
         {
             throw new InvalidOperationException("Offer not found for the given inquiry ID.");
         }
-        //przypisanie uzytkownika jesli zalogowal sie w czasie lub po porostu podeslal 
+        //przypisanie uzytkownika jesli zalogowal sie w czasie lub po porostu podeslal
         if (offerDTO.Auth0Id != null && _userRepository.GetByAuth0Id(offerDTO.Auth0Id) != null)
         {
-               
             _offerRepository.GetByInquiryId(new Guid(offerDTO.InquiryId)).DeliveryRequest.User = _userRepository.GetByAuth0Id(offerDTO.Auth0Id);
         }
 
-
         OfferRespondDTO? respond = default;
 
-        // jako ze są tylk 3 firmy zaimplementuje to bez adapter i fabryki (jak starczy czas) 
+        // jako ze są tylk 3 firmy zaimplementuje to bez adapter i fabryki (jak starczy czas)
         switch (offerDTO.CourierCompany)
         {
             case "SzymonCompany":
@@ -175,9 +158,7 @@ public class ClientService : IClientService
 
             default:
                 throw new KeyNotFoundException("Nie znaleziono firmy: " + offerDTO.CourierCompany);
-
         }
-
 
         Delivery delivery = new Delivery
         {
@@ -193,7 +174,7 @@ public class ClientService : IClientService
         return respond;
     }
 
-    // otoczka dla odpowiedzi gdyby 404 nie wylapuje teog 
+    // otoczka dla odpowiedzi gdyby 404 nie wylapuje teog
     private async Task<InquiryRespondDTO?> SafeGetOffer(Task<InquiryRespondDTO> task)
     {
         try
@@ -206,7 +187,6 @@ public class ClientService : IClientService
             return null;
         }
     }
-
 
     public DeliveryRequest CreateDeliveryRequest(InquiryDTO deliveryRequestDTO)
     {
@@ -232,7 +212,6 @@ public class ClientService : IClientService
         };
         _addressRepository.Add(sourceAddress);
 
-
         var destinationAddress = new Address
         {
             ApartmentNumber = deliveryRequestDTO.DestinationAddress.ApartmentNumber,
@@ -244,7 +223,7 @@ public class ClientService : IClientService
         };
         _addressRepository.Add(destinationAddress);
 
-        // create deliveryrequest with reference (it will work??) 
+        // create deliveryrequest with reference (it will work??)
         var deliveryRequest = new DeliveryRequest
         {
             UserAuth0 = deliveryRequestDTO.UserAuth0,
@@ -259,13 +238,13 @@ public class ClientService : IClientService
             WeekendDelivery = deliveryRequestDTO.WeekendDelivery
         };
         deliveryRequest.CreatedAt = DateTime.Now;
-        deliveryRequest.DeliveryRequestPublicId=Guid.NewGuid();
+        deliveryRequest.DeliveryRequestPublicId = Guid.NewGuid();
         _inquiryRepository.Add(deliveryRequest);
 
         return deliveryRequest;
     }
 
-    // dodawnanie oferty do bazy danych 
+    // dodawnanie oferty do bazy danych
     public void AddOffersToDatabase(InquiryRespondDTO?[] InquiryRespondDTO, DeliveryRequest lastRequest)
     {
         foreach (var respond in InquiryRespondDTO)
@@ -280,16 +259,12 @@ public class ClientService : IClientService
                 totalPrice = respond.totalPrice,
                 OfferValidity = respond.expiringAt,
                 DeliveryRequest = lastRequest,
-
             };
             _offerRepository.Add(offer);
-
         }
     }
 
-
-
-    // dodawanie delivery do profilu 
+    // dodawanie delivery do profilu
 
     public async Task<AddDeliveryRespondDTO> AddDeliveryToAccount(AddDeliveryDTO add)
     {
@@ -304,48 +279,35 @@ public class ClientService : IClientService
             throw new KeyNotFoundException("Delivery already have user (probably you).");
         }
 
-
         delivery.Offer.DeliveryRequest.User = await _userRepository.GetByAuth0IdAsync(add.UserAuth0);
         delivery.Offer.DeliveryRequest.UserAuth0 = add.UserAuth0;
-
 
         _deliveryRepository.Update(delivery);
         await _deliveryRepository.SaveChangesAsync();
 
-
         var responseDTO = new AddDeliveryRespondDTO
         {
-
         };
 
         return responseDTO;
     }
 
-
-
     public async Task<string> CancelDelivery(CancelDeliveryDTO cancelDeliveryDTO)
     {
         var response = await _deliveryRepository.FindAsync(cancelDeliveryDTO.DeliveryId);
 
-        if (response == null)  throw new KeyNotFoundException("Cant find that deliveryid in database");
-        if(response.Offer.DeliveryRequest.UserAuth0!=cancelDeliveryDTO.UserAuth0)
+        if (response == null) throw new KeyNotFoundException("Cant find that deliveryid in database");
+        if (response.Offer.DeliveryRequest.UserAuth0 != cancelDeliveryDTO.UserAuth0)
         {
-          throw new  KeyNotFoundException("You arent user assigned to that delivery");
+            throw new KeyNotFoundException("You arent user assigned to that delivery");
         }
 
         response.DeliveryStatus = DeliveryStatus.cancelled;
-         _deliveryRepository.Update(response);
-       await  _deliveryRepository.SaveChangesAsync();
-
+        _deliveryRepository.Update(response);
+        await _deliveryRepository.SaveChangesAsync();
 
         return "Ok!";
     }
-
-    
-
-
-
-
 
     // do przeniesienia
 
@@ -354,10 +316,10 @@ public class ClientService : IClientService
         var user = _userRepository.GetByAuth0Id(idAuth0);
         return user != null;
     }
+
     public User? GetUser(string idAuth0)
     {
         var user = _userRepository.GetByAuth0Id(idAuth0);
         return user;
     }
-
 }

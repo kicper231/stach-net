@@ -2,7 +2,6 @@ using Api.Service;
 using Domain.Abstractions;
 using Domain.DTO;
 using Domain.Model;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 public class LoginResult
@@ -26,7 +25,6 @@ namespace Api.Controllers
             this.userService = userService;
         }
 
-
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<List<User>> GetAll()
@@ -34,7 +32,6 @@ namespace Api.Controllers
             var users = repository.GetAll();
             return Ok(users);
         }
-
 
         [HttpGet("{id}", Name = "Get-User-By-Id")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -45,7 +42,6 @@ namespace Api.Controllers
             if (user == null) return NotFound();
             return Ok(user);
         }
-
 
         [HttpPost("auth0-add")]
         //[Authorize]
@@ -59,10 +55,9 @@ namespace Api.Controllers
             {
                 return Ok(result);
             }
-               
+
             return BadRequest(result.Message);
         }
-
 
         [HttpGet("active-users")]
         [ProducesResponseType(StatusCodes.Status200OK)]

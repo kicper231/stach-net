@@ -11,5 +11,4 @@ public class IdentityManagerSettings
     public string? ClientIdOur { get; set; }
     public string? ClientSecretOur { get; set; }
     public string? EmailConnectionString { get; set; }
-   
 }

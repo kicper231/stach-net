@@ -1,17 +1,11 @@
-﻿using System.Linq.Expressions;
-using System.Net;
-using System.Security.Claims;
-using Api.Service;
+﻿using Api.Service;
 using Domain.DTO;
-using Domain.Model;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Api.Controllers;
 
 [ApiController]
-//[Route()]
-//[Authorize] 
 public class ClientController : ControllerBase
 {
     private readonly IClientService _deliveryservice;
@@ -20,9 +14,8 @@ public class ClientController : ControllerBase
     {
         _deliveryservice = ClientService;
     }
-     
+
     [HttpGet("get-my-inquiries/{idAuth0}")]
-   // [Authorize("client:permission")]
     public ActionResult<List<UserInquiryDTO>> GetMyDeliveryRequests(string idAuth0)
     {
         if (string.IsNullOrEmpty(idAuth0))
@@ -30,7 +23,6 @@ public class ClientController : ControllerBase
             return BadRequest("Auth0 id użytkownika jest wymagane.");
         }
 
-       
         if (!_deliveryservice.UserExists(idAuth0))
         {
             return NotFound("Nie ma takiego uzytkownika.");
@@ -39,7 +31,6 @@ public class ClientController : ControllerBase
         var deliveryRequests = _deliveryservice.GetUserDeliveryRequests(idAuth0);
         return Ok(deliveryRequests);
     }
-
 
     [HttpPost("send-inquiry")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(InquiryRespondDTO))]
@@ -65,7 +56,6 @@ public class ClientController : ControllerBase
         //        }))
         //        .ToList();
 
-
         //    return BadRequest(errors);
         //}
         //{ // dla stacha
@@ -85,13 +75,11 @@ public class ClientController : ControllerBase
         //}
     }
 
-
     [HttpPost("accept-offer")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OfferRespondDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<ErrorResponse>))]
-    public async Task<IActionResult> AcceptedOffer([FromBody] OfferDTO ODTO )
+    public async Task<IActionResult> AcceptedOffer([FromBody] OfferDTO ODTO)
     {
-
         try
         {
             var respond = await _deliveryservice.acceptoffer(ODTO);
@@ -103,35 +91,27 @@ public class ClientController : ControllerBase
         }
         catch (HttpRequestException ex)
         {
-           
             return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
         }
-        catch(InvalidOperationException ex)
+        catch (InvalidOperationException ex)
         {
             return NotFound(ex.Message);
         }
     }
 
-
     [HttpPost("add-delivery")]
-   // [Authorize]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(AddDeliveryRespondDTO))]
-   // [ProducesResponseType(StatusCodes.Status400BadRequest,Type=typeof(KeyNotFoundException))]
-    public  async Task<IActionResult> AddDeliveryToYourAccount(AddDeliveryDTO AddDeliveryDTO)
+    // [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AddDeliveryRespondDTO))]
+    public async Task<IActionResult> AddDeliveryToYourAccount(AddDeliveryDTO AddDeliveryDTO)
     {
-        try { 
+        try
+        {
             AddDeliveryRespondDTO respond = await _deliveryservice.AddDeliveryToAccount(AddDeliveryDTO);
             return Ok(respond);
         }
-        catch(KeyNotFoundException ex)
+        catch (KeyNotFoundException ex)
         {
             return BadRequest(ex.Message);
         }
-        
     }
-
-
-   
-
-
 }

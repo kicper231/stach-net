@@ -8,7 +8,6 @@ public class DbRequestRepository : IDeliveryRequestRepository
 {
     private readonly ShopperContext _context;
 
-
     public DbRequestRepository(ShopperContext context)
     {
         _context = context;
@@ -18,7 +17,7 @@ public class DbRequestRepository : IDeliveryRequestRepository
     {
         return _context.DeliveryRequests
             .Where(dr => dr.UserAuth0 == userId)
-             
+
         .Include(dr => dr.Package)
         .Include(dr => dr.SourceAddress)
         .Include(dr => dr.DestinationAddress)

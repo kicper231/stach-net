@@ -12,8 +12,6 @@ public class Delivery : BaseEntity
     public DateTime PickupDate { get; set; }
     public DateTime DeliveryDate { get; set; }
     public DeliveryStatus DeliveryStatus { get; set; }
-
-    
 }
 
 //public enum DeliveryStatus
@@ -27,7 +25,7 @@ public class Delivery : BaseEntity
 //     CannotDelivery,
 //     CancelledByWorker,
 //     WaitingToAcceptByWorker
-     
+
 //}
 
 public enum DeliveryStatus
@@ -40,8 +38,4 @@ public enum DeliveryStatus
     delivered,
     cannotdelivery,
     cancelled,
-    
-
-
-
 }

@@ -1,16 +1,10 @@
 ﻿using Domain.Abstractions;
 using Domain.Model;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories;
 
-
-public  class DeliveryRepository:IDeliveryRepository
+public class DeliveryRepository : IDeliveryRepository
 {
     private readonly ShopperContext _context;
 
@@ -18,13 +12,14 @@ public  class DeliveryRepository:IDeliveryRepository
     {
         _context = context;
     }
+
     public Guid Add(Delivery delivery)
     {
-        delivery.PublicID = Guid.NewGuid(); 
+        delivery.PublicID = Guid.NewGuid();
         _context.Deliveries.Add(delivery);
         _context.SaveChanges();
 
-        return delivery.PublicID; 
+        return delivery.PublicID;
     }
 
     public async Task<Delivery> FindAsync(Guid id)
@@ -43,7 +38,7 @@ public  class DeliveryRepository:IDeliveryRepository
     .Include(d => d.Offer)
         .ThenInclude(o => o.DeliveryRequest)
             .ThenInclude(dr => dr.User)
-    .Include(d => d.Courier) 
+    .Include(d => d.Courier)
     .FirstOrDefaultAsync();
 
         if (delivery == null)
@@ -66,7 +61,7 @@ public  class DeliveryRepository:IDeliveryRepository
 
     public async Task<List<Delivery>> GetAllDeliveriesAsync()
     {
-        return await _context.Deliveries.Include(o=>o.Courier)
+        return await _context.Deliveries.Include(o => o.Courier)
     .Include(d => d.Offer)
         .ThenInclude(o => o.DeliveryRequest)
             .ThenInclude(dr => dr.Package)
@@ -114,7 +109,6 @@ public  class DeliveryRepository:IDeliveryRepository
         return deliveries;
     }
 
-
     public async Task<List<Delivery>> FindDeliveriesByCourierId(string courierId)
     {
         var deliveries = await _context.Deliveries
@@ -136,5 +130,4 @@ public  class DeliveryRepository:IDeliveryRepository
 
         return deliveries;
     }
-
 }

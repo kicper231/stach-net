@@ -12,7 +12,6 @@ public class ShopperContext : DbContext
     {
     }
 
-
     public DbSet<User> Users { get; set; }
     public DbSet<Package> Packages { get; set; }
     public DbSet<Address> Addresses { get; set; }
@@ -20,7 +19,6 @@ public class ShopperContext : DbContext
     public DbSet<Offer> Offers { get; set; }
     public DbSet<CourierCompany> CourierCompanies { get; set; }
     public DbSet<Delivery> Deliveries { get; set; }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -135,34 +133,31 @@ public class ShopperContext : DbContext
             .HasMaxLength(200)
             .IsRequired();
 
-
-        // indeksy??
-        // modelBuilder.Entity<DeliveryRequest>()
-        //   .HasIndex(dr => dr.UserId);
-
+        // indeksy?? modelBuilder.Entity<DeliveryRequest>() .HasIndex(dr => dr.UserId);
 
         modelBuilder.Entity<Offer>()
             .HasIndex(o => o.CourierCompanyId);
 
-
         modelBuilder.Entity<Delivery>()
             .HasIndex(d => d.CourierId);
 
-
-        //data seed 
+        //data seed
 
         modelBuilder.Entity<CourierCompany>().HasData(
             new CourierCompany
             {
-                CourierCompanyId = 1, Name = "StachnetCompany",
-                ContactInfo = "https://courierapistachnet.azurewebsites.net/api", CreatedAt = DateAndTime.Now
+                CourierCompanyId = 1,
+                Name = "StachnetCompany",
+                ContactInfo = "https://courierapistachnet.azurewebsites.net/api",
+                CreatedAt = DateAndTime.Now
             },
             new CourierCompany
             {
-                CourierCompanyId = 2, Name = "SzymonCompany", ContactInfo = "https://mini.currier.api.snet.com.pl",
+                CourierCompanyId = 2,
+                Name = "SzymonCompany",
+                ContactInfo = "https://mini.currier.api.snet.com.pl",
                 CreatedAt = DateAndTime.Now
             }
         );
-        
     }
 }

@@ -12,11 +12,10 @@ public class DbCreationalService : IHostedService
         _contextFactory = contextFactory;
     }
 
-
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         var context = await _contextFactory.CreateDbContextAsync();
-        //  await context.Database.MigrateAsync(); 
+        // await context.Database.MigrateAsync();
         await context.Database.EnsureCreatedAsync();
     }
 

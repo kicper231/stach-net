@@ -1,18 +1,18 @@
-﻿using Domain.DTO;
-using Domain;
-using Microsoft.Extensions.Options;
+﻿using Domain;
 using Domain.Adapters;
+using Domain.DTO;
+using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace Api.Service;
-
 
 public class SzymonInquiryService : IInquiryService
 {
     private readonly HttpClient _httpClient;
     private readonly IdentityManagerSettings _settings;
     private readonly HttpClient _httpClientToken;
+
     public SzymonInquiryService(IHttpClientFactory clientFactory, IOptions<IdentityManagerSettings> settings)
     {
         _httpClient = clientFactory.CreateClient("SzymonClient");
@@ -23,8 +23,6 @@ public class SzymonInquiryService : IInquiryService
     public async Task<string?> GetTokenAsync()
     {
         HttpRequestMessage? tokenRequest = null;
-
-
 
         tokenRequest = new HttpRequestMessage(HttpMethod.Post, _settings.TokenEndpointSzymon)
         {
@@ -37,13 +35,10 @@ public class SzymonInquiryService : IInquiryService
             })
         };
 
-
-
         var tokenResponse = await _httpClientToken.SendAsync(tokenRequest);
         tokenResponse.EnsureSuccessStatusCode();
 
         var tokenResult = await tokenResponse.Content.ReadAsStringAsync();
-
 
         using (var doc = JsonDocument.Parse(tokenResult))
         {
@@ -62,7 +57,6 @@ public class SzymonInquiryService : IInquiryService
             Content = JsonContent.Create(inquiryToSzymonDTO)
         };
 
-
         var accessToken = await GetTokenAsync();
 
         inquirymessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -70,10 +64,9 @@ public class SzymonInquiryService : IInquiryService
         var response = await _httpClient.SendAsync(inquirymessage);
         response.EnsureSuccessStatusCode();
         var responseBody = await response.Content.ReadAsStringAsync();
-        
+
         var respond = await response.Content.ReadFromJsonAsync<InquiryRespondDTO>();
         respond.CompanyName = "SzymonCompany";
-
 
         return respond;
     }

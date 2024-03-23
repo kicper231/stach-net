@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace Domain.DTO;
+﻿namespace Domain.DTO;
 
 public class InquiryDTO
 {
@@ -10,7 +8,7 @@ public class InquiryDTO
     public AddressDTO SourceAddress { get; set; }
     public AddressDTO DestinationAddress { get; set; }
     public DateTime DeliveryDate { get; set; }
-    
+
     public bool Priority { get; set; }
     public bool WeekendDelivery { get; set; }
 }
@@ -42,7 +40,6 @@ public class PackageDTO
 }
 
 /// odebranie inquires od api
-
 
 public class PriceBreakdown
 {

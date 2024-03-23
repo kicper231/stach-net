@@ -8,7 +8,6 @@ public class Package : BaseEntity
     public double Length { get; set; }
     public double Weight { get; set; }
 
-
     //public ICollection<DeliveryRequest> DeliveryRequests { get; set; }
 }
 

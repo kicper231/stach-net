@@ -6,10 +6,10 @@
 
 namespace Api.Migrations
 {
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public partial class offers : Migration
     {
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
@@ -27,7 +27,7 @@ namespace Api.Migrations
                 });
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DeleteData(

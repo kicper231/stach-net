@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using System.ComponentModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,7 +64,7 @@ builder.Services.AddHttpClient("SzymonToken", client => { client.BaseAddress = n
 builder.Services.AddHostedService<MyBackgroundWorker>();
 //System.Console.WriteLine(builder.Configuration["CourierApi:Url"]);
 
-//cors polityka 
+//cors polityka
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyAllowSpecificOrigins",
@@ -86,18 +85,15 @@ builder.Services.AddScoped<IDeliveryRequestRepository, DbRequestRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<ICourierCompanyRepository, DbCourierCompanyRepository>();
-builder.Services.AddScoped<IOfferService,OfferService>();
+builder.Services.AddScoped<IOfferService, OfferService>();
 builder.Services.AddScoped<IOfferRepository, DbOfferRepository>();
 builder.Services.AddScoped<IInquiryServiceFactory, InquiryServiceFactory>();
 builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
 builder.Services.Configure<IdentityManagerSettings>(builder.Configuration.GetSection("IdentityManager"));
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 
-
 builder.Services.AddScoped<IClientService, ClientService>();
-builder.Services.AddScoped<IEmailService,EmailService>();
-
-
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Konfiguracja factory do tworzenia DbContext, konkretnie ShopperContext, u�ywaj�c SQLite jako bazy danych
 builder.Services.AddDbContextFactory<ShopperContext>(options =>
@@ -106,7 +102,6 @@ builder.Services.AddDbContextFactory<ShopperContext>(options =>
         x => x.MigrationsAssembly("Api")
     )
 );
-
 
 // servis bazy danych
 builder.Services.AddHostedService<DbCreationalService>();
@@ -131,14 +126,9 @@ builder.Services.AddAuthorization(options =>
         policy => policy.Requirements.Add(new HasScopeRequirement("serviceworker:permission", domain)));
 });
 
-
-
-
 builder.Services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 
-
 var app = builder.Build(); // Buduje aplikacj� webow�
-
 
 if (app.Environment.IsDevelopment())
 {
@@ -146,7 +136,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseSwagger();
 app.UseSwaggerUI(); // ui nawet gdy nie developmnet
-
 
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -156,6 +145,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers(); // Mapuje trasy do akcji kontroler�w
-
 
 app.Run(); // Uruchamia aplikacj�

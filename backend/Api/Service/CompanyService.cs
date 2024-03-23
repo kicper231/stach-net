@@ -1,10 +1,9 @@
-﻿using Api.Service;
-using Domain.Abstractions;
+﻿using Domain.Abstractions;
 using Domain.Adapters;
 using Domain.DTO;
 using Domain.Model;
 using Infrastructure;
-using Microsoft.AspNetCore.Http.HttpResults;
+
 namespace Api.Service;
 
 public class CompanyService : ICompanyService
@@ -19,7 +18,6 @@ public class CompanyService : ICompanyService
     private readonly IOfferRepository _offerRepository;
     private readonly IDeliveryRepository _deliveryRepository;
     private readonly IInquiryServiceFactory _inquiryServiceFactory;
-
 
     public CompanyService(IDeliveryRequestRepository repository, IUserRepository repositoryuser,
         IPackageRepository repositorypackage, IAddressRepository repositoryaddress,
@@ -38,12 +36,9 @@ public class CompanyService : ICompanyService
         _deliveryRepository = delivery;
     }
 
-
-
     // dostep do IOD courier i officeworker
     public async Task<DTOIOD> GetIODAsync(Guid DeliveryId)
     {
-
         ApiAdapter adapter = new ApiAdapter();
         var delivery = await _deliveryRepository.FindAsync(DeliveryId);
 
@@ -66,17 +61,14 @@ public class CompanyService : ICompanyService
             Currency = "PLN"
         };
 
-
         DeliveryData deliveryDto = new DeliveryData
         {
             DeliveryId = delivery.PublicID,
             PickupDate = delivery.PickupDate,
             DeliveryDate = delivery.DeliveryDate,
             DeliveryStatus = adapter.ConvertStatusToString(delivery.DeliveryStatus),
-            Courier=adapter.ConvertToUserData(delivery.Courier)
+            Courier = adapter.ConvertToUserData(delivery.Courier)
         };
-
-       
 
         DTOIOD result = new DTOIOD()
         {
@@ -94,13 +86,11 @@ public class CompanyService : ICompanyService
             },
             Offer = offerDto,
             Delivery = deliveryDto
-
         };
-
-
 
         return result;
     }
+
     // company worker wszystkie IOD
     public async Task<List<InquiryCompanyDTO>> GetCompanyInquries()
     {
@@ -115,8 +105,8 @@ public class CompanyService : ICompanyService
 
         foreach (var inquiry in inquiries)
         {
-            var user = await _userRepository.GetBy0IdAsync(inquiry.UserId); 
-            UserData UserDTO= null;
+            var user = await _userRepository.GetBy0IdAsync(inquiry.UserId);
+            UserData UserDTO = null;
             if (user != null)
             {
                 UserDTO = new UserData()
@@ -125,7 +115,6 @@ public class CompanyService : ICompanyService
                     LastName = user.LastName,
                     Email = user.Email
                 };
-
             }
             InquiryCompanyDTO Inquiry = new InquiryCompanyDTO()
             {
@@ -139,13 +128,9 @@ public class CompanyService : ICompanyService
                 Priority = inquiry.Priority,
                 User = UserDTO
             };
-                  
-                
-            result.Add(Inquiry);
-         
-        }
 
-       
+            result.Add(Inquiry);
+        }
 
         return result.OrderByDescending(r => r.InquiryDate).ToList();
     }
@@ -158,26 +143,25 @@ public class CompanyService : ICompanyService
         ApiAdapter adapter = new ApiAdapter();
 
         foreach (var delivery in Delivery)
-        { 
-        var offer = delivery.Offer;
-        var user = delivery.Offer.DeliveryRequest.User;
-        var inquiry = delivery.Offer.DeliveryRequest;
-        UserData? userData = null;
-        if (user != null)
         {
-            userData = new UserData()
+            var offer = delivery.Offer;
+            var user = delivery.Offer.DeliveryRequest.User;
+            var inquiry = delivery.Offer.DeliveryRequest;
+            UserData? userData = null;
+            if (user != null)
             {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email
+                userData = new UserData()
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email
+                };
+            }
+            OfferData offerDto = new OfferData
+            {
+                totalPrice = offer.totalPrice,
+                Currency = "PLN"
             };
-        }
-        OfferData offerDto = new OfferData
-        {
-            totalPrice = offer.totalPrice,
-            Currency = "PLN"
-        };
-
 
             DeliveryData deliveryDto = new DeliveryData
             {
@@ -187,45 +171,41 @@ public class CompanyService : ICompanyService
                 DeliveryStatus = adapter.ConvertStatusToString(delivery.DeliveryStatus),
                 Courier = adapter.ConvertToUserData(delivery.Courier)
             };
-        
 
-        
-
-        DeliveryCompanyDTO item = new DeliveryCompanyDTO()
-        {
-            User = userData,
-            Inquiry = new InquiryData
+            DeliveryCompanyDTO item = new DeliveryCompanyDTO()
             {
-                InquiryId = inquiry.DeliveryRequestPublicId,
-                Package = adapter.ConvertToPackageDTO(inquiry.Package),
-                SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
-                DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
-                InquiryDate = inquiry.CreatedAt,
-                DeliveryDate = inquiry.DeliveryDate,
-                WeekendDelivery = inquiry.WeekendDelivery,
-                Priority = inquiry.Priority
-            },
-            Offer = offerDto,
-            Delivery = deliveryDto
-
-        };
+                User = userData,
+                Inquiry = new InquiryData
+                {
+                    InquiryId = inquiry.DeliveryRequestPublicId,
+                    Package = adapter.ConvertToPackageDTO(inquiry.Package),
+                    SourceAddress = adapter.ConvertToAddressDTO(inquiry.SourceAddress),
+                    DestinationAddress = adapter.ConvertToAddressDTO(inquiry.DestinationAddress),
+                    InquiryDate = inquiry.CreatedAt,
+                    DeliveryDate = inquiry.DeliveryDate,
+                    WeekendDelivery = inquiry.WeekendDelivery,
+                    Priority = inquiry.Priority
+                },
+                Offer = offerDto,
+                Delivery = deliveryDto
+            };
             result.Add(item);
         }
 
-
         return result.OrderByDescending(r => r.Inquiry.InquiryDate).ToList();
     }
+
     //zmiana statusu by worker
-    public async  Task<string> ChangeStatusByWorker(ChangeDeliveryStatusWorkerDTO changeDeliveryStatusDTO)
+    public async Task<string> ChangeStatusByWorker(ChangeDeliveryStatusWorkerDTO changeDeliveryStatusDTO)
     {
         ApiAdapter api = new ApiAdapter();
-       var delivery=await  _deliveryRepository.FindAsync(changeDeliveryStatusDTO.DeliveryId);
+        var delivery = await _deliveryRepository.FindAsync(changeDeliveryStatusDTO.DeliveryId);
 
-        if(delivery == null) { throw new Exception("Dont find that delivery"); }
-      
+        if (delivery == null) { throw new Exception("Dont find that delivery"); }
+
         delivery.DeliveryStatus = api.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
         _deliveryRepository.Update(delivery);
-       await _deliveryRepository.SaveChangesAsync();
+        await _deliveryRepository.SaveChangesAsync();
 
         return "OK!";
     }
@@ -239,23 +219,22 @@ public class CompanyService : ICompanyService
         if (delivery == null) { throw new Exception("Nie znaleziono takiej delivery"); }
         DeliveryStatus status = adapter.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
 
-        if (status != DeliveryStatus.acceptedbycourier||status!=DeliveryStatus.cannotdelivery||status!=DeliveryStatus.pickedup||status!=DeliveryStatus.delivered)
+        if (status != DeliveryStatus.acceptedbycourier || status != DeliveryStatus.cannotdelivery || status != DeliveryStatus.pickedup || status != DeliveryStatus.delivered)
             if (delivery == null) { throw new Exception("Nozesz tylko: delivered pickedup accept and Cannotdelivery"); }
-        if(status==DeliveryStatus.cannotdelivery&&changeDeliveryStatusDTO.Message==null)
+        if (status == DeliveryStatus.cannotdelivery && changeDeliveryStatusDTO.Message == null)
         {
             throw new Exception("Podaj wiadomosc jesli nie udalo sie dostarczyc paczki ( wymagania )");
         }
-        if(delivery.DeliveryStatus==DeliveryStatus.accepted)
+        if (delivery.DeliveryStatus == DeliveryStatus.accepted)
         {
-           if(changeDeliveryStatusDTO.Auth0Id==null) { throw new Exception("null jako auth0id gdy acceptedbycourier"); }
+            if (changeDeliveryStatusDTO.Auth0Id == null) { throw new Exception("null jako auth0id gdy acceptedbycourier"); }
 
-          User user= await _userRepository.GetByAuth0IdAsync(changeDeliveryStatusDTO.Auth0Id);
+            User user = await _userRepository.GetByAuth0IdAsync(changeDeliveryStatusDTO.Auth0Id);
             if (user == null) { throw new Exception("Nie ma takiego usera"); }
 
             delivery.Courier = user;
-
         }
-        
+
         delivery.DeliveryStatus = adapter.ConvertStringToDeliveryStatus(changeDeliveryStatusDTO.DeliveryStatus);
         _deliveryRepository.Update(delivery);
         await _deliveryRepository.SaveChangesAsync();
@@ -290,7 +269,6 @@ public class CompanyService : ICompanyService
                 Currency = "PLN"
             };
 
-
             DeliveryData deliveryDto = new DeliveryData
             {
                 DeliveryId = delivery.PublicID,
@@ -299,8 +277,6 @@ public class CompanyService : ICompanyService
                 DeliveryStatus = adapter.ConvertStatusToString(delivery.DeliveryStatus),
                 Courier = adapter.ConvertToUserData(delivery.Courier)
             };
-
-           
 
             DTOIOD result = new DTOIOD()
             {
@@ -318,13 +294,13 @@ public class CompanyService : ICompanyService
                 },
                 Offer = offerDto,
                 Delivery = deliveryDto
-
             };
             resultlist.Add(result);
         }
 
         return resultlist;
     }
+
     // dostepne IOD courier
     public async Task<List<DTOIOD>> GetAvailableIOD()
     {
@@ -353,7 +329,6 @@ public class CompanyService : ICompanyService
                 Currency = "PLN"
             };
 
-
             DeliveryData deliveryDto = new DeliveryData
             {
                 DeliveryId = delivery.PublicID,
@@ -363,7 +338,6 @@ public class CompanyService : ICompanyService
                 Courier = adapter.ConvertToUserData(delivery.Courier)
             };
 
-           
             DTOIOD result = new DTOIOD()
             {
                 User = userData,
@@ -380,13 +354,10 @@ public class CompanyService : ICompanyService
                 },
                 Offer = offerDto,
                 Delivery = deliveryDto
-
             };
             resultlist.Add(result);
         }
 
         return resultlist;
     }
-
-
 }

@@ -2,8 +2,6 @@
 using Domain.DTO;
 using Domain.Model;
 
-
-
 namespace Api.Service;
 
 public class UserService : IUserService
@@ -24,7 +22,6 @@ public class UserService : IUserService
 
         return result;
     }
-
 
     public ServiceResult AddUser(DTO_UserFromAuth0 user)
     {
@@ -64,12 +61,11 @@ public class UserService : IUserService
     {
         try
         {
-            
             var existingUser = await repository.GetByAuth0IdAsync(user.Auth0Id);
             if (existingUser != null)
             {
                 existingUser.NumberOfLogins++;
-                await repository.SaveChangesAsync(); 
+                await repository.SaveChangesAsync();
                 return new ServiceResult(false, "Użytkownik już istnieje.", 409);
             }
 
@@ -83,7 +79,7 @@ public class UserService : IUserService
                 NumberOfLogins = 1
             };
 
-            await repository.AddAsync(AddUser); 
+            await repository.AddAsync(AddUser);
 
             return new ServiceResult(true, "Użytkownik został dodany.", 201, AddUser);
         }

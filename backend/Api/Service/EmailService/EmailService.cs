@@ -1,30 +1,27 @@
 ﻿namespace Api.Service;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+
 using Azure;
 using Azure.Communication.Email;
-
 using Domain;
 using Domain.DTO;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
 
-public class EmailService: IEmailService
-    {
-
-   private readonly IdentityManagerSettings _settings;
+public class EmailService : IEmailService
+{
+    private readonly IdentityManagerSettings _settings;
 
     public EmailService(IOptions<IdentityManagerSettings> settings)//IdentityManagerSettings settings
     {
-       _settings = settings.Value;
+        _settings = settings.Value;
     }
-    // logged in users 
-    public  async Task<bool> AfterInquiry(InquiryDTO inquiryDTO, string name, string email)
+
+    // logged in users
+    public async Task<bool> AfterInquiry(InquiryDTO inquiryDTO, string name, string email)
     {
         string connectionString = "endpoint=https://emailsending420.unitedstates.communication.azure.com/;accesskey=ixhKzJrHEMFPyNhTNHzLoIecXjRzoVP900lp1eLQYBzzJssmj42iMneW3mow4cNY1glWBcNZNgzNRWur3nleCA==";
         var emailClient = new EmailClient(connectionString);
-
-      
 
         string subject = string.Format("New inquiry");
         string body = string.Format($"Hej! Przeslanie inquiry powiodlo się! Dziękujemy za zaufanie naszej firmie {name} ~ Stachnet");
@@ -40,19 +37,11 @@ public class EmailService: IEmailService
         {
             response = await emailClient.SendAsync(WaitUntil.Completed, emailMessage);
         }
-       catch(Exception ex)
+        catch (Exception ex)
         {
             string a = ex.Message;
         }
 
-
-
-
-
-
         return response.Value.Status == EmailSendStatus.Succeeded;
     }
-
-
 }
-

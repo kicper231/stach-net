@@ -1,13 +1,11 @@
-﻿using Domain.Adapters;
+﻿using Domain;
 using Domain.DTO;
-using Domain;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-
 namespace Api.Service.OfferServices;
+
 public class OfferService : IOfferService
 {
     private readonly HttpClient _httpOurClientOffer;
@@ -42,7 +40,6 @@ public class OfferService : IOfferService
 
         var tokenResult = await tokenResponse.Content.ReadAsStringAsync();
 
-
         using (var doc = JsonDocument.Parse(tokenResult))
         {
             var accessToken = doc.RootElement.GetProperty("access_token").GetString();
@@ -50,17 +47,14 @@ public class OfferService : IOfferService
         }
     }
 
-
     public async Task<OfferRespondDTO> GetOfferOurID(OfferDTO offerdto)
     {
-
         OfferSzymonApiDTO data = new OfferSzymonApiDTO
         {
             Address = offerdto.Address,
             Name = offerdto.firstName,
             InquiryId = offerdto.InquiryId,
             Email = offerdto.Email
-
         };
 
         var response = await _httpOurClientOffer.PostAsJsonAsync("/offers", data);
@@ -73,21 +67,18 @@ public class OfferService : IOfferService
 
     public async Task<OfferRespondDTO> GetOfferSzymonID(OfferDTO offerdto)
     {
-
         OfferSzymonApiDTO data = new OfferSzymonApiDTO
         {
             Address = offerdto.Address,
             Name = offerdto.firstName,
             InquiryId = offerdto.InquiryId,
             Email = offerdto.Email
-
         };
 
         var inquirymessage = new HttpRequestMessage(HttpMethod.Post, $"{_httpSzymonClientOffer.BaseAddress}Offers")
         {
             Content = JsonContent.Create(data)
         };
-
 
         var accessToken = await GetTokenAsync("SzymonCompany");
 
@@ -97,13 +88,8 @@ public class OfferService : IOfferService
         response.EnsureSuccessStatusCode();
         var responseBody = await response.Content.ReadAsStringAsync();
 
-
         var respond = await response.Content.ReadFromJsonAsync<OfferRespondDTO>();
-
-
 
         return respond;
     }
-
-
 }

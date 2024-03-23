@@ -4,10 +4,10 @@
 
 namespace Api.Migrations
 {
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public partial class zipcode : Migration
     {
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -228,7 +228,7 @@ namespace Api.Migrations
                 column: "DeliveryRequestId");
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

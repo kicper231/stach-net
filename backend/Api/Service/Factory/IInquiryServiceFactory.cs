@@ -1,9 +1,7 @@
-﻿
-using Domain;
+﻿using Domain;
 using Microsoft.Extensions.Options;
 
 namespace Api.Service;
-
 
 public interface IInquiryServiceFactory
 {
@@ -27,8 +25,10 @@ public class InquiryServiceFactory : IInquiryServiceFactory
         {
             case "StachnetCompany":
                 return new StachnetInquiryService(_clientFactory, _settings);
+
             case "SzymonCompany":
                 return new SzymonInquiryService(_clientFactory, _settings);
+
             default:
                 throw new ArgumentException("Nieznana nazwa firmy", nameof(companyName));
         }

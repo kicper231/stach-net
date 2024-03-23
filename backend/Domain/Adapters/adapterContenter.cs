@@ -1,10 +1,9 @@
 ﻿using Domain.DTO;
 using Domain.Model;
-using System.Text.RegularExpressions;
-using Domain;
+
 namespace Domain.Adapters;
 
-//raczej konwenter nie adapter ale cicho  jak starczy czasu to zmienie strukture kodu na adapter // jak bede wiedzial jak 
+//raczej konwenter nie adapter ale cicho  jak starczy czasu to zmienie strukture kodu na adapter // jak bede wiedzial jak
 public class ApiAdapter
 {
     // interfejs
@@ -19,7 +18,7 @@ public class ApiAdapter
                 Length = inquiryDTO.Package.Length,
                 DimensionUnit = "Meters"
             },
-            Currency = "PLN", // 
+            Currency = "PLN", //
             Weight = inquiryDTO.Package.Weight,
             WeightUnit = "Kilograms",
             Source = inquiryDTO.SourceAddress,
@@ -32,8 +31,6 @@ public class ApiAdapter
             IsCompany = false
         };
     }
-
-
 
     public AddressDTO ConvertToAddressDTO(Address address)
     {
@@ -50,7 +47,6 @@ public class ApiAdapter
         };
     }
 
-  
     public PackageDTO ConvertToPackageDTO(Package package)
     {
         if (package == null) return null;
@@ -68,29 +64,28 @@ public class ApiAdapter
     {
         if (user == null) return null;
         else return new UserData()
-        { Email= user.Email,
-         FirstName = user.FirstName,
-        LastName =user.LastName};
-
+        {
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName
+        };
     }
 
-
-    public  DeliveryStatus ConvertStringToDeliveryStatus(string statusString)
+    public DeliveryStatus ConvertStringToDeliveryStatus(string statusString)
     {
-       return statusString switch
-    {
-        "no status" => DeliveryStatus.nostatus,
-        "accepted" => DeliveryStatus.accepted,
-        "rejected" => DeliveryStatus.rejected,
-        "accepted by courier" => DeliveryStatus.acceptedbycourier,
-        "picked up" => DeliveryStatus.pickedup,
-        "delivered" => DeliveryStatus.delivered,
-        "cannot deliver" => DeliveryStatus.cannotdelivery,
-        "cancelled" => DeliveryStatus.cancelled,
-        _ => DeliveryStatus.nostatus
-    };
+        return statusString switch
+        {
+            "no status" => DeliveryStatus.nostatus,
+            "accepted" => DeliveryStatus.accepted,
+            "rejected" => DeliveryStatus.rejected,
+            "accepted by courier" => DeliveryStatus.acceptedbycourier,
+            "picked up" => DeliveryStatus.pickedup,
+            "delivered" => DeliveryStatus.delivered,
+            "cannot deliver" => DeliveryStatus.cannotdelivery,
+            "cancelled" => DeliveryStatus.cancelled,
+            _ => DeliveryStatus.nostatus
+        };
     }
-
 
     public string ConvertStatusToString(DeliveryStatus status)
     {
@@ -107,8 +102,4 @@ public class ApiAdapter
             _ => "unknown status"
         };
     }
-    
-
-
-
 }

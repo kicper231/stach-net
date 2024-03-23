@@ -5,8 +5,11 @@ namespace Infrastructure;
 public interface ICourierCompanyRepository
 {
     List<CourierCompany> GetAll();
+
     CourierCompany GetByName(string name);
+
     void Add(CourierCompany courierCompany);
+
     void SaveChanges();
 }
 
