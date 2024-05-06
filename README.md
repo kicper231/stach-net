@@ -11,7 +11,6 @@ The "Courier Hub" project is part of a .NET programming course and simulates a c
 - Clean Architecture ensures code clarity and maintainability.
 - The frontend is built with React.
 - SQL database is accessed via Entity Framework using Fluent API.
-- Microsoft diagnostic tools help monitor and debug.
 - Deployed on Azure with CI/CD pipelines.
 - Developed using Agile (Scrum) for iterative progress
 
